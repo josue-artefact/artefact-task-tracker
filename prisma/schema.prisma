@@ -24,6 +24,13 @@ model User {
   teamId    String?
   team      Team?     @relation(fields: [teamId], references: [id], onDelete: SetNull)
   createdAt DateTime  @default(now())
+
+  // "Active now" — qué tarea estoy trabajando ahora mismo.
+  // Stale después de 8h, se trata como inactivo en displays.
+  activeTaskId  String?
+  activeTask    Task?     @relation("ActiveOn", fields: [activeTaskId], references: [id], onDelete: SetNull)
+  activeSince   DateTime?
+
   assignedTasks Task[]    @relation("Assignee")
   createdTasks  Task[]    @relation("Creator")
   comments      Comment[]
@@ -63,6 +70,7 @@ model Task {
   comments         Comment[]
   transfers        TaskTransfer[]
   timeEntries      TimeEntry[]
+  activeUsers      User[]   @relation("ActiveOn")
 }
 
 model Comment {

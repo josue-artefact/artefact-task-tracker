@@ -3,6 +3,7 @@ import { requirePM } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { AppShell } from "@/components/AppShell";
 import { AnnouncementBoard } from "@/components/AnnouncementBoard";
+import { ActiveNow } from "@/components/ActiveNow";
 import { AdminTaskTable } from "./AdminTaskTable";
 import { AdminSearchInput } from "./AdminSearchInput";
 
@@ -111,6 +112,9 @@ export default async function AdminPage({
     <AppShell user={user}>
       {/* Tablón de anuncios */}
       <AnnouncementBoard isPM />
+
+      {/* Quién está activo en qué tarea ahora */}
+      <ActiveNow />
 
       {/* Hero */}
       <section className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between animate-fade-up">

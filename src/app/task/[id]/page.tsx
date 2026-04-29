@@ -7,6 +7,7 @@ import { PriorityPill, StatusPill } from "@/components/PriorityPill";
 import { PRIORITIES, STATUSES, formatDate, formatRelative, priorityLabel, statusLabel, isOverdue } from "@/lib/format";
 import { addComment, transferTask, setStatus, setPriority, deleteTask, updateTask } from "@/app/actions/tasks";
 import { setTaskEstimate } from "@/app/actions/time";
+import { toggleActiveTask } from "@/app/actions/active";
 import { EditCard, EditTrigger, EditPanel } from "@/components/EditDisclosure";
 import { ImproveBriefButton } from "@/components/ImproveBriefButton";
 import { TimeSection } from "@/components/TimeSection";
@@ -69,6 +70,22 @@ export default async function TaskPage({
 
   const dueDateValue = task.dueDate ? new Date(task.dueDate).toISOString().slice(0, 10) : "";
   const overdue = task.dueDate && isOverdue(task.dueDate) && task.status !== "DONE";
+
+  // Estado "active now" del usuario actual (para el toggle)
+  const meActive = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: {
+      activeTaskId: true,
+      activeSince: true,
+      activeTask: { select: { id: true, title: true } },
+    },
+  });
+  const STALE_HOURS = 8;
+  const activeIsFresh =
+    meActive?.activeSince &&
+    Date.now() - meActive.activeSince.getTime() < STALE_HOURS * 60 * 60 * 1000;
+  const isActiveOnThisTask = activeIsFresh && meActive?.activeTaskId === task.id;
+  const isActiveOnOther = activeIsFresh && meActive?.activeTaskId && meActive.activeTaskId !== task.id;
 
   return (
     <AppShell user={user}>
@@ -263,6 +280,65 @@ export default async function TaskPage({
 
         {/* Side column */}
         <aside className="space-y-6">
+          {/* Active now toggle */}
+          <Card>
+            <SectionLabel>
+              {isActiveOnThisTask ? "Trabajando aquí" : "Activo"}
+            </SectionLabel>
+            <form action={toggleActiveTask}>
+              <input type="hidden" name="taskId" value={task.id} />
+              <button
+                type="submit"
+                className={[
+                  "group flex w-full items-center justify-between gap-2 rounded-full py-2 pl-4 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98]",
+                  isActiveOnThisTask
+                    ? "bg-accent-lime text-ink-900 ring-1 ring-ink-900/10 hover:bg-accent-lime/80"
+                    : "bg-ink-900 text-cream-50 hover:bg-ink-800",
+                ].join(" ")}
+              >
+                <span className="flex items-center gap-2">
+                  {isActiveOnThisTask ? (
+                    <>
+                      <span className="relative inline-flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ink-900 opacity-50" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-ink-900" />
+                      </span>
+                      Detener
+                    </>
+                  ) : isActiveOnOther ? (
+                    "Cambiar a esta"
+                  ) : (
+                    "Empezar a trabajar"
+                  )}
+                </span>
+                <span className={`flex h-7 w-7 items-center justify-center rounded-full transition-all duration-500 group-hover:translate-x-0.5 ${
+                  isActiveOnThisTask ? "bg-ink-900/15" : "bg-cream-50/15"
+                }`}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    {isActiveOnThisTask ? (
+                      <rect x="6" y="6" width="12" height="12" rx="1" fill="currentColor" />
+                    ) : (
+                      <polygon points="6,4 20,12 6,20" fill="currentColor" />
+                    )}
+                  </svg>
+                </span>
+              </button>
+            </form>
+            {isActiveOnThisTask && meActive?.activeSince && (
+              <p className="mt-3 text-[11px] uppercase tracking-[0.18em] text-ink-500">
+                activo {formatRelative(meActive.activeSince)}
+              </p>
+            )}
+            {isActiveOnOther && meActive?.activeTask && (
+              <p className="mt-3 text-[11px] text-ink-500">
+                Ahora estás en{" "}
+                <Link href={`/task/${meActive.activeTask.id}`} className="font-serif italic text-ink-700 hover:text-ink-900 underline-offset-2 hover:underline">
+                  "{meActive.activeTask.title}"
+                </Link>
+              </p>
+            )}
+          </Card>
+
           <Card>
             <SectionLabel>Asignación</SectionLabel>
             <div className="flex items-center gap-3">
