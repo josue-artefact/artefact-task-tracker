@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireUser, requirePM } from "@/lib/auth";
 import { PRIORITIES, STATUSES } from "@/lib/format";
+import { parseDuration } from "@/lib/time";
 
 export async function createTask(formData: FormData) {
   const pm = await requirePM();
@@ -17,6 +18,8 @@ export async function createTask(formData: FormData) {
   const priority = (formData.get("priority") as string) || "MEDIUM";
   const dueDateRaw = (formData.get("dueDate") as string) || "";
   const dueDate = dueDateRaw ? new Date(dueDateRaw) : null;
+  const estimateRaw = ((formData.get("estimate") as string) || "").trim();
+  const estimatedMinutes = estimateRaw ? parseDuration(estimateRaw) : null;
 
   if (!title || !clientId || !teamId) return;
   if (!PRIORITIES.includes(priority as any)) return;
@@ -30,6 +33,7 @@ export async function createTask(formData: FormData) {
       assigneeId: assigneeId || null,
       priority,
       dueDate,
+      estimatedMinutes: estimatedMinutes && estimatedMinutes > 0 ? estimatedMinutes : null,
       createdById: pm.id,
     },
   });

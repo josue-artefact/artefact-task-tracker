@@ -6,13 +6,23 @@ import { AppShell } from "@/components/AppShell";
 import { PriorityPill, StatusPill } from "@/components/PriorityPill";
 import { PRIORITIES, STATUSES, formatDate, formatRelative, priorityLabel, statusLabel, isOverdue } from "@/lib/format";
 import { addComment, transferTask, setStatus, setPriority, deleteTask, updateTask } from "@/app/actions/tasks";
+import { setTaskEstimate } from "@/app/actions/time";
 import { EditCard, EditTrigger, EditPanel } from "@/components/EditDisclosure";
 import { ImproveBriefButton } from "@/components/ImproveBriefButton";
+import { TimeSection } from "@/components/TimeSection";
+import { formatDurationCompact } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
 
-export default async function TaskPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function TaskPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ time_error?: string }>;
+}) {
   const { id } = await params;
+  const sp = await searchParams;
   const user = await requireUser();
 
   const task = await prisma.task.findUnique({
@@ -26,6 +36,11 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
       transfers: {
         include: { fromUser: true, toUser: true },
         orderBy: { createdAt: "desc" },
+      },
+      timeEntries: {
+        where: { deletedAt: null },
+        include: { user: true },
+        orderBy: { loggedFor: "desc" },
       },
     },
   });
@@ -170,6 +185,17 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
             </EditCard>
           </Card>
 
+          {/* Time tracking */}
+          <TimeSection
+            taskId={task.id}
+            taskStatus={task.status}
+            estimatedMinutes={task.estimatedMinutes}
+            entries={task.timeEntries}
+            currentUserId={user.id}
+            isPM={isPM}
+            errorCode={sp.time_error}
+          />
+
           {/* Comments */}
           <Card>
             <SectionLabel>Comentarios · {task.comments.length}</SectionLabel>
@@ -260,6 +286,25 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
               <Row label="Equipo">{task.team.name}</Row>
             </div>
           </Card>
+
+          {/* Estimate (PM only) */}
+          {isPM && (
+            <Card>
+              <SectionLabel>Estimación</SectionLabel>
+              <form action={setTaskEstimate} className="space-y-2">
+                <input type="hidden" name="taskId" value={task.id} />
+                <input
+                  name="estimate"
+                  defaultValue={task.estimatedMinutes ? formatDurationCompact(task.estimatedMinutes) : ""}
+                  placeholder="ej. 4h, 90m, 1h30 (vacío = sin estimación)"
+                  className="w-full rounded-xl bg-ink-900/[0.04] px-3 py-2.5 text-[13px] text-ink-900 ring-1 ring-ink-900/5 placeholder:text-ink-400 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
+                />
+                <div className="flex justify-end">
+                  <SubmitButton>Guardar</SubmitButton>
+                </div>
+              </form>
+            </Card>
+          )}
 
           {/* Status setter */}
           {canEditStatus && (

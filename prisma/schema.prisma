@@ -30,6 +30,8 @@ model User {
   transfersFrom TaskTransfer[] @relation("TransferFrom")
   transfersTo   TaskTransfer[] @relation("TransferTo")
   announcements Announcement[]
+  timeEntries   TimeEntry[]
+  timeEntryEdits TimeEntryEdit[]
 }
 
 model Client {
@@ -41,24 +43,26 @@ model Client {
 }
 
 model Task {
-  id           String   @id @default(cuid())
-  title        String
-  description  String?
-  priority     String   @default("MEDIUM") // "LOW" | "MEDIUM" | "HIGH" | "URGENT"
-  status       String   @default("TODO")   // "TODO" | "DOING" | "DONE"
-  dueDate      DateTime?
-  clientId     String
-  client       Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  teamId       String
-  team         Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  assigneeId   String?
-  assignee     User?    @relation("Assignee", fields: [assigneeId], references: [id], onDelete: SetNull)
-  createdById  String
-  createdBy    User     @relation("Creator", fields: [createdById], references: [id])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  comments     Comment[]
-  transfers    TaskTransfer[]
+  id               String   @id @default(cuid())
+  title            String
+  description      String?
+  priority         String   @default("MEDIUM") // "LOW" | "MEDIUM" | "HIGH" | "URGENT"
+  status           String   @default("TODO")   // "TODO" | "DOING" | "DONE"
+  dueDate          DateTime?
+  estimatedMinutes Int?     // PM puede setear; opcional
+  clientId         String
+  client           Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  teamId           String
+  team             Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  assigneeId       String?
+  assignee         User?    @relation("Assignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  createdById      String
+  createdBy        User     @relation("Creator", fields: [createdById], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  comments         Comment[]
+  transfers        TaskTransfer[]
+  timeEntries      TimeEntry[]
 }
 
 model Comment {
@@ -81,6 +85,40 @@ model Announcement {
   author    User      @relation(fields: [authorId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+}
+
+model TimeEntry {
+  id        String    @id @default(cuid())
+  taskId    String
+  task      Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  minutes   Int       // siempre positivo
+  note      String?
+  loggedFor DateTime  // fecha del trabajo (puede ser hoy o hasta 14 días atrás)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // soft delete para preservar audit trail
+  edits     TimeEntryEdit[]
+
+  @@index([taskId, deletedAt])
+  @@index([userId, loggedFor])
+}
+
+model TimeEntryEdit {
+  id              String    @id @default(cuid())
+  entryId         String
+  entry           TimeEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  editorId        String
+  editor          User      @relation(fields: [editorId], references: [id])
+  action          String    // "edit" | "delete"
+  prevMinutes     Int
+  prevNote        String?
+  prevLoggedFor   DateTime
+  newMinutes      Int?      // null en delete
+  newNote         String?
+  newLoggedFor    DateTime?
+  createdAt       DateTime  @default(now())
 }
 
 model TaskTransfer {

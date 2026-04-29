@@ -105,6 +105,14 @@ export default async function NewTaskPage() {
                   className="w-full rounded-xl bg-ink-900/[0.04] px-3 py-2.5 text-[13px] text-ink-900 ring-1 ring-ink-900/5 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
                 />
               </Field>
+
+              <Field label="Estimación (opcional)">
+                <input
+                  name="estimate"
+                  placeholder="ej. 4h, 90m, 1h30"
+                  className="w-full rounded-xl bg-ink-900/[0.04] px-3 py-2.5 text-[13px] text-ink-900 ring-1 ring-ink-900/5 placeholder:text-ink-400 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
+                />
+              </Field>
             </div>
 
             <div className="flex justify-end pt-2">

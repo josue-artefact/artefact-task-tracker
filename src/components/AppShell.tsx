@@ -46,6 +46,9 @@ export function AppShell({ user, children }: Props) {
                 <Link href="/admin/teams" className="rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
                   Equipos
                 </Link>
+                <Link href="/admin/insights" className="rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
+                  Insights
+                </Link>
                 <Link
                   href="/admin/tasks/new"
                   className="rounded-full bg-ink-900 px-3 py-1.5 text-cream-50 transition hover:bg-ink-800"
