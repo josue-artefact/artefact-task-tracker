@@ -44,14 +44,19 @@ function buildSortUrl(query: string, nextSort: SortKey, nextDir: SortDir): strin
   return qs ? `/admin?${qs}` : "/admin";
 }
 
-const COLUMNS: { key: SortKey; label: string; sortable: boolean }[] = [
-  { key: "title",    label: "Tarea",      sortable: true },
-  { key: "client",   label: "Cliente",    sortable: true },
-  { key: "team",     label: "Equipo",     sortable: true },
-  { key: "assignee", label: "Asignado",   sortable: true },
-  { key: "priority", label: "Prioridad",  sortable: true },
-  { key: "status",   label: "Estado",     sortable: true },
-  { key: "updated",  label: "Actualizada",sortable: true },
+const COLUMNS: {
+  key: SortKey;
+  label: string;
+  /** Tailwind responsive class para mostrar/esconder en mobile */
+  responsive?: string;
+}[] = [
+  { key: "title",    label: "Tarea" },
+  { key: "client",   label: "Cliente",   responsive: "hidden lg:table-cell" },
+  { key: "team",     label: "Equipo",    responsive: "hidden lg:table-cell" },
+  { key: "assignee", label: "Asignado",  responsive: "hidden md:table-cell" },
+  { key: "priority", label: "Prioridad" },
+  { key: "status",   label: "Estado",    responsive: "hidden sm:table-cell" },
+  { key: "updated",  label: "Actualizada", responsive: "hidden xl:table-cell" },
 ];
 
 export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props) {
@@ -80,11 +85,11 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
   return (
     <>
       <div className="rounded-[2rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
-        <div className="overflow-hidden rounded-[calc(2rem-0.375rem)] bg-cream-50">
+        <div className="overflow-x-auto rounded-[calc(2rem-0.375rem)] bg-cream-50">
           <table className="w-full text-left text-[13px]">
             <thead className="border-b border-ink-900/5 text-[10px] uppercase tracking-[0.18em] text-ink-500">
               <tr>
-                <th className="w-10 py-3 pl-6 pr-2">
+                <th className="w-10 py-3 pl-4 pr-2 sm:pl-6">
                   <input
                     type="checkbox"
                     checked={allSelected}
@@ -98,7 +103,7 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
                   const nextDir: SortDir =
                     sortKey === col.key && sortDir === "asc" ? "desc" : "asc";
                   return (
-                    <th key={col.key} className="px-3 py-3 font-medium">
+                    <th key={col.key} className={`px-3 py-3 font-medium ${col.responsive ?? ""}`}>
                       <SortHeader
                         label={col.label}
                         active={sortKey === col.key}
@@ -108,7 +113,7 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
                     </th>
                   );
                 })}
-                <th className="py-3 pl-3 pr-6 font-medium" />
+                <th className="py-3 pl-3 pr-4 font-medium sm:pr-6" />
               </tr>
             </thead>
             <tbody className="divide-y divide-ink-900/5">
@@ -127,7 +132,7 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
                     key={t.id}
                     className={`group transition-colors ${isSelected ? "bg-accent-lime/20" : "hover:bg-ink-900/[0.02]"}`}
                   >
-                    <td className="py-3.5 pl-6 pr-2">
+                    <td className="py-3.5 pl-4 pr-2 sm:pl-6">
                       <input
                         type="checkbox"
                         checked={isSelected}
@@ -137,13 +142,19 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
                       />
                     </td>
                     <td className="px-3 py-3.5">
-                      <Link href={`/task/${t.id}`} className="font-serif italic text-[16px] text-ink-900 transition group-hover:text-ink-700">
-                        {t.title}
+                      <Link href={`/task/${t.id}`} className="block">
+                        <span className="font-serif italic text-[16px] text-ink-900 transition group-hover:text-ink-700">
+                          {t.title}
+                        </span>
+                        {/* Meta visible solo en mobile (lg-hidden) — muestra cliente · equipo cuando las columnas están ocultas */}
+                        <span className="mt-0.5 block text-[10px] uppercase tracking-[0.18em] text-ink-500 lg:hidden">
+                          {t.client.name} · {t.team.name}
+                        </span>
                       </Link>
                     </td>
-                    <td className="px-3 py-3.5 text-[13px] text-ink-700">{t.client.name}</td>
-                    <td className="px-3 py-3.5 text-[13px] text-ink-700">{t.team.name}</td>
-                    <td className="px-3 py-3.5 text-ink-700">
+                    <td className="hidden px-3 py-3.5 text-[13px] text-ink-700 lg:table-cell">{t.client.name}</td>
+                    <td className="hidden px-3 py-3.5 text-[13px] text-ink-700 lg:table-cell">{t.team.name}</td>
+                    <td className="hidden px-3 py-3.5 text-ink-700 md:table-cell">
                       {t.assignee ? <span className="font-mono">@{t.assignee.handle}</span> : <span className="text-ink-400">—</span>}
                     </td>
                     <td className="px-3 py-3.5">
@@ -156,11 +167,11 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
                         )}
                       </div>
                     </td>
-                    <td className="px-3 py-3.5"><StatusPill status={t.status} /></td>
-                    <td className="px-3 py-3.5 text-[10px] uppercase tracking-[0.18em] text-ink-400">
+                    <td className="hidden px-3 py-3.5 sm:table-cell"><StatusPill status={t.status} /></td>
+                    <td className="hidden px-3 py-3.5 text-[10px] uppercase tracking-[0.18em] text-ink-400 xl:table-cell">
                       {formatRelative(t.updatedAt)}
                     </td>
-                    <td className="py-3.5 pl-3 pr-6">
+                    <td className="py-3.5 pl-3 pr-4 sm:pr-6">
                       <div className="flex items-center justify-end gap-2">
                         <Link
                           href={`/task/${t.id}`}

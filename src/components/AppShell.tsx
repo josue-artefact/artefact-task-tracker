@@ -28,30 +28,30 @@ export function AppShell({ user, children }: Props) {
             </span>
           </Link>
 
-          <div className="flex items-center gap-1 rounded-full bg-ink-900/[0.04] p-1 text-[12px]">
+          <div className="flex min-w-0 items-center gap-1 overflow-x-auto rounded-full bg-ink-900/[0.04] p-1 text-[12px] [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
             <Link
               href={isPM ? "/admin" : "/inbox"}
-              className="rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900"
+              className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900"
             >
               {isPM ? "Resumen" : "Bandeja"}
             </Link>
-            <Link href="/kanban" className="rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
+            <Link href="/kanban" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
               Kanban
             </Link>
             {isPM && (
               <>
-                <Link href="/admin/clients" className="rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
+                <Link href="/admin/clients" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
                   Clientes
                 </Link>
-                <Link href="/admin/teams" className="rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
+                <Link href="/admin/teams" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
                   Equipos
                 </Link>
-                <Link href="/admin/insights" className="rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
+                <Link href="/admin/insights" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
                   Insights
                 </Link>
                 <Link
                   href="/admin/tasks/new"
-                  className="rounded-full bg-ink-900 px-3 py-1.5 text-cream-50 transition hover:bg-ink-800"
+                  className="shrink-0 rounded-full bg-ink-900 px-3 py-1.5 text-cream-50 transition hover:bg-ink-800"
                 >
                   Nueva tarea
                 </Link>
