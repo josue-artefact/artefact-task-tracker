@@ -42,6 +42,7 @@ model User {
   pipelinesCreated Pipeline[] @relation("PipelineCreator")
   notifications        Notification[] @relation("NotifRecipient")
   notificationsAuthored Notification[] @relation("NotifFrom")
+  pushSubscriptions    PushSubscription[]
 }
 
 model Client {
@@ -188,6 +189,19 @@ model Notification {
 
   @@index([userId, readAt])
   @@index([userId, createdAt])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model TaskTransfer {

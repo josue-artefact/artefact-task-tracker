@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { markAsRead, markAllAsRead } from "@/app/actions/notifications";
+import { ensurePushSubscribed, getPushStatus, type PushStatus } from "@/lib/push-client";
 
 type Notification = {
   id: string;
@@ -27,7 +28,19 @@ export function NotificationBell({ initialCount = 0 }: { initialCount?: number }
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<Payload>({ notifications: [], unreadCount: initialCount });
   const [loading, setLoading] = useState(false);
+  const [pushStatus, setPushStatus] = useState<PushStatus>("needs-permission");
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Check estado de push al montar (sin pedir permisos automáticamente)
+  useEffect(() => {
+    getPushStatus().then(setPushStatus);
+  }, []);
+
+  async function handleEnablePush() {
+    setPushStatus("subscribing");
+    const result = await ensurePushSubscribed();
+    setPushStatus(result);
+  }
 
   // Fetch on mount + cada 30s
   useEffect(() => {
@@ -132,6 +145,37 @@ export function NotificationBell({ initialCount = 0 }: { initialCount?: number }
                 </button>
               )}
             </div>
+
+            {/* Push opt-in banner */}
+            {(pushStatus === "needs-permission" || pushStatus === "subscribing") && (
+              <div className="border-b border-ink-900/[0.05] bg-accent-lime/[0.15] px-4 py-3">
+                <p className="text-[12px] text-ink-900">
+                  📣 Activa notificaciones del sistema operativo para enterarte cuando te asignen algo aunque tengas la app cerrada.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleEnablePush}
+                  disabled={pushStatus === "subscribing"}
+                  className="mt-2 rounded-full bg-ink-900 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-cream-50 transition hover:bg-ink-800 disabled:opacity-50"
+                >
+                  {pushStatus === "subscribing" ? "Activando…" : "Activar push notifications"}
+                </button>
+              </div>
+            )}
+            {pushStatus === "denied" && (
+              <div className="border-b border-ink-900/[0.05] bg-accent-rust/[0.08] px-4 py-3">
+                <p className="text-[12px] text-ink-700">
+                  Las notificaciones están bloqueadas. Actívalas en la configuración de tu navegador y recarga.
+                </p>
+              </div>
+            )}
+            {pushStatus === "subscribed" && data.unreadCount === 0 && data.notifications.length === 0 && (
+              <div className="border-b border-ink-900/[0.05] px-4 py-2 text-center">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-ink-400">
+                  ✓ Push activadas
+                </p>
+              </div>
+            )}
 
             {/* Lista */}
             <div className="max-h-[400px] overflow-y-auto">
