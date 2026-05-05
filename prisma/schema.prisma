@@ -40,6 +40,8 @@ model User {
   timeEntries   TimeEntry[]
   timeEntryEdits TimeEntryEdit[]
   pipelinesCreated Pipeline[] @relation("PipelineCreator")
+  notifications        Notification[] @relation("NotifRecipient")
+  notificationsAuthored Notification[] @relation("NotifFrom")
 }
 
 model Client {
@@ -89,6 +91,7 @@ model Task {
   transfers        TaskTransfer[]
   timeEntries      TimeEntry[]
   activeUsers      User[]   @relation("ActiveOn")
+  notifications    Notification[]
 
   @@index([pipelineId, pipelineOrder])
   @@index([blockedByTaskId])
@@ -168,6 +171,23 @@ model TimeEntryEdit {
   newNote         String?
   newLoggedFor    DateTime?
   createdAt       DateTime  @default(now())
+}
+
+model Notification {
+  id         String    @id @default(cuid())
+  userId     String    // recipient
+  user       User      @relation("NotifRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  kind       String    // "task_assigned" | "task_transferred_from_me" | "task_commented" | "pipeline_at_risk"
+  message    String    // pre-formatted en español
+  taskId     String?
+  task       Task?     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  fromUserId String?
+  fromUser   User?     @relation("NotifFrom", fields: [fromUserId], references: [id], onDelete: SetNull)
+  readAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
 }
 
 model TaskTransfer {

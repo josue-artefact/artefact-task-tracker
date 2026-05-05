@@ -1,14 +1,21 @@
 import Link from "next/link";
 import { ArtefactMark } from "./ArtefactMark";
+import { NotificationBell } from "./NotificationBell";
 import { logoutAction } from "@/app/actions/auth";
+import { prisma } from "@/lib/db";
 
 type Props = {
-  user: { handle: string; name: string; role: string; team?: { name: string } | null };
+  user: { id: string; handle: string; name: string; role: string; team?: { name: string } | null };
   children: React.ReactNode;
 };
 
-export function AppShell({ user, children }: Props) {
+export async function AppShell({ user, children }: Props) {
   const isPM = user.role === "PM";
+
+  // Count de no leídas para el badge inicial (antes del primer fetch del client)
+  const unreadCount = await prisma.notification.count({
+    where: { userId: user.id, readAt: null },
+  });
   return (
     <div className="relative min-h-[100dvh] bg-cream-50">
       {/* Floating glass nav island */}
@@ -69,6 +76,7 @@ export function AppShell({ user, children }: Props) {
                 {user.role === "PM" ? "Project Manager" : (user.team?.name ?? "Miembro")}
               </div>
             </div>
+            <NotificationBell initialCount={unreadCount} />
             <form action={logoutAction}>
               <button
                 type="submit"

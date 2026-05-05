@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { requireUser, requirePM } from "@/lib/auth";
 import { PRIORITIES, STATUSES } from "@/lib/format";
 import { parseDuration } from "@/lib/time";
+import { notifyAssigned, notifyTransferredFromMe, notifyCommented } from "@/lib/notify";
 
 export async function createTask(formData: FormData) {
   const pm = await requirePM();
@@ -24,7 +25,7 @@ export async function createTask(formData: FormData) {
   if (!title || !clientId || !teamId) return;
   if (!PRIORITIES.includes(priority as any)) return;
 
-  await prisma.task.create({
+  const created = await prisma.task.create({
     data: {
       title,
       description,
@@ -36,6 +37,13 @@ export async function createTask(formData: FormData) {
       estimatedMinutes: estimatedMinutes && estimatedMinutes > 0 ? estimatedMinutes : null,
       createdById: pm.id,
     },
+  });
+
+  await notifyAssigned({
+    taskId: created.id,
+    taskTitle: created.title,
+    assigneeId: created.assigneeId,
+    fromUserId: pm.id,
   });
 
   revalidatePath("/admin");
@@ -142,6 +150,21 @@ export async function addComment(formData: FormData) {
   const body = ((formData.get("body") as string) || "").trim();
   if (!taskId || !body) return;
   await prisma.comment.create({ data: { taskId, body, authorId: user.id } });
+
+  // Notifica al assignee (si no es el mismo que comentó)
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    select: { title: true, assigneeId: true },
+  });
+  if (task) {
+    await notifyCommented({
+      taskId,
+      taskTitle: task.title,
+      taskAssigneeId: task.assigneeId,
+      fromUserId: user.id,
+    });
+  }
+
   revalidatePath(`/task/${taskId}`);
 }
 
@@ -165,6 +188,23 @@ export async function transferTask(formData: FormData) {
       data: { taskId, fromUserId, toUserId, reason },
     }),
   ]);
+
+  // Notificar al nuevo asignado + al anterior (si era distinto del que ejecutó)
+  await notifyAssigned({
+    taskId,
+    taskTitle: task.title,
+    assigneeId: toUserId,
+    fromUserId: user.id,
+  });
+  if (task.assigneeId && task.assigneeId !== toUserId) {
+    await notifyTransferredFromMe({
+      taskId,
+      taskTitle: task.title,
+      fromAssigneeId: task.assigneeId,
+      toAssigneeId: toUserId,
+      byUserId: user.id,
+    });
+  }
 
   revalidatePath("/admin");
   revalidatePath("/inbox");
