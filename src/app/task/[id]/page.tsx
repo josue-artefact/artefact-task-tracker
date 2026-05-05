@@ -43,6 +43,8 @@ export default async function TaskPage({
         include: { user: true },
         orderBy: { loggedFor: "desc" },
       },
+      pipeline: { select: { id: true, name: true } },
+      blockedByTask: { select: { id: true, title: true, status: true, pipelineOrder: true } },
     },
   });
 
@@ -97,7 +99,15 @@ export default async function TaskPage({
           </svg>
           Volver
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {task.pipeline && (
+            <>
+              <Link href={`/pipeline/${task.pipeline.id}`} className="rounded-full bg-amber-100 px-2 py-0.5 text-amber-900 hover:bg-amber-200">
+                {task.pipeline.name}
+              </Link>
+              <span className="opacity-30">·</span>
+            </>
+          )}
           <span className="rounded-full bg-ink-900 px-2 py-0.5 text-cream-50">{task.client.name}</span>
           <span className="opacity-30">·</span>
           <span>{task.team.name}</span>

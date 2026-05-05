@@ -40,6 +40,9 @@ export function AppShell({ user, children }: Props) {
             </Link>
             {isPM && (
               <>
+                <Link href="/admin/pipelines" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
+                  Pipelines
+                </Link>
                 <Link href="/admin/clients" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
                   Clientes
                 </Link>

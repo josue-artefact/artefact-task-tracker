@@ -39,14 +39,16 @@ model User {
   announcements Announcement[]
   timeEntries   TimeEntry[]
   timeEntryEdits TimeEntryEdit[]
+  pipelinesCreated Pipeline[] @relation("PipelineCreator")
 }
 
 model Client {
-  id          String    @id @default(cuid())
-  name        String    @unique
+  id          String     @id @default(cuid())
+  name        String     @unique
   description String?
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime   @default(now())
   tasks       Task[]
+  pipelines   Pipeline[]
 }
 
 model Task {
@@ -67,10 +69,49 @@ model Task {
   createdBy        User     @relation("Creator", fields: [createdById], references: [id])
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+
+  // Pipeline membership (opcional — tareas individuales no necesitan pipeline)
+  pipelineId    String?
+  pipeline      Pipeline? @relation(fields: [pipelineId], references: [id], onDelete: SetNull)
+  pipelineOrder Int?      // 1, 2, 3 — orden visual y para resolver dependencias
+
+  // Dependencias dentro del mismo pipeline (1 predecesora máximo)
+  blockedByTaskId String?
+  blockedByTask   Task?   @relation("BlockedBy", fields: [blockedByTaskId], references: [id], onDelete: SetNull)
+  blockingTasks   Task[]  @relation("BlockedBy")
+
+  // Bloqueador externo: esperando aprobación del cliente
+  blockedByClient        Boolean   @default(false)
+  blockedSince           DateTime? // cuándo se marcó como esperando cliente
+  lastClientReminderAt   DateTime? // último recordatorio enviado al cliente
+
   comments         Comment[]
   transfers        TaskTransfer[]
   timeEntries      TimeEntry[]
   activeUsers      User[]   @relation("ActiveOn")
+
+  @@index([pipelineId, pipelineOrder])
+  @@index([blockedByTaskId])
+}
+
+model Pipeline {
+  id              String    @id @default(cuid())
+  name            String    // ej. "Majadas - Mayo 2026"
+  description     String?
+  clientId        String
+  client          Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  startDate       DateTime  // fecha de arranque del pipeline
+  status          String    @default("ACTIVE")  // ACTIVE | DONE | PAUSED | ARCHIVED
+  savedAsTemplate Boolean   @default(false)
+  templateOfId    String?   // si fue duplicado de otro pipeline
+  createdById     String
+  createdBy       User      @relation("PipelineCreator", fields: [createdById], references: [id])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  tasks           Task[]
+
+  @@index([clientId, status])
+  @@index([savedAsTemplate])
 }
 
 model Comment {
