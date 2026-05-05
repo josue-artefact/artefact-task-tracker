@@ -29,7 +29,10 @@ export default async function InsightsPage() {
   const weekStart = startOfWeek();
   const monthStart = startOfMonth();
 
-  const [weekEntries, monthEntries, doneTasks] = await Promise.all([
+  const last30Days = new Date();
+  last30Days.setDate(last30Days.getDate() - 30);
+
+  const [weekEntries, monthEntries, doneTasks, recentDoneTasks, allMembers] = await Promise.all([
     prisma.timeEntry.findMany({
       where: { deletedAt: null, loggedFor: { gte: weekStart } },
       include: { user: true },
@@ -51,6 +54,25 @@ export default async function InsightsPage() {
       },
       orderBy: { updatedAt: "desc" },
       take: 30,
+    }),
+    // Tareas DONE en últimos 30 días → para performance por miembro (throughput + on-time)
+    prisma.task.findMany({
+      where: {
+        status: "DONE",
+        updatedAt: { gte: last30Days },
+        assigneeId: { not: null },
+      },
+      select: {
+        assigneeId: true,
+        dueDate: true,
+        updatedAt: true,
+      },
+    }),
+    // Todos los miembros con su info — incluso los que no han cerrado tareas
+    prisma.user.findMany({
+      where: { role: "MEMBER" },
+      select: { id: true, handle: true, name: true },
+      orderBy: { name: "asc" },
     }),
   ]);
 
@@ -91,6 +113,29 @@ export default async function InsightsPage() {
     })
     .filter((t) => t.estimated > 0)
     .sort((a, b) => Math.abs(b.diffPct) - Math.abs(a.diffPct));
+
+  // 4. Performance por miembro (últimos 30 días):
+  //    - Throughput: tareas cerradas
+  //    - On-time rate: % cerradas antes del dueDate (solo cuenta las que TENÍAN dueDate)
+  const perfByUser = new Map<string, { completed: number; withDue: number; onTime: number }>();
+  for (const t of recentDoneTasks) {
+    if (!t.assigneeId) continue;
+    const p = perfByUser.get(t.assigneeId) ?? { completed: 0, withDue: 0, onTime: 0 };
+    p.completed++;
+    if (t.dueDate) {
+      p.withDue++;
+      if (t.updatedAt.getTime() <= t.dueDate.getTime()) p.onTime++;
+    }
+    perfByUser.set(t.assigneeId, p);
+  }
+  const performance = allMembers
+    .map((m) => {
+      const p = perfByUser.get(m.id) ?? { completed: 0, withDue: 0, onTime: 0 };
+      const onTimeRate = p.withDue > 0 ? Math.round((p.onTime / p.withDue) * 100) : null;
+      return { ...m, completed: p.completed, withDue: p.withDue, onTime: p.onTime, onTimeRate };
+    })
+    .sort((a, b) => b.completed - a.completed);
+  const maxCompleted = Math.max(1, ...performance.map((p) => p.completed));
 
   return (
     <AppShell user={user}>
@@ -184,8 +229,56 @@ export default async function InsightsPage() {
           </Card>
         </section>
 
-        {/* Calibración */}
+        {/* Performance por miembro — últimos 30 días */}
         <section className="animate-fade-up [animation-delay:180ms]">
+          <h2 className="mb-4 text-[11px] uppercase tracking-[0.22em] text-ink-500">
+            Performance por miembro · últimos 30 días
+          </h2>
+          <Card>
+            {performance.length === 0 && (
+              <p className="text-sm text-ink-400">Sin miembros registrados.</p>
+            )}
+            <ul className="space-y-2.5">
+              {performance.map((m) => {
+                const completedPct = (m.completed / maxCompleted) * 100;
+                const onTimeColor =
+                  m.onTimeRate === null
+                    ? "text-ink-400"
+                    : m.onTimeRate >= 90
+                      ? "text-accent-lime-dark text-ink-900"
+                      : m.onTimeRate >= 50
+                        ? "text-amber-700"
+                        : "text-accent-rust";
+                return (
+                  <li key={m.id} className="grid grid-cols-[140px_1fr_70px_80px] items-center gap-3 rounded-xl px-2 py-1.5 transition hover:bg-ink-900/[0.02]">
+                    <div>
+                      <div className="text-[13px] font-medium text-ink-900">{m.name}</div>
+                      <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-500">@{m.handle}</div>
+                    </div>
+                    <div className="h-1.5 overflow-hidden rounded-full bg-ink-900/[0.06]">
+                      <div
+                        className="h-full rounded-full bg-ink-900 transition-all duration-700 ease-out"
+                        style={{ width: `${completedPct}%` }}
+                      />
+                    </div>
+                    <div className="text-right text-[12px] text-ink-700">
+                      {m.completed} {m.completed === 1 ? "tarea" : "tareas"}
+                    </div>
+                    <div className={`text-right text-[12px] font-medium ${onTimeColor}`}>
+                      {m.onTimeRate !== null ? `${m.onTimeRate}% on-time` : "—"}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="mt-4 text-[10px] uppercase tracking-[0.18em] text-ink-400">
+              On-time rate: % de tareas que cerraron antes o el día del vencimiento. Solo cuenta tareas que tenían dueDate set.
+            </p>
+          </Card>
+        </section>
+
+        {/* Calibración */}
+        <section className="animate-fade-up [animation-delay:240ms]">
           <h2 className="mb-4 text-[11px] uppercase tracking-[0.22em] text-ink-500">
             Calibración · tareas hechas con estimación
           </h2>

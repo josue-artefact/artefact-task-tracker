@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { AppShell } from "@/components/AppShell";
 import { AnnouncementBoard } from "@/components/AnnouncementBoard";
 import { PriorityPill, StatusPill } from "@/components/PriorityPill";
-import { priorityRank, formatRelative, formatDate, isOverdue } from "@/lib/format";
+import { priorityRank, formatRelative, formatDate } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -17,10 +17,43 @@ export default async function InboxPage() {
     orderBy: [{ status: "asc" }, { updatedAt: "desc" }],
   });
 
+  /**
+   * Sort inteligente: lo que más quema primero.
+   *   1. DONE siempre al final
+   *   2. Vencidas primero (más vencida primero — más días en rojo)
+   *   3. Por prioridad (URGENT → HIGH → MEDIUM → LOW)
+   *   4. Dentro de la misma prioridad, por dueDate cercana
+   *      (las que tienen fecha primero, ordenadas por proximidad)
+   *   5. Sin fecha y misma prioridad → updatedAt desc
+   */
   const sorted = [...tasks].sort((a, b) => {
+    // 1. DONE al final
     if (a.status === "DONE" && b.status !== "DONE") return 1;
     if (b.status === "DONE" && a.status !== "DONE") return -1;
-    return priorityRank(a.priority) - priorityRank(b.priority);
+
+    const now = Date.now();
+    const aOverdue = a.dueDate && a.dueDate.getTime() < now;
+    const bOverdue = b.dueDate && b.dueDate.getTime() < now;
+
+    // 2. Vencidas primero
+    if (aOverdue && !bOverdue) return -1;
+    if (bOverdue && !aOverdue) return 1;
+    if (aOverdue && bOverdue) {
+      // entre vencidas, la más antigua primero (más urgente)
+      return a.dueDate!.getTime() - b.dueDate!.getTime();
+    }
+
+    // 3. Por prioridad
+    const pDiff = priorityRank(a.priority) - priorityRank(b.priority);
+    if (pDiff !== 0) return pDiff;
+
+    // 4. dueDate cercana primero (con fecha > sin fecha)
+    if (a.dueDate && !b.dueDate) return -1;
+    if (b.dueDate && !a.dueDate) return 1;
+    if (a.dueDate && b.dueDate) return a.dueDate.getTime() - b.dueDate.getTime();
+
+    // 5. updatedAt desc
+    return b.updatedAt.getTime() - a.updatedAt.getTime();
   });
 
   const open = sorted.filter((t) => t.status !== "DONE");
@@ -112,12 +145,7 @@ export default async function InboxPage() {
               <div className="flex shrink-0 flex-wrap items-center gap-2">
                 <PriorityPill priority={t.priority} />
                 <StatusPill status={t.status} />
-                {t.dueDate && isOverdue(t.dueDate) && t.status !== "DONE" && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-rust/10 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-accent-rust ring-1 ring-accent-rust/20">
-                    <span className="h-1.5 w-1.5 rounded-full bg-accent-rust" />
-                    Vencida {formatDate(t.dueDate)}
-                  </span>
-                )}
+                {t.dueDate && t.status !== "DONE" && <DueChip dueDate={t.dueDate} />}
                 <span className="text-[10px] uppercase tracking-[0.2em] text-ink-400">
                   {formatRelative(t.updatedAt)}
                 </span>
@@ -134,6 +162,7 @@ export default async function InboxPage() {
         ))}
       </section>
 
+      {/* DueChip helper inline */}
       {done.length > 0 && (
         <section className="mt-12 space-y-3">
           <h2 className="mb-3 text-[11px] uppercase tracking-[0.22em] text-ink-500">
@@ -163,5 +192,41 @@ export default async function InboxPage() {
         </section>
       )}
     </AppShell>
+  );
+}
+
+/** Chip de fecha de vencimiento con color contextual. */
+function DueChip({ dueDate }: { dueDate: Date }) {
+  const now = Date.now();
+  const diffDays = Math.ceil((dueDate.getTime() - now) / (1000 * 60 * 60 * 24));
+
+  let label: string;
+  let tone: string;
+
+  if (diffDays < 0) {
+    const overdueDays = Math.abs(diffDays);
+    label = `Vencida${overdueDays > 0 ? ` hace ${overdueDays}d` : ""}`;
+    tone = "bg-accent-rust/10 text-accent-rust ring-accent-rust/20";
+  } else if (diffDays === 0) {
+    label = "Vence hoy";
+    tone = "bg-amber-100 text-amber-900 ring-amber-300/40";
+  } else if (diffDays === 1) {
+    label = "Vence mañana";
+    tone = "bg-amber-100 text-amber-900 ring-amber-300/40";
+  } else if (diffDays <= 3) {
+    label = `Vence en ${diffDays}d`;
+    tone = "bg-amber-50 text-amber-900 ring-amber-200/40";
+  } else {
+    label = `Vence ${formatDate(dueDate)}`;
+    tone = "bg-ink-900/[0.04] text-ink-700 ring-ink-900/5";
+  }
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] ring-1 ${tone}`}
+    >
+      {diffDays < 0 && <span className="h-1.5 w-1.5 rounded-full bg-accent-rust" />}
+      {label}
+    </span>
   );
 }
