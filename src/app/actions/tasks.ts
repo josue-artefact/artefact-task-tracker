@@ -144,6 +144,24 @@ export async function unarchiveTask(formData: FormData) {
   revalidatePath(`/task/${id}`);
 }
 
+/**
+ * Archiva en bulk las tareas seleccionadas que estén en DONE.
+ * Las que no estén en DONE se ignoran silenciosamente — la UI ya filtra
+ * el contador "X hechas", así que sólo deberían llegar IDs válidos.
+ */
+export async function bulkArchiveTasks(formData: FormData) {
+  await requirePM();
+  const ids = formData.getAll("ids").map(String).filter(Boolean);
+  if (ids.length === 0) return;
+  await prisma.task.updateMany({
+    where: { id: { in: ids }, status: "DONE", archivedAt: null },
+    data: { archivedAt: new Date() },
+  });
+  revalidatePath("/admin");
+  revalidatePath("/admin/archive");
+  revalidatePath("/inbox");
+}
+
 export async function bulkAssignTasks(formData: FormData) {
   await requirePM();
   const ids = formData.getAll("ids").map(String).filter(Boolean);

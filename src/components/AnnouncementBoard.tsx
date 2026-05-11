@@ -39,12 +39,10 @@ export async function AnnouncementBoard({ isPM }: { isPM: boolean }) {
       </div>
 
       {announcements.length === 0 && isPM && (
-        <div className="rounded-2xl bg-ink-900/[0.03] p-1.5 ring-1 ring-ink-900/5">
-          <div className="rounded-xl bg-cream-100 px-6 py-8 text-center">
-            <p className="text-sm text-ink-400">
-              Aún no hay anuncios. Publica el primero arriba.
-            </p>
-          </div>
+        <div className="rounded-2xl bg-cream-100 border border-ink-300/30 px-6 py-8 text-center">
+          <p className="text-sm text-ink-400">
+            Aún no hay anuncios. Publica el primero arriba.
+          </p>
         </div>
       )}
 
@@ -57,20 +55,20 @@ export async function AnnouncementBoard({ isPM }: { isPM: boolean }) {
             return (
               <li key={a.id}>
                 <article
-                  className={`rounded-2xl p-1.5 ring-1 ${
+                  className={`rounded-2xl bg-cream-100 border p-5 transition ${
                     a.pinned
-                      ? "bg-accent-lime/40 ring-ink-900/10"
-                      : "bg-ink-900/[0.04] ring-ink-900/5"
+                      ? "border-accent-lime/40 shadow-[0_0_0_1px_rgba(163,255,18,0.08)_inset]"
+                      : "border-ink-300/30"
                   }`}
                 >
-                  <div className="rounded-xl bg-cream-100 p-5">
-                    <EditCard>
+                  <EditCard>
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.22em] text-ink-500">
                             {a.pinned && (
                               <>
-                                <span className="rounded-full bg-cream-300 px-2 py-0.5 text-ink-900">
+                                <span className="inline-flex items-center gap-1 rounded-full bg-accent-lime/15 px-2 py-0.5 text-accent-lime ring-1 ring-accent-lime/30">
+                                  <span className="h-1 w-1 rounded-full bg-accent-lime" />
                                   Fijo
                                 </span>
                                 <span className="opacity-30">·</span>
@@ -86,7 +84,7 @@ export async function AnnouncementBoard({ isPM }: { isPM: boolean }) {
                               </>
                             )}
                           </div>
-                          <h3 className="mt-2 font-semibold tracking-tight text-[24px] leading-tight text-ink-900">
+                          <h3 className="mt-2 font-semibold tracking-tight text-[20px] leading-tight text-ink-900">
                             {a.title}
                           </h3>
                           <p className="mt-2 whitespace-pre-wrap text-[14px] leading-relaxed text-ink-700">
@@ -113,7 +111,7 @@ export async function AnnouncementBoard({ isPM }: { isPM: boolean }) {
                         )}
                       </div>
                       {isPM && (
-                        <EditPanel className="mt-4 rounded-2xl bg-ink-900/[0.03] p-4 ring-1 ring-ink-900/5">
+                        <EditPanel className="mt-4 rounded-2xl bg-cream-200 p-4 border border-ink-300/30">
                           <form action={updateAnnouncement} className="space-y-2">
                             <input type="hidden" name="id" value={a.id} />
                             <Input name="title" required defaultValue={a.title} placeholder="Título" />
@@ -142,7 +140,6 @@ export async function AnnouncementBoard({ isPM }: { isPM: boolean }) {
                         </EditPanel>
                       )}
                     </EditCard>
-                  </div>
                 </article>
               </li>
             );
@@ -164,8 +161,8 @@ function NewAnnouncementButton() {
         </svg>
         <span>Nuevo anuncio</span>
       </summary>
-      <div className="absolute right-0 top-full z-30 mt-2 w-[min(420px,90vw)] rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/10 shadow-[0_20px_60px_rgba(10,9,7,0.12)] animate-fade-up">
-        <form action={createAnnouncement} className="rounded-xl bg-cream-100 p-5 space-y-3">
+      <div className="absolute right-0 top-full z-30 mt-2 w-[min(420px,90vw)] rounded-2xl bg-cream-100 border border-ink-300/40 shadow-[0_20px_60px_rgba(0,0,0,0.4)] animate-fade-up">
+        <form action={createAnnouncement} className="p-5 space-y-3">
           <Input name="title" required placeholder="Título" />
           <Textarea name="body" required rows={3} placeholder="Mensaje" />
           <div className="flex items-center gap-3 text-[11px] text-ink-700">

@@ -122,22 +122,22 @@ export default async function AdminPage({
       <ActiveNow />
 
       {/* Hero */}
-      <section className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between animate-fade-up">
+      <section className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between animate-fade-up">
         <div>
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink-500">
-            <span className="inline-block h-1 w-6 bg-cream-300" />
+            <span className="inline-block h-1 w-6 bg-accent-lime" />
             Resumen del estudio
           </div>
-          <h1 className="mt-4 font-semibold tracking-tight text-[clamp(40px,6vw,72px)] leading-[0.95] text-ink-900">
+          <h1 className="mt-3 font-semibold tracking-tight text-[clamp(28px,4vw,44px)] leading-[1.05] text-ink-900">
             El estudio, de un vistazo.
           </h1>
         </div>
         <Link
           href="/admin/tasks/new"
-          className="group inline-flex items-center gap-1 self-start rounded-full bg-cream-300 py-2.5 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-ink-900 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98] md:self-auto"
+          className="group inline-flex items-center gap-1 self-start rounded-full bg-accent-lime py-2.5 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-cream-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-accent-lime/85 active:scale-[0.98] md:self-auto"
         >
           <span>Nueva tarea</span>
-          <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-100/15 transition-all duration-500 group-hover:translate-x-0.5">
+          <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-50/15 transition-all duration-500 group-hover:translate-x-0.5">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 5v14M5 12h14" />
             </svg>
@@ -146,19 +146,19 @@ export default async function AdminPage({
       </section>
 
       {/* Bento metrics */}
-      <section className="mb-12 grid grid-cols-2 gap-4 md:grid-cols-12 md:grid-rows-2">
-        <BentoStat span="md:col-span-6 md:row-span-2"  tone="bg-cream-300 text-ink-900"   label="Tareas abiertas" value={stats.open}     delay={0}   hero />
-        <BentoStat span="md:col-span-2"                tone="bg-cream-100 text-ink-900"  label="Urgentes"        value={stats.urgent}   delay={60} />
-        <BentoStat span="md:col-span-2"                tone="bg-cream-100 text-ink-900"  label="Clientes"        value={stats.clients}  delay={100} />
-        <BentoStat span="md:col-span-2"                tone="bg-cream-100 text-ink-900"  label="Equipos"         value={stats.teams}    delay={140} />
-        <BentoStat span="md:col-span-2"                tone="bg-cream-100 text-ink-900"  label="Miembros"        value={stats.members}  delay={180} />
-        <BentoStat span="md:col-span-2"                tone="bg-accent-lime text-cream-50" label="En curso"        value={doing}          delay={220} />
-        <BentoStat span="md:col-span-2"                tone="bg-cream-100 text-ink-900"  label="Hechas"          value={stats.done}     delay={260} />
+      <section className="mb-10 grid grid-cols-2 gap-3 md:grid-cols-12 md:grid-rows-2">
+        <BentoStat span="md:col-span-6 md:row-span-2" tone="hero"    label="Tareas abiertas" value={stats.open}     delay={0}   />
+        <BentoStat span="md:col-span-2"               tone="default" label="Urgentes"        value={stats.urgent}   delay={60}  />
+        <BentoStat span="md:col-span-2"               tone="default" label="Clientes"        value={stats.clients}  delay={100} />
+        <BentoStat span="md:col-span-2"               tone="default" label="Equipos"         value={stats.teams}    delay={140} />
+        <BentoStat span="md:col-span-2"               tone="default" label="Miembros"        value={stats.members}  delay={180} />
+        <BentoStat span="md:col-span-2"               tone="accent"  label="En curso"        value={doing}          delay={220} />
+        <BentoStat span="md:col-span-2"               tone="default" label="Hechas"          value={stats.done}     delay={260} />
       </section>
 
       {/* Tasks table */}
       <section>
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
           <div className="flex flex-wrap items-center gap-3">
             <h2 className="text-[11px] uppercase tracking-[0.22em] text-ink-500">Todas las tareas</h2>
             {archivedCount > 0 && (
@@ -201,31 +201,33 @@ function BentoStat({
   span,
   tone,
   delay,
-  hero,
 }: {
   label: string;
   value: number;
   span: string;
-  tone: string;
+  /** "hero" = highlighted cream-200 (más claro); "accent" = lima; "default" = neutral con hairline. */
+  tone: "hero" | "accent" | "default";
   delay: number;
-  hero?: boolean;
 }) {
-  const isDark = tone.includes("bg-cream-300");
+  const styles = {
+    hero:    "bg-cream-200 border border-ink-300/30 text-ink-900",
+    accent:  "bg-accent-lime border border-accent-lime text-cream-50",
+    default: "bg-cream-100 border border-ink-300/30 text-ink-900",
+  }[tone];
+
   return (
     <div
-      className={`rounded-2xl p-1.5 ring-1 ring-ink-900/5 animate-fade-up ${span} ${isDark ? "bg-ink-900/[0.06]" : "bg-ink-900/[0.04]"}`}
+      className={`rounded-2xl p-5 sm:p-6 flex h-full flex-col justify-between animate-fade-up ${span} ${styles}`}
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div
-        className={`flex h-full flex-col justify-between rounded-xl p-6 ${tone}`}
+      <span className="text-[10px] uppercase tracking-[0.22em] opacity-70">{label}</span>
+      <span
+        className={`font-semibold tracking-tight leading-none ${
+          tone === "hero" ? "text-[clamp(56px,8vw,110px)]" : "text-[40px]"
+        }`}
       >
-        <span className="text-[11px] uppercase tracking-[0.22em] opacity-70">{label}</span>
-        <span
-          className={`font-semibold tracking-tight leading-none ${hero ? "text-[clamp(80px,12vw,180px)]" : "text-[56px]"}`}
-        >
-          {value}
-        </span>
-      </div>
+        {value}
+      </span>
     </div>
   );
 }
