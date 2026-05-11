@@ -422,9 +422,9 @@ export default async function TaskPage({
                     <button
                       type="submit"
                       className={[
-                        "rounded-full px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
+                        "rounded-full px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] transition-all duration-300",
                         task.status === s
-                          ? "bg-accent-lime text-cream-50"
+                          ? "bg-accent-lime/15 text-accent-lime ring-1 ring-accent-lime/30"
                           : "bg-ink-900/[0.04] text-ink-700 ring-1 ring-ink-900/5 hover:bg-ink-900/[0.08]",
                       ].join(" ")}
                     >
@@ -448,9 +448,9 @@ export default async function TaskPage({
                     <button
                       type="submit"
                       className={[
-                        "rounded-full px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
+                        "rounded-full px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] transition-all duration-300",
                         task.priority === p
-                          ? "bg-accent-lime text-cream-50"
+                          ? "bg-accent-lime/15 text-accent-lime ring-1 ring-accent-lime/30"
                           : "bg-ink-900/[0.04] text-ink-700 ring-1 ring-ink-900/5 hover:bg-ink-900/[0.08]",
                       ].join(" ")}
                     >
