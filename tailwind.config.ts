@@ -48,10 +48,10 @@ const config: Config = {
           300: "#CBD5E1",  // dividers, hairlines — slate-300
         },
         // ACCENTS — brand colors
-        // Mantenemos el key `lime` para minimizar refactor; su valor pasa a cyan-400.
+        // Mantenemos el key `lime` para minimizar refactor; su valor pasa a sky-500.
         accent: {
-          lime:    "#22D3EE",  // brand action (era #A3FF12 neon lima) — cyan-400
-          warning: "#F59E0B",  // watch this — amber-500 (más saturado que antes)
+          lime:    "#0EA5E9",  // brand action — sky-500 (era cyan-400, demasiado celeste)
+          warning: "#F59E0B",  // watch this — amber-500
           rust:    "#FB923C",  // danger — orange-400 (mejor en slate que rust antiguo)
         },
         // FIXED — texto/iconos sobre fondos brand. Los 3 accents son brillantes

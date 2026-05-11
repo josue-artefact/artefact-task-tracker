@@ -24,9 +24,9 @@ html, body {
 input:focus { outline: none; }
 input::-webkit-search-cancel-button { display: none; }
 
-/* Selection con acento cyan — pop visual al copiar texto */
+/* Selection con acento sky — pop visual al copiar texto */
 ::selection {
-  background: #22D3EE;
+  background: #0EA5E9;
   color: #0F172A;
 }
 
@@ -39,9 +39,9 @@ input::-webkit-search-cancel-button { display: none; }
 }
 ::-webkit-scrollbar-thumb:hover { background: rgba(15, 23, 42, 0.28); }
 
-/* Focus ring para accesibilidad — cyan sobre fondo slate lee bien */
+/* Focus ring para accesibilidad — sky sobre fondo slate lee bien */
 *:focus-visible {
-  outline: 2px solid rgba(34, 211, 238, 0.7);
+  outline: 2px solid rgba(14, 165, 233, 0.75);
   outline-offset: 2px;
   border-radius: 4px;
 }
