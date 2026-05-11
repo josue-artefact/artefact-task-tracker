@@ -28,108 +28,106 @@ export default async function NewTaskPage() {
           </Link>
         </div>
 
-        <header className="mb-10 animate-fade-up">
+        <header className="mb-8 animate-fade-up">
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink-500">
-            <span className="inline-block h-1 w-6 bg-cream-300" />
+            <span className="inline-block h-1 w-6 bg-accent-lime" />
             Nueva tarea
           </div>
-          <h1 className="mt-4 font-semibold tracking-tight text-[clamp(36px,5vw,56px)] leading-[1] text-ink-900">
+          <h1 className="mt-3 font-semibold tracking-tight text-[clamp(28px,4vw,44px)] leading-[1.05] text-ink-900">
             Lanza una nueva tarea al estudio.
           </h1>
         </header>
 
-        <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up">
-          <form action={createTask} className="rounded-xl bg-cream-100 p-8 space-y-5">
-            <Field label="Título">
+        <form action={createTask} className="rounded-2xl bg-cream-100 border border-ink-300/30 p-8 space-y-5 animate-fade-up">
+          <Field label="Título">
+            <input
+              name="title"
+              required
+              placeholder="¿Qué hay que hacer?"
+              className="w-full bg-transparent font-semibold tracking-tight text-[24px] leading-tight text-ink-900 placeholder:text-ink-500/50 focus:outline-none"
+            />
+          </Field>
+
+          <div className="block">
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <span className="text-[10px] uppercase tracking-[0.22em] text-ink-500">Brief</span>
+              <ImproveBriefButton />
+            </div>
+            <textarea
+              name="description"
+              rows={4}
+              placeholder="Contexto, links o referencias (opcional)…"
+              className="w-full resize-none rounded-xl bg-cream-50 border border-ink-300/40 px-3 py-2.5 text-[14px] text-ink-900 placeholder:text-ink-400 transition-colors focus:outline-none focus:border-accent-lime/40"
+            />
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label="Cliente">
+              <Select name="clientId" required defaultValue="">
+                <option value="" disabled>Elige un cliente…</option>
+                {clients.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </Select>
+            </Field>
+
+            <Field label="Equipo">
+              <Select name="teamId" required defaultValue="">
+                <option value="" disabled>Elige un equipo…</option>
+                {teams.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </Select>
+            </Field>
+
+            <Field label="Asignar a">
+              <Select name="assigneeId" defaultValue="">
+                <option value="">Sin asignar</option>
+                {users.map((u) => (
+                  <option key={u.id} value={u.id}>@{u.handle} · {u.team?.name ?? "—"}</option>
+                ))}
+              </Select>
+            </Field>
+
+            <Field label="Prioridad">
+              <Select name="priority" defaultValue="MEDIUM">
+                {PRIORITIES.map((p) => (
+                  <option key={p} value={p}>{priorityLabel(p)}</option>
+                ))}
+              </Select>
+            </Field>
+
+            <Field label="Vencimiento">
               <input
-                name="title"
-                required
-                placeholder="¿Qué hay que hacer?"
-                className="w-full bg-transparent font-semibold tracking-tight text-[28px] leading-tight text-ink-900 placeholder:text-ink-300 focus:outline-none"
+                type="date"
+                name="dueDate"
+                className="w-full rounded-xl bg-cream-50 border border-ink-300/40 px-3 py-2.5 text-[13px] text-ink-900 transition-colors focus:outline-none focus:border-accent-lime/40"
               />
             </Field>
 
-            <div className="block">
-              <div className="mb-2 flex items-center justify-between gap-3">
-                <span className="text-[10px] uppercase tracking-[0.22em] text-ink-500">Brief</span>
-                <ImproveBriefButton />
-              </div>
-              <textarea
-                name="description"
-                rows={4}
-                placeholder="Contexto, links o referencias (opcional)…"
-                className="w-full resize-none rounded-xl bg-ink-900/[0.04] px-3 py-2.5 text-[14px] text-ink-900 ring-1 ring-ink-900/5 placeholder:text-ink-400 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
+            <Field label="Estimación (opcional)">
+              <input
+                name="estimate"
+                placeholder="ej. 4h, 90m, 1h30"
+                className="w-full rounded-xl bg-cream-50 border border-ink-300/40 px-3 py-2.5 text-[13px] text-ink-900 placeholder:text-ink-400 transition-colors focus:outline-none focus:border-accent-lime/40"
               />
-            </div>
+            </Field>
+          </div>
 
-            <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="Cliente">
-                <Select name="clientId" required defaultValue="">
-                  <option value="" disabled>Elige un cliente…</option>
-                  {clients.map((c) => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </Select>
-              </Field>
-
-              <Field label="Equipo">
-                <Select name="teamId" required defaultValue="">
-                  <option value="" disabled>Elige un equipo…</option>
-                  {teams.map((t) => (
-                    <option key={t.id} value={t.id}>{t.name}</option>
-                  ))}
-                </Select>
-              </Field>
-
-              <Field label="Asignar a">
-                <Select name="assigneeId" defaultValue="">
-                  <option value="">Sin asignar</option>
-                  {users.map((u) => (
-                    <option key={u.id} value={u.id}>@{u.handle} · {u.team?.name ?? "—"}</option>
-                  ))}
-                </Select>
-              </Field>
-
-              <Field label="Prioridad">
-                <Select name="priority" defaultValue="MEDIUM">
-                  {PRIORITIES.map((p) => (
-                    <option key={p} value={p}>{priorityLabel(p)}</option>
-                  ))}
-                </Select>
-              </Field>
-
-              <Field label="Vencimiento">
-                <input
-                  type="date"
-                  name="dueDate"
-                  className="w-full rounded-xl bg-ink-900/[0.04] px-3 py-2.5 text-[13px] text-ink-900 ring-1 ring-ink-900/5 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
-                />
-              </Field>
-
-              <Field label="Estimación (opcional)">
-                <input
-                  name="estimate"
-                  placeholder="ej. 4h, 90m, 1h30"
-                  className="w-full rounded-xl bg-ink-900/[0.04] px-3 py-2.5 text-[13px] text-ink-900 ring-1 ring-ink-900/5 placeholder:text-ink-400 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
-                />
-              </Field>
-            </div>
-
-            <div className="flex justify-end pt-2">
-              <button
-                type="submit"
-                className="group flex items-center gap-1 rounded-full bg-cream-300 py-2.5 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-ink-900 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]"
-              >
-                <span>Crear tarea</span>
-                <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-100/15 transition-all duration-500 group-hover:translate-x-0.5">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12h14M13 6l6 6-6 6" />
-                  </svg>
-                </span>
-              </button>
-            </div>
-          </form>
-        </div>
+          <div className="flex justify-end pt-2">
+            <button
+              type="submit"
+              className="group flex items-center gap-1 rounded-full bg-accent-lime py-2.5 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-cream-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-accent-lime/85 active:scale-[0.98]"
+            >
+              <span>Crear tarea</span>
+              <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-50/15 transition-all duration-500 group-hover:translate-x-0.5">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </button>
+          </div>
+        </form>
       </div>
     </AppShell>
   );
@@ -147,7 +145,7 @@ function Select({ children, ...rest }: React.SelectHTMLAttributes<HTMLSelectElem
   return (
     <select
       {...rest}
-      className="w-full rounded-xl bg-ink-900/[0.04] px-3 py-2.5 text-[13px] text-ink-900 ring-1 ring-ink-900/5 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
+      className="w-full rounded-xl bg-cream-50 border border-ink-300/40 px-3 py-2.5 text-[13px] text-ink-900 transition-colors focus:outline-none focus:border-accent-lime/40"
     >
       {children}
     </select>

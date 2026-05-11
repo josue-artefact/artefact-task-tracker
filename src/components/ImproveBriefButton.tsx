@@ -93,10 +93,10 @@ export function ImproveBriefButton() {
         disabled={loading}
         className={[
           "group inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.18em]",
-          "ring-1 ring-ink-900/10 transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          "transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
           loading
-            ? "bg-ink-900/[0.06] text-ink-500"
-            : "bg-accent-lime/30 text-cream-50 hover:bg-accent-lime hover:scale-[1.03] active:scale-95",
+            ? "bg-cream-200 text-ink-500 ring-1 ring-ink-300/40 cursor-wait"
+            : "bg-accent-lime/15 text-accent-lime ring-1 ring-accent-lime/30 hover:bg-accent-lime hover:text-cream-50 hover:ring-accent-lime hover:scale-[1.03] active:scale-95",
         ].join(" ")}
       >
         {loading ? <Spinner /> : <SparkleIcon />}
@@ -107,7 +107,7 @@ export function ImproveBriefButton() {
         <button
           type="button"
           onClick={handleUndo}
-          className="text-[10px] uppercase tracking-[0.18em] text-ink-500 underline-offset-4 hover:text-ink-900 hover:underline"
+          className="text-[10px] uppercase tracking-[0.18em] text-ink-500 underline-offset-4 transition hover:text-ink-900 hover:underline"
         >
           Deshacer
         </button>
