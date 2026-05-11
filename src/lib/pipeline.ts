@@ -112,8 +112,17 @@ export function healthLabel(health: PipelineHealth): string {
 export function healthDot(health: PipelineHealth): string {
   return {
     GREEN: "bg-accent-lime",
-    AMBER: "bg-amber-500",
-    RED: "bg-accent-rust",
+    AMBER: "bg-accent-warning",
+    RED:   "bg-accent-rust",
+  }[health];
+}
+
+/** Color sólido para barras de progreso, usable con .bg-{color}. */
+export function healthFill(health: PipelineHealth): string {
+  return {
+    GREEN: "bg-accent-lime",
+    AMBER: "bg-accent-warning",
+    RED:   "bg-accent-rust",
   }[health];
 }
 
@@ -127,12 +136,12 @@ export function taskRiskLabel(state: TaskRiskState): string {
   }[state];
 }
 
-export function taskRiskTone(state: TaskRiskState): { bg: string; text: string } {
+export function taskRiskTone(state: TaskRiskState): { bg: string; text: string; ring: string } {
   return {
-    on_track:         { bg: "bg-ink-900/[0.04]",      text: "text-ink-700" },
-    blocked_by_pred:  { bg: "bg-ink-900/[0.08]",      text: "text-ink-600" },
-    blocked_by_client: { bg: "bg-amber-100",          text: "text-amber-900" },
-    at_risk:          { bg: "bg-amber-200",           text: "text-amber-900" },
-    overdue:          { bg: "bg-accent-rust/15",      text: "text-accent-rust" },
+    on_track:          { bg: "bg-ink-900/[0.04]",       text: "text-ink-700",       ring: "ring-ink-900/5" },
+    blocked_by_pred:   { bg: "bg-ink-900/[0.08]",       text: "text-ink-600",       ring: "ring-ink-900/10" },
+    blocked_by_client: { bg: "bg-accent-warning/12",    text: "text-accent-warning", ring: "ring-accent-warning/30" },
+    at_risk:           { bg: "bg-accent-warning/20",    text: "text-accent-warning", ring: "ring-accent-warning/40" },
+    overdue:           { bg: "bg-accent-rust/15",       text: "text-accent-rust",    ring: "ring-accent-rust/30" },
   }[state];
 }

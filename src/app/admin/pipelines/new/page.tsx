@@ -43,16 +43,16 @@ export default async function NewPipelinePage({
 
         <header className="mb-8 animate-fade-up">
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink-500">
-            <span className="inline-block h-1 w-6 bg-cream-300" />
+            <span className="inline-block h-1 w-6 bg-accent-lime" />
             Nuevo pipeline
           </div>
-          <h1 className="mt-4 font-semibold tracking-tight text-[clamp(36px,5vw,56px)] leading-[1] text-ink-900">
+          <h1 className="mt-3 font-semibold tracking-tight text-[clamp(28px,4vw,44px)] leading-[1.05] text-ink-900">
             Encadena el trabajo de un mes.
           </h1>
         </header>
 
         {errorMsg && (
-          <div className="mb-6 rounded-2xl bg-accent-rust/10 px-4 py-3 ring-1 ring-accent-rust/20 text-[13px] text-accent-rust">
+          <div className="mb-6 rounded-2xl bg-accent-rust/10 border border-accent-rust/30 px-4 py-3 text-[13px] text-accent-rust">
             {errorMsg}
           </div>
         )}

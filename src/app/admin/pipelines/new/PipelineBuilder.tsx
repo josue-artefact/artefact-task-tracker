@@ -59,53 +59,51 @@ export function PipelineBuilder({
   return (
     <form action={createPipeline} className="space-y-8">
       {/* Pipeline-level fields */}
-      <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
-        <div className="space-y-4 rounded-xl bg-cream-100 p-6">
-          <Field label="Nombre del pipeline">
+      <div className="space-y-4 rounded-2xl bg-cream-100 border border-ink-300/30 p-6">
+        <Field label="Nombre del pipeline">
+          <input
+            name="name"
+            required
+            placeholder="ej. Majadas — Mayo 2026"
+            className="w-full bg-transparent font-semibold tracking-tight text-[24px] leading-tight text-ink-900 placeholder:text-ink-500/50 focus:outline-none"
+          />
+        </Field>
+        <Field label="Descripción">
+          <textarea
+            name="description"
+            rows={2}
+            placeholder="Contexto del lote (opcional)"
+            className="w-full resize-none rounded-xl bg-cream-50 border border-ink-300/40 px-3 py-2.5 text-[14px] text-ink-900 placeholder:text-ink-400 transition-colors focus:outline-none focus:border-accent-lime/40"
+          />
+        </Field>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Field label="Cliente">
+            <Select name="clientId" required defaultValue="">
+              <option value="" disabled>Elige un cliente…</option>
+              {clients.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </Select>
+          </Field>
+          <Field label="Fecha de arranque">
             <input
-              name="name"
+              type="date"
+              name="startDate"
               required
-              placeholder="ej. Majadas — Mayo 2026"
-              className="w-full bg-transparent font-semibold tracking-tight text-[26px] leading-tight text-ink-900 placeholder:text-ink-300 focus:outline-none"
+              defaultValue={today}
+              className="w-full rounded-xl bg-cream-50 border border-ink-300/40 px-3 py-2.5 text-[13px] text-ink-900 transition-colors focus:outline-none focus:border-accent-lime/40"
             />
           </Field>
-          <Field label="Descripción">
-            <textarea
-              name="description"
-              rows={2}
-              placeholder="Contexto del lote (opcional)"
-              className="w-full resize-none rounded-xl bg-ink-900/[0.04] px-3 py-2.5 text-[14px] text-ink-900 ring-1 ring-ink-900/5 placeholder:text-ink-400 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
-            />
-          </Field>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <Field label="Cliente">
-              <Select name="clientId" required defaultValue="">
-                <option value="" disabled>Elige un cliente…</option>
-                {clients.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </Select>
-            </Field>
-            <Field label="Fecha de arranque">
+          <Field label="Guardar como template">
+            <label className="flex items-center gap-2 pt-1 text-[13px] text-ink-700">
               <input
-                type="date"
-                name="startDate"
-                required
-                defaultValue={today}
-                className="w-full rounded-xl bg-ink-900/[0.04] px-3 py-2.5 text-[13px] text-ink-900 ring-1 ring-ink-900/5 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
+                type="checkbox"
+                name="savedAsTemplate"
+                className="h-3.5 w-3.5 rounded border-ink-300 accent-accent-lime"
               />
-            </Field>
-            <Field label="Guardar como template">
-              <label className="flex items-center gap-2 text-[13px] text-ink-700">
-                <input
-                  type="checkbox"
-                  name="savedAsTemplate"
-                  className="h-3.5 w-3.5 rounded border-ink-900/20 accent-ink-900"
-                />
-                Reutilizable cada mes
-              </label>
-            </Field>
-          </div>
+              Reutilizable cada mes
+            </label>
+          </Field>
         </div>
       </div>
 
@@ -118,9 +116,12 @@ export function PipelineBuilder({
           <button
             type="button"
             onClick={addTask}
-            className="rounded-full bg-ink-900/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/5 transition hover:bg-cream-300 hover:text-ink-900"
+            className="inline-flex items-center gap-1.5 rounded-full bg-cream-100 border border-ink-300/40 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-700 transition hover:bg-cream-200 hover:border-accent-lime/40 hover:text-accent-lime"
           >
-            + Agregar tarea
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Agregar tarea
           </button>
         </div>
 
@@ -128,103 +129,101 @@ export function PipelineBuilder({
           {tasks.map((t, idx) => {
             const order = idx + 1;
             return (
-              <div key={t.id} className="rounded-xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
-                <div className="rounded-lg bg-cream-100 p-4">
-                  <div className="mb-2 flex items-center justify-between">
-                    <span className="rounded-full bg-cream-300 px-2.5 py-0.5 text-[10px] font-medium text-ink-900">
-                      #{order}
-                    </span>
-                    {tasks.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeTask(t.id)}
-                        aria-label="Quitar tarea"
-                        className="rounded-full bg-ink-900/[0.04] p-1.5 text-ink-500 transition hover:bg-accent-rust hover:text-cream-50"
-                      >
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M6 6l12 12M18 6L6 18" />
-                        </svg>
-                      </button>
-                    )}
-                  </div>
+              <div key={t.id} className="rounded-xl bg-cream-100 border border-ink-300/30 p-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-cream-200 border border-ink-300/40 px-1.5 text-[10px] font-medium text-ink-700">
+                    {order}
+                  </span>
+                  {tasks.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeTask(t.id)}
+                      aria-label="Quitar tarea"
+                      className="rounded-full bg-cream-50 p-1.5 text-ink-500 border border-ink-300/40 transition hover:bg-accent-rust hover:text-cream-50 hover:border-accent-rust"
+                    >
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 6l12 12M18 6L6 18" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
 
-                  <input
-                    name={`task[${idx}][title]`}
-                    value={t.title}
-                    onChange={(e) => updateTask(t.id, "title", e.target.value)}
-                    placeholder={`ej. ${["Propuesta de ideas de contenido", "Callsheet para aprobación", "Photoshoot mensual", "Línea gráfica", "KVs de actividades"][idx % 5]}`}
-                    className="w-full bg-transparent font-semibold tracking-tight text-[18px] text-ink-900 placeholder:text-ink-300 focus:outline-none"
+                <input
+                  name={`task[${idx}][title]`}
+                  value={t.title}
+                  onChange={(e) => updateTask(t.id, "title", e.target.value)}
+                  placeholder={`ej. ${["Propuesta de ideas de contenido", "Callsheet para aprobación", "Photoshoot mensual", "Línea gráfica", "KVs de actividades"][idx % 5]}`}
+                  className="w-full bg-transparent font-semibold tracking-tight text-[17px] text-ink-900 placeholder:text-ink-500/50 focus:outline-none"
+                  required
+                />
+
+                <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                  <SmallSelect
+                    name={`task[${idx}][teamId]`}
+                    value={t.teamId}
+                    onChange={(v) => updateTask(t.id, "teamId", v)}
+                    label="Equipo"
                     required
+                  >
+                    {teams.map((tm) => <option key={tm.id} value={tm.id}>{tm.name}</option>)}
+                  </SmallSelect>
+
+                  <SmallSelect
+                    name={`task[${idx}][assigneeId]`}
+                    value={t.assigneeId}
+                    onChange={(v) => updateTask(t.id, "assigneeId", v)}
+                    label="Asignar a"
+                  >
+                    <option value="">Sin asignar</option>
+                    {users.map((u) => (
+                      <option key={u.id} value={u.id}>@{u.handle} · {u.team?.name ?? "—"}</option>
+                    ))}
+                  </SmallSelect>
+
+                  <SmallSelect
+                    name={`task[${idx}][priority]`}
+                    value={t.priority}
+                    onChange={(v) => updateTask(t.id, "priority", v)}
+                    label="Prioridad"
+                  >
+                    <option value="LOW">Baja</option>
+                    <option value="MEDIUM">Media</option>
+                    <option value="HIGH">Alta</option>
+                    <option value="URGENT">Urgente</option>
+                  </SmallSelect>
+                </div>
+
+                <div className="mt-2 grid gap-2 sm:grid-cols-3">
+                  <SmallNumberInput
+                    name={`task[${idx}][dueOffsetDays]`}
+                    value={t.dueOffsetDays}
+                    onChange={(v) => updateTask(t.id, "dueOffsetDays", v)}
+                    label="Vence (días desde arranque)"
+                    placeholder="ej. 7"
                   />
 
-                  <div className="mt-3 grid gap-2 sm:grid-cols-3">
-                    <SmallSelect
-                      name={`task[${idx}][teamId]`}
-                      value={t.teamId}
-                      onChange={(v) => updateTask(t.id, "teamId", v)}
-                      label="Equipo"
-                      required
-                    >
-                      {teams.map((tm) => <option key={tm.id} value={tm.id}>{tm.name}</option>)}
-                    </SmallSelect>
+                  <SmallTextInput
+                    name={`task[${idx}][estimatedMinutes]`}
+                    value={t.estimatedMinutes}
+                    onChange={(v) => updateTask(t.id, "estimatedMinutes", v)}
+                    label="Estimación (min)"
+                    placeholder="ej. 240"
+                    type="number"
+                  />
 
-                    <SmallSelect
-                      name={`task[${idx}][assigneeId]`}
-                      value={t.assigneeId}
-                      onChange={(v) => updateTask(t.id, "assigneeId", v)}
-                      label="Asignar a"
-                    >
-                      <option value="">Sin asignar</option>
-                      {users.map((u) => (
-                        <option key={u.id} value={u.id}>@{u.handle} · {u.team?.name ?? "—"}</option>
+                  <SmallSelect
+                    name={`task[${idx}][blockedByOrder]`}
+                    value={t.blockedByOrder}
+                    onChange={(v) => updateTask(t.id, "blockedByOrder", v)}
+                    label="Depende de"
+                  >
+                    <option value="">— ninguna</option>
+                    {tasks
+                      .filter((_, i) => i < idx)
+                      .map((_, i) => (
+                        <option key={i} value={i + 1}>Tarea #{i + 1}</option>
                       ))}
-                    </SmallSelect>
-
-                    <SmallSelect
-                      name={`task[${idx}][priority]`}
-                      value={t.priority}
-                      onChange={(v) => updateTask(t.id, "priority", v)}
-                      label="Prioridad"
-                    >
-                      <option value="LOW">Baja</option>
-                      <option value="MEDIUM">Media</option>
-                      <option value="HIGH">Alta</option>
-                      <option value="URGENT">Urgente</option>
-                    </SmallSelect>
-                  </div>
-
-                  <div className="mt-2 grid gap-2 sm:grid-cols-3">
-                    <SmallNumberInput
-                      name={`task[${idx}][dueOffsetDays]`}
-                      value={t.dueOffsetDays}
-                      onChange={(v) => updateTask(t.id, "dueOffsetDays", v)}
-                      label="Vence (días desde arranque)"
-                      placeholder="ej. 7"
-                    />
-
-                    <SmallTextInput
-                      name={`task[${idx}][estimatedMinutes]`}
-                      value={t.estimatedMinutes}
-                      onChange={(v) => updateTask(t.id, "estimatedMinutes", v)}
-                      label="Estimación (min)"
-                      placeholder="ej. 240"
-                      type="number"
-                    />
-
-                    <SmallSelect
-                      name={`task[${idx}][blockedByOrder]`}
-                      value={t.blockedByOrder}
-                      onChange={(v) => updateTask(t.id, "blockedByOrder", v)}
-                      label="Depende de"
-                    >
-                      <option value="">— ninguna</option>
-                      {tasks
-                        .filter((_, i) => i < idx)
-                        .map((_, i) => (
-                          <option key={i} value={i + 1}>Tarea #{i + 1}</option>
-                        ))}
-                    </SmallSelect>
-                  </div>
+                  </SmallSelect>
                 </div>
               </div>
             );
@@ -236,10 +235,10 @@ export function PipelineBuilder({
       <div className="flex justify-end gap-3">
         <button
           type="submit"
-          className="group flex items-center gap-1 rounded-full bg-cream-300 py-2.5 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-ink-900 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]"
+          className="group flex items-center gap-1 rounded-full bg-accent-lime py-2.5 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-cream-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-accent-lime/85 active:scale-[0.98]"
         >
           <span>Crear pipeline</span>
-          <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-100/15 transition-all duration-500 group-hover:translate-x-0.5">
+          <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-50/15 transition-all duration-500 group-hover:translate-x-0.5">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
@@ -265,7 +264,7 @@ function Select({ children, ...rest }: React.SelectHTMLAttributes<HTMLSelectElem
   return (
     <select
       {...rest}
-      className="w-full rounded-xl bg-ink-900/[0.04] px-3 py-2.5 text-[13px] text-ink-900 ring-1 ring-ink-900/5 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
+      className="w-full rounded-xl bg-cream-50 border border-ink-300/40 px-3 py-2.5 text-[13px] text-ink-900 transition-colors focus:outline-none focus:border-accent-lime/40"
     >
       {children}
     </select>
@@ -290,7 +289,7 @@ function SmallSelect({
         value={value}
         required={required}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg bg-ink-900/[0.04] px-2 py-1.5 text-[12px] text-ink-900 ring-1 ring-ink-900/5 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
+        className="w-full rounded-lg bg-cream-50 border border-ink-300/40 px-2 py-1.5 text-[12px] text-ink-900 transition-colors focus:outline-none focus:border-accent-lime/40"
       >
         {children}
       </select>
@@ -317,7 +316,7 @@ function SmallTextInput({
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg bg-ink-900/[0.04] px-2 py-1.5 text-[12px] text-ink-900 ring-1 ring-ink-900/5 placeholder:text-ink-400 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
+        className="w-full rounded-lg bg-cream-50 border border-ink-300/40 px-2 py-1.5 text-[12px] text-ink-900 placeholder:text-ink-400 transition-colors focus:outline-none focus:border-accent-lime/40"
       />
     </label>
   );

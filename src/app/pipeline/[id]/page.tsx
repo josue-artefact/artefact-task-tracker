@@ -10,6 +10,7 @@ import {
   getPipelineProgress,
   getTaskRisk,
   healthDot,
+  healthFill,
   healthLabel,
   taskRiskLabel,
   taskRiskTone,
@@ -66,43 +67,44 @@ export default async function PipelineDetailPage({
     <AppShell user={user}>
       {/* Eyebrow */}
       <div className="mb-6 flex items-center justify-between text-[11px] uppercase tracking-[0.22em] text-ink-500">
-        <Link href="/admin/pipelines" className="inline-flex items-center gap-2 hover:text-ink-900">
+        <Link href="/admin/pipelines" className="inline-flex items-center gap-2 hover:text-ink-900 transition">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 12H5M11 18l-6-6 6-6" />
           </svg>
           Pipelines
         </Link>
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-cream-300 px-2 py-0.5 text-ink-900">{pipeline.client.name}</span>
+          <span className="text-ink-700">{pipeline.client.name}</span>
           <span className="opacity-30">·</span>
           <span>arranca {formatDate(pipeline.startDate)}</span>
         </div>
       </div>
 
       {/* Header */}
-      <header className="mb-8 flex flex-wrap items-end justify-between gap-6 animate-fade-up">
+      <header className="mb-8 flex flex-wrap items-end justify-between gap-4 animate-fade-up">
         <div className="min-w-0">
-          <h1 className="font-semibold tracking-tight text-[clamp(36px,5vw,60px)] leading-[1] text-ink-900">
+          <h1 className="font-semibold tracking-tight text-[clamp(28px,4vw,52px)] leading-[1.05] text-ink-900">
             {pipeline.name}
           </h1>
           {pipeline.description && (
             <p className="mt-3 max-w-2xl text-[14px] text-ink-600">{pipeline.description}</p>
           )}
           <div className="mt-4 flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-2 rounded-full bg-ink-900/[0.04] px-3 py-1.5 ring-1 ring-ink-900/5">
+            <div className="flex items-center gap-2 rounded-full bg-cream-100 border border-ink-300/30 px-3 py-1.5">
               <span className={`h-2 w-2 rounded-full ${healthDot(health)}`} />
               <span className="text-[10px] uppercase tracking-[0.18em] text-ink-700">{healthLabel(health)}</span>
             </div>
-            <span className="rounded-full bg-ink-900/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/5">
+            <span className="rounded-full bg-cream-100 border border-ink-300/30 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-700">
               {doneTasks} / {totalTasks} tareas · {progress}%
             </span>
             {pipeline.savedAsTemplate && (
-              <span className="rounded-full bg-amber-100 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-amber-900 ring-1 ring-amber-300/30">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-lime/15 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-accent-lime ring-1 ring-accent-lime/30">
+                <span className="h-1 w-1 rounded-full bg-accent-lime" />
                 Template
               </span>
             )}
             {pipeline.status !== "ACTIVE" && (
-              <span className="rounded-full bg-ink-900/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/5">
+              <span className="rounded-full bg-cream-100 border border-ink-300/30 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-700">
                 {pipeline.status === "DONE" ? "Cerrado" : pipeline.status === "PAUSED" ? "Pausado" : "Archivado"}
               </span>
             )}
@@ -114,7 +116,7 @@ export default async function PipelineDetailPage({
           <div className="flex shrink-0 flex-wrap items-start gap-2">
             <EditCard>
               <EditTrigger label="Duplicar" />
-              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-100 p-4 shadow-[0_10px_40px_rgba(10,9,7,0.1)] ring-1 ring-ink-900/10 z-20">
+              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-100 border border-ink-300/40 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.4)] z-20">
                 <form action={duplicatePipeline} className="space-y-2">
                   <input type="hidden" name="sourceId" value={pipeline.id} />
                   <SmallLabel>Nombre del nuevo pipeline</SmallLabel>
@@ -131,7 +133,7 @@ export default async function PipelineDetailPage({
 
             <EditCard>
               <EditTrigger label="Editar" />
-              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-100 p-4 shadow-[0_10px_40px_rgba(10,9,7,0.1)] ring-1 ring-ink-900/10 z-20">
+              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-100 border border-ink-300/40 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.4)] z-20">
                 <form action={updatePipeline} className="space-y-2">
                   <input type="hidden" name="id" value={pipeline.id} />
                   <SmallLabel>Nombre</SmallLabel>
@@ -150,7 +152,7 @@ export default async function PipelineDetailPage({
                       type="checkbox"
                       name="savedAsTemplate"
                       defaultChecked={pipeline.savedAsTemplate}
-                      className="h-3.5 w-3.5 rounded border-ink-900/20 accent-ink-900"
+                      className="h-3.5 w-3.5 rounded border-ink-300 accent-accent-lime"
                     />
                     Reusar como template
                   </label>
@@ -165,7 +167,7 @@ export default async function PipelineDetailPage({
               <input type="hidden" name="id" value={pipeline.id} />
               <button
                 type="submit"
-                className="rounded-full bg-ink-900/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-500 ring-1 ring-ink-900/5 transition hover:bg-accent-rust hover:text-cream-50"
+                className="rounded-full bg-cream-50 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-accent-rust border border-accent-rust/30 transition hover:bg-accent-rust hover:text-cream-50 hover:border-accent-rust"
               >
                 Borrar
               </button>
@@ -176,11 +178,9 @@ export default async function PipelineDetailPage({
 
       {/* Progress bar */}
       <div className="mb-8">
-        <div className="h-2 w-full overflow-hidden rounded-full bg-ink-900/[0.06]">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-cream-100 border border-ink-300/30">
           <div
-            className={`h-full rounded-full transition-all duration-700 ease-out ${
-              health === "RED" ? "bg-accent-rust" : health === "AMBER" ? "bg-amber-500" : "bg-accent-lime"
-            }`}
+            className={`h-full rounded-full transition-all duration-700 ease-out ${healthFill(health)}`}
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -192,14 +192,12 @@ export default async function PipelineDetailPage({
       </h2>
 
       {pipeline.tasks.length === 0 && (
-        <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
-          <div className="rounded-xl bg-cream-100 px-8 py-12 text-center text-sm text-ink-400">
-            Este pipeline no tiene tareas.
-          </div>
+        <div className="rounded-2xl bg-cream-100 border border-ink-300/30 px-8 py-12 text-center text-sm text-ink-400">
+          Este pipeline no tiene tareas.
         </div>
       )}
 
-      <ol className="space-y-2.5">
+      <ol className="space-y-2">
         {pipeline.tasks.map((t) => {
           const risk = getTaskRisk(t, taskRefs);
           const tone = taskRiskTone(risk);
@@ -213,98 +211,109 @@ export default async function PipelineDetailPage({
 
           return (
             <li key={t.id}>
-              <div className="rounded-xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
-                <div className="rounded-lg bg-cream-100 p-4">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="rounded-full bg-cream-300 px-2 py-0.5 text-[10px] font-medium text-ink-900">
-                          #{t.pipelineOrder ?? "—"}
-                        </span>
-                        <Link
-                          href={`/task/${t.id}`}
-                          className="font-semibold tracking-tight text-[20px] text-ink-900 hover:text-ink-700"
-                        >
-                          {t.title}
+              <div className="rounded-xl bg-cream-100 border border-ink-300/30 p-4 transition hover:border-ink-300/60">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-cream-200 border border-ink-300/40 px-1.5 text-[10px] font-medium text-ink-700">
+                        {t.pipelineOrder ?? "—"}
+                      </span>
+                      <Link
+                        href={`/task/${t.id}`}
+                        className="font-semibold tracking-tight text-[18px] text-ink-900 hover:text-ink-700 transition"
+                      >
+                        {t.title}
+                      </Link>
+                    </div>
+
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-500">
+                      <PriorityPill priority={t.priority} />
+                      <StatusPill status={t.status} />
+                      {t.dueDate && <span>vence {formatDate(t.dueDate)}</span>}
+                      {t.assignee && (
+                        <>
+                          <span className="opacity-30">·</span>
+                          <span className="font-mono">@{t.assignee.handle}</span>
+                        </>
+                      )}
+                      <span className="opacity-30">·</span>
+                      <span>{t.team.name}</span>
+                    </div>
+
+                    {/* Predecesora */}
+                    {t.blockedByTask && (
+                      <div className="mt-2 text-[11px] text-ink-500">
+                        Depende de:{" "}
+                        <Link href={`/task/${t.blockedByTask.id}`} className="text-ink-700 hover:text-ink-900 underline-offset-2 hover:underline transition">
+                          #{t.blockedByTask.pipelineOrder} · {t.blockedByTask.title}
                         </Link>
                       </div>
+                    )}
 
-                      <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-500">
-                        <PriorityPill priority={t.priority} />
-                        <StatusPill status={t.status} />
-                        {t.dueDate && <span>vence {formatDate(t.dueDate)}</span>}
-                        {t.assignee && (
-                          <>
-                            <span className="opacity-30">·</span>
-                            <span className="font-mono">@{t.assignee.handle}</span>
-                          </>
-                        )}
-                        <span className="opacity-30">·</span>
-                        <span>{t.team.name}</span>
-                      </div>
-
-                      {/* Predecesora */}
-                      {t.blockedByTask && (
-                        <div className="mt-2 text-[11px] text-ink-500">
-                          Depende de:{" "}
-                          <Link href={`/task/${t.blockedByTask.id}`} className="text-ink-700 hover:text-ink-900 underline-offset-2 hover:underline">
-                            #{t.blockedByTask.pipelineOrder} · {t.blockedByTask.title}
-                          </Link>
-                        </div>
-                      )}
-
-                      {/* Cliente blocker */}
-                      {t.blockedByClient && (
-                        <div className="mt-2 rounded-xl bg-amber-50 px-3 py-2 ring-1 ring-amber-200/40">
-                          <div className="text-[11px] text-amber-900">
-                            <strong>Esperando aprobación del cliente</strong>
-                            {t.blockedSince && ` desde hace ${blockedDays} día${blockedDays === 1 ? "" : "s"}`}
-                            {reminderDays !== null && ` · último recordatorio hace ${reminderDays} d`}
+                    {/* Cliente blocker */}
+                    {t.blockedByClient && (
+                      <div className="mt-3 rounded-xl bg-accent-warning/10 border border-accent-warning/30 px-3 py-2.5">
+                        <div className="flex items-start gap-2 text-[11px] text-accent-warning">
+                          <span className="mt-1 h-1.5 w-1.5 rounded-full bg-accent-warning shrink-0" />
+                          <div>
+                            <strong className="font-semibold">Esperando aprobación del cliente</strong>
+                            {t.blockedSince && (
+                              <span className="text-accent-warning/80"> desde hace {blockedDays} día{blockedDays === 1 ? "" : "s"}</span>
+                            )}
+                            {reminderDays !== null && (
+                              <span className="text-accent-warning/80"> · último recordatorio hace {reminderDays} d</span>
+                            )}
                           </div>
-                          {canToggleBlocker && (
-                            <div className="mt-2 flex gap-2">
-                              <form action={markClientReminderSent}>
-                                <input type="hidden" name="taskId" value={t.id} />
-                                <button type="submit" className="rounded-full bg-amber-200/60 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-amber-900 hover:bg-amber-200">
-                                  Marqué recordatorio
-                                </button>
-                              </form>
-                              <form action={toggleClientBlocker}>
-                                <input type="hidden" name="taskId" value={t.id} />
-                                <button type="submit" className="rounded-full bg-amber-900/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-amber-900 hover:bg-amber-900/20">
-                                  Cliente respondió
-                                </button>
-                              </form>
-                            </div>
-                          )}
                         </div>
-                      )}
-                    </div>
-
-                    {/* Risk + actions */}
-                    <div className="flex shrink-0 flex-col items-end gap-2">
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] ${tone.bg} ${tone.text}`}
-                      >
-                        {taskRiskLabel(risk)}
-                      </span>
-                      {canToggleBlocker && !t.blockedByClient && t.status !== "DONE" && (
-                        <form action={toggleClientBlocker}>
-                          <input type="hidden" name="taskId" value={t.id} />
-                          <button
-                            type="submit"
-                            className="rounded-full bg-ink-900/[0.04] px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-ink-600 ring-1 ring-ink-900/5 transition hover:bg-amber-100 hover:text-amber-900"
-                          >
-                            Esperar cliente
-                          </button>
-                        </form>
-                      )}
-                    </div>
+                        {canToggleBlocker && (
+                          <div className="mt-2.5 flex gap-2">
+                            <form action={markClientReminderSent}>
+                              <input type="hidden" name="taskId" value={t.id} />
+                              <button
+                                type="submit"
+                                className="rounded-full bg-cream-50 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-accent-warning border border-accent-warning/30 transition hover:bg-accent-warning/15"
+                              >
+                                Marqué recordatorio
+                              </button>
+                            </form>
+                            <form action={toggleClientBlocker}>
+                              <input type="hidden" name="taskId" value={t.id} />
+                              <button
+                                type="submit"
+                                className="rounded-full bg-accent-warning/20 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-accent-warning border border-accent-warning/40 transition hover:bg-accent-warning hover:text-cream-50 hover:border-accent-warning"
+                              >
+                                Cliente respondió
+                              </button>
+                            </form>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
-                  <div className="mt-3 text-[10px] uppercase tracking-[0.18em] text-ink-400">
-                    actualizada {formatRelative(t.updatedAt)}
+                  {/* Risk + actions */}
+                  <div className="flex shrink-0 flex-col items-end gap-2">
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] ring-1 ${tone.bg} ${tone.text} ${tone.ring}`}
+                    >
+                      {taskRiskLabel(risk)}
+                    </span>
+                    {canToggleBlocker && !t.blockedByClient && t.status !== "DONE" && (
+                      <form action={toggleClientBlocker}>
+                        <input type="hidden" name="taskId" value={t.id} />
+                        <button
+                          type="submit"
+                          className="rounded-full bg-cream-50 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-ink-500 border border-ink-300/40 transition hover:bg-accent-warning/15 hover:text-accent-warning hover:border-accent-warning/30"
+                        >
+                          Esperar cliente
+                        </button>
+                      </form>
+                    )}
                   </div>
+                </div>
+
+                <div className="mt-3 text-[10px] uppercase tracking-[0.18em] text-ink-400">
+                  actualizada {formatRelative(t.updatedAt)}
                 </div>
               </div>
             </li>
@@ -324,7 +333,7 @@ function SmallInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className="w-full rounded-lg bg-ink-900/[0.04] px-2 py-1.5 text-[12px] text-ink-900 ring-1 ring-ink-900/5 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
+      className="w-full rounded-lg bg-cream-50 border border-ink-300/40 px-2 py-1.5 text-[12px] text-ink-900 transition-colors focus:outline-none focus:border-accent-lime/40"
     />
   );
 }
@@ -332,7 +341,7 @@ function SmallSelect({ children, ...rest }: React.SelectHTMLAttributes<HTMLSelec
   return (
     <select
       {...rest}
-      className="w-full rounded-lg bg-ink-900/[0.04] px-2 py-1.5 text-[12px] text-ink-900 ring-1 ring-ink-900/5 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
+      className="w-full rounded-lg bg-cream-50 border border-ink-300/40 px-2 py-1.5 text-[12px] text-ink-900 transition-colors focus:outline-none focus:border-accent-lime/40"
     >
       {children}
     </select>
@@ -342,7 +351,7 @@ function SmallSubmit({ children }: { children: React.ReactNode }) {
   return (
     <button
       type="submit"
-      className="rounded-full bg-cream-300 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-900 transition hover:bg-ink-800"
+      className="rounded-full bg-accent-lime px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-cream-50 transition hover:bg-accent-lime/85 active:scale-[0.98]"
     >
       {children}
     </button>

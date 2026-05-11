@@ -36,8 +36,9 @@ const config: Config = {
         },
         // ACCENTS — adaptados al fondo oscuro
         accent: {
-          lime: "#A3FF12",  // brand: actions, positive states, active dots
-          rust: "#FF7A5C",  // danger: overdue, critical, delete
+          lime:    "#A3FF12",  // brand: actions, positive states, "en tiempo"
+          warning: "#D4A82E",  // watch this: pipeline en riesgo, esperando cliente
+          rust:    "#FF7A5C",  // danger: overdue, critical, delete
         },
       },
       fontFamily: {
