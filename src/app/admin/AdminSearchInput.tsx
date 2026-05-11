@@ -42,7 +42,7 @@ export function AdminSearchInput({ initial, sortKey, sortDir }: Props) {
 
   return (
     <div className="mb-4 flex items-center gap-2">
-      <div className="flex flex-1 items-center gap-2 rounded-full bg-ink-900/[0.04] px-4 py-2 ring-1 ring-ink-900/5 focus-within:bg-ink-900/[0.06] focus-within:ring-ink-900/20">
+      <div className="flex flex-1 items-center gap-2 rounded-full bg-cream-50 border border-ink-300/40 px-4 py-2 transition-colors focus-within:border-accent-lime/40">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-ink-500">
           <circle cx="11" cy="11" r="7" />
           <path d="M20 20l-3.5-3.5" />
@@ -60,7 +60,7 @@ export function AdminSearchInput({ initial, sortKey, sortDir }: Props) {
         <button
           type="button"
           onClick={() => setValue("")}
-          className="rounded-full bg-ink-900/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-500 ring-1 ring-ink-900/5 transition hover:bg-cream-300 hover:text-ink-900"
+          className="rounded-full bg-cream-100 border border-ink-300/40 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-500 transition hover:bg-cream-200 hover:text-ink-900"
         >
           Limpiar
         </button>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArtefactMark } from "./ArtefactMark";
+import { NavLinks } from "./NavLinks";
 import { NotificationBell } from "./NotificationBell";
 import { logoutAction } from "@/app/actions/auth";
 import { prisma } from "@/lib/db";
@@ -37,37 +38,7 @@ export async function AppShell({ user, children }: Props) {
           </Link>
 
           <div className="flex min-w-0 items-center gap-1 overflow-x-auto rounded-full bg-ink-900/[0.04] p-1 text-[12px] [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
-            <Link
-              href={isPM ? "/admin" : "/inbox"}
-              className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-200 hover:text-ink-900"
-            >
-              {isPM ? "Resumen" : "Bandeja"}
-            </Link>
-            <Link href="/kanban" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-200 hover:text-ink-900">
-              Kanban
-            </Link>
-            {isPM && (
-              <>
-                <Link href="/admin/pipelines" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-200 hover:text-ink-900">
-                  Pipelines
-                </Link>
-                <Link href="/admin/clients" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-200 hover:text-ink-900">
-                  Clientes
-                </Link>
-                <Link href="/admin/teams" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-200 hover:text-ink-900">
-                  Equipos
-                </Link>
-                <Link href="/admin/insights" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-200 hover:text-ink-900">
-                  Insights
-                </Link>
-                <Link
-                  href="/admin/tasks/new"
-                  className="shrink-0 rounded-full bg-accent-lime px-3 py-1.5 font-medium text-cream-50 transition hover:bg-accent-lime/85"
-                >
-                  Nueva tarea
-                </Link>
-              </>
-            )}
+            <NavLinks isPM={isPM} />
           </div>
 
           <div className="flex items-center gap-2 pr-1">

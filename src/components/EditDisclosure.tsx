@@ -41,7 +41,12 @@ export function EditTrigger({ label = "Editar" }: { label?: string }) {
       type="button"
       onClick={ctx.toggle}
       aria-expanded={ctx.open}
-      className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-ink-900/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/5 transition hover:bg-ink-900/[0.08]"
+      className={[
+        "flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] transition-all duration-300",
+        ctx.open
+          ? "bg-accent-lime/15 text-accent-lime ring-1 ring-accent-lime/30"
+          : "bg-cream-50 text-ink-700 border border-ink-300/40 hover:bg-cream-200 hover:border-ink-300/60 hover:text-ink-900",
+      ].join(" ")}
     >
       <svg
         width="11"

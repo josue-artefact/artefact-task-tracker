@@ -118,114 +118,121 @@ export function NotificationBell({ initialCount = 0 }: { initialCount?: number }
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
         </svg>
         {data.unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-accent-rust px-1 text-[9px] font-bold text-ink-900 ring-2 ring-cream-50">
+          <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-accent-rust px-1 text-[9px] font-bold text-cream-50 ring-2 ring-cream-50">
             {data.unreadCount > 99 ? "99+" : data.unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-[360px] max-w-[92vw] origin-top-right animate-fade-up rounded-2xl bg-cream-100 p-1.5 ring-1 ring-ink-900/10 shadow-[0_10px_40px_rgba(10,9,7,0.12)]">
-          <div className="rounded-xl bg-cream-100/50">
-            {/* Header */}
-            <div className="flex items-center justify-between gap-2 border-b border-ink-900/[0.05] px-4 py-3">
-              <div className="text-[11px] uppercase tracking-[0.22em] text-ink-700">
-                Notificaciones
-                {data.unreadCount > 0 && (
-                  <span className="ml-2 text-ink-500">{data.unreadCount} no leída{data.unreadCount === 1 ? "" : "s"}</span>
-                )}
-              </div>
+        <div className="absolute right-0 top-full z-50 mt-2 w-[360px] max-w-[92vw] origin-top-right animate-fade-up rounded-2xl bg-cream-100 border border-ink-300/40 shadow-[0_20px_60px_rgba(0,0,0,0.4)] overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between gap-2 border-b border-ink-300/30 px-4 py-3">
+            <div className="text-[11px] uppercase tracking-[0.22em] text-ink-700">
+              Notificaciones
               {data.unreadCount > 0 && (
-                <button
-                  type="button"
-                  onClick={handleMarkAll}
-                  className="rounded-full bg-ink-900/[0.04] px-2 py-1 text-[10px] uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/5 transition hover:bg-cream-300 hover:text-ink-900"
-                >
-                  Marcar todas
-                </button>
+                <span className="ml-2 text-ink-500">{data.unreadCount} no leída{data.unreadCount === 1 ? "" : "s"}</span>
               )}
             </div>
+            {data.unreadCount > 0 && (
+              <button
+                type="button"
+                onClick={handleMarkAll}
+                className="rounded-full bg-cream-50 border border-ink-300/40 px-2 py-1 text-[10px] uppercase tracking-[0.18em] text-ink-700 transition hover:bg-cream-200 hover:text-ink-900"
+              >
+                Marcar todas
+              </button>
+            )}
+          </div>
 
-            {/* Push opt-in banner */}
-            {(pushStatus === "needs-permission" || pushStatus === "subscribing") && (
-              <div className="border-b border-ink-900/[0.05] bg-accent-lime/[0.15] px-4 py-3">
-                <p className="text-[12px] text-ink-900">
-                  📣 Activa notificaciones del sistema operativo para enterarte cuando te asignen algo aunque tengas la app cerrada.
-                </p>
-                <button
-                  type="button"
-                  onClick={handleEnablePush}
-                  disabled={pushStatus === "subscribing"}
-                  className="mt-2 rounded-full bg-cream-300 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-900 transition hover:bg-ink-800 disabled:opacity-50"
-                >
-                  {pushStatus === "subscribing" ? "Activando…" : "Activar push notifications"}
-                </button>
-              </div>
-            )}
-            {pushStatus === "denied" && (
-              <div className="border-b border-ink-900/[0.05] bg-accent-rust/[0.08] px-4 py-3">
-                <p className="text-[12px] text-ink-700">
-                  Las notificaciones están bloqueadas. Actívalas en la configuración de tu navegador y recarga.
-                </p>
-              </div>
-            )}
-            {pushStatus === "subscribed" && data.unreadCount === 0 && data.notifications.length === 0 && (
-              <div className="border-b border-ink-900/[0.05] px-4 py-2 text-center">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-ink-400">
-                  ✓ Push activadas
-                </p>
-              </div>
-            )}
+          {/* Push opt-in banner */}
+          {(pushStatus === "needs-permission" || pushStatus === "subscribing") && (
+            <div className="border-b border-ink-300/30 bg-accent-lime/[0.08] px-4 py-3">
+              <p className="flex items-start gap-2 text-[12px] text-ink-800">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-accent-lime" aria-hidden>
+                  <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                  <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                </svg>
+                <span>
+                  Activa notificaciones del sistema operativo para enterarte cuando te asignen algo aunque tengas la app cerrada.
+                </span>
+              </p>
+              <button
+                type="button"
+                onClick={handleEnablePush}
+                disabled={pushStatus === "subscribing"}
+                className="mt-2 rounded-full bg-accent-lime px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-cream-50 transition hover:bg-accent-lime/85 active:scale-[0.98] disabled:opacity-50 disabled:cursor-wait"
+              >
+                {pushStatus === "subscribing" ? "Activando…" : "Activar push notifications"}
+              </button>
+            </div>
+          )}
+          {pushStatus === "denied" && (
+            <div className="border-b border-ink-300/30 bg-accent-rust/10 px-4 py-3">
+              <p className="text-[12px] text-ink-700">
+                Las notificaciones están bloqueadas. Actívalas en la configuración de tu navegador y recarga.
+              </p>
+            </div>
+          )}
+          {pushStatus === "subscribed" && data.unreadCount === 0 && data.notifications.length === 0 && (
+            <div className="border-b border-ink-300/30 px-4 py-2 text-center">
+              <p className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-400">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-lime" aria-hidden>
+                  <path d="M5 12l5 5L20 7" />
+                </svg>
+                Push activadas
+              </p>
+            </div>
+          )}
 
-            {/* Lista */}
-            <div className="max-h-[400px] overflow-y-auto">
-              {loading && data.notifications.length === 0 && (
-                <p className="px-4 py-6 text-center text-[12px] text-ink-400">Cargando…</p>
-              )}
-              {!loading && data.notifications.length === 0 && (
-                <p className="px-4 py-8 text-center text-[12px] text-ink-400">
-                  Sin notificaciones. Estás al día.
-                </p>
-              )}
-              <ul className="divide-y divide-ink-900/[0.04]">
-                {data.notifications.map((n) => {
-                  const unread = !n.readAt;
-                  return (
-                    <li key={n.id}>
-                      {n.taskId ? (
-                        <Link
-                          href={`/task/${n.taskId}`}
-                          onClick={(e) => handleClickNotification(n, e)}
-                          className={`flex items-start gap-3 px-4 py-3 transition hover:bg-ink-900/[0.02] ${unread ? "bg-accent-lime/[0.08]" : ""}`}
-                        >
-                          <NotificationDot kind={n.kind} unread={unread} />
-                          <div className="min-w-0 flex-1">
-                            <p className={`text-[13px] leading-snug ${unread ? "text-ink-900" : "text-ink-600"}`}>
-                              {n.message}
-                            </p>
-                            <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-ink-400">
-                              {timeAgo(n.createdAt)}
-                            </p>
-                          </div>
-                        </Link>
-                      ) : (
-                        <div className={`flex items-start gap-3 px-4 py-3 ${unread ? "bg-accent-lime/[0.08]" : ""}`}>
-                          <NotificationDot kind={n.kind} unread={unread} />
-                          <div className="min-w-0 flex-1">
-                            <p className={`text-[13px] leading-snug ${unread ? "text-ink-900" : "text-ink-600"}`}>
-                              {n.message}
-                            </p>
-                            <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-ink-400">
-                              {timeAgo(n.createdAt)}
-                            </p>
-                          </div>
+          {/* Lista */}
+          <div className="max-h-[400px] overflow-y-auto">
+            {loading && data.notifications.length === 0 && (
+              <p className="px-4 py-6 text-center text-[12px] text-ink-400">Cargando…</p>
+            )}
+            {!loading && data.notifications.length === 0 && (
+              <p className="px-4 py-8 text-center text-[12px] text-ink-400">
+                Sin notificaciones. Estás al día.
+              </p>
+            )}
+            <ul className="divide-y divide-ink-300/30">
+              {data.notifications.map((n) => {
+                const unread = !n.readAt;
+                return (
+                  <li key={n.id}>
+                    {n.taskId ? (
+                      <Link
+                        href={`/task/${n.taskId}`}
+                        onClick={(e) => handleClickNotification(n, e)}
+                        className={`flex items-start gap-3 px-4 py-3 transition hover:bg-cream-200 ${unread ? "bg-accent-lime/[0.06]" : ""}`}
+                      >
+                        <NotificationDot kind={n.kind} unread={unread} />
+                        <div className="min-w-0 flex-1">
+                          <p className={`text-[13px] leading-snug ${unread ? "text-ink-900" : "text-ink-600"}`}>
+                            {n.message}
+                          </p>
+                          <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-ink-400">
+                            {timeAgo(n.createdAt)}
+                          </p>
                         </div>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+                      </Link>
+                    ) : (
+                      <div className={`flex items-start gap-3 px-4 py-3 ${unread ? "bg-accent-lime/[0.06]" : ""}`}>
+                        <NotificationDot kind={n.kind} unread={unread} />
+                        <div className="min-w-0 flex-1">
+                          <p className={`text-[13px] leading-snug ${unread ? "text-ink-900" : "text-ink-600"}`}>
+                            {n.message}
+                          </p>
+                          <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-ink-400">
+                            {timeAgo(n.createdAt)}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </div>
       )}
@@ -234,16 +241,21 @@ export function NotificationBell({ initialCount = 0 }: { initialCount?: number }
 }
 
 function NotificationDot({ kind, unread }: { kind: string; unread: boolean }) {
+  // Color por tipo — semánticamente alineado con la paleta:
+  //   task_assigned           → lima (positivo, te pasaron algo)
+  //   task_transferred_from_me → warning (algo cambió de manos, ojo)
+  //   task_commented          → neutral (info)
+  //   pipeline_at_risk        → rust (alarma)
   const color =
     kind === "task_assigned"
       ? "bg-accent-lime"
       : kind === "task_transferred_from_me"
-        ? "bg-amber-500"
-        : kind === "task_commented"
-          ? "bg-cream-300"
-          : "bg-ink-400";
+        ? "bg-accent-warning"
+        : kind === "pipeline_at_risk"
+          ? "bg-accent-rust"
+          : "bg-ink-500";
   return (
-    <span className={`mt-1.5 inline-flex h-2 w-2 shrink-0 rounded-full ${unread ? color : "bg-ink-300"}`} />
+    <span className={`mt-1.5 inline-flex h-2 w-2 shrink-0 rounded-full ${unread ? color : "bg-ink-400"}`} />
   );
 }
 
