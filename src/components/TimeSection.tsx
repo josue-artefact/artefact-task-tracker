@@ -276,7 +276,7 @@ function EntryRow({
               <button
                 type="submit"
                 aria-label="Borrar entrada"
-                className="rounded-full bg-cream-100 border border-ink-300/40 p-2 text-ink-500 transition hover:bg-accent-rust hover:text-cream-50 hover:border-accent-rust"
+                className="rounded-full bg-cream-100 border border-ink-300/40 p-2 text-ink-500 transition hover:bg-accent-rust hover:text-on-accent hover:border-accent-rust"
               >
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14" />
@@ -304,12 +304,12 @@ function SubmitButton({ children, small }: { children: React.ReactNode; small?: 
     <button
       type="submit"
       className={[
-        "group flex items-center justify-between gap-1 rounded-full bg-accent-lime text-cream-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-accent-lime/85 active:scale-[0.98]",
+        "group flex items-center justify-between gap-1 rounded-full bg-accent-lime text-on-accent transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-accent-lime/85 active:scale-[0.98]",
         small ? "py-1.5 pl-3 pr-1 text-[10px] font-medium uppercase tracking-[0.18em]" : "py-2 pl-5 pr-2 text-[11px] font-medium uppercase tracking-[0.18em]",
       ].join(" ")}
     >
       <span>{children}</span>
-      <span className={`ml-2 flex items-center justify-center rounded-full bg-cream-50/15 transition-all duration-500 group-hover:translate-x-0.5 ${small ? "h-5 w-5" : "h-6 w-6"}`}>
+      <span className={`ml-2 flex items-center justify-center rounded-full bg-on-accent/15 transition-all duration-500 group-hover:translate-x-0.5 ${small ? "h-5 w-5" : "h-6 w-6"}`}>
         <svg width={small ? 9 : 10} height={small ? 9 : 10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M5 12h14M13 6l6 6-6 6" />
         </svg>

@@ -135,7 +135,7 @@ export default async function TeamsPage({
                       <input type="hidden" name="id" value={team.id} />
                       <button
                         type="submit"
-                        className="rounded-full bg-cream-50 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-accent-rust border border-accent-rust/30 transition hover:bg-accent-rust hover:text-cream-50 hover:border-accent-rust"
+                        className="rounded-full bg-cream-50 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-accent-rust border border-accent-rust/30 transition hover:bg-accent-rust hover:text-on-accent hover:border-accent-rust"
                       >
                         Borrar
                       </button>
@@ -245,12 +245,12 @@ function Submit({ children, small }: { children: React.ReactNode; small?: boolea
     <button
       type="submit"
       className={[
-        "group flex items-center justify-between gap-1 rounded-full bg-accent-lime text-cream-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-accent-lime/85 active:scale-[0.98]",
+        "group flex items-center justify-between gap-1 rounded-full bg-accent-lime text-on-accent transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-accent-lime/85 active:scale-[0.98]",
         small ? "py-1.5 pl-3 pr-1 text-[10px] font-medium uppercase tracking-[0.18em]" : "w-full py-2 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em]",
       ].join(" ")}
     >
       <span>{children}</span>
-      <span className={`ml-2 flex items-center justify-center rounded-full bg-cream-50/15 transition-all duration-500 group-hover:translate-x-0.5 ${small ? "h-5 w-5" : "h-7 w-7"}`}>
+      <span className={`ml-2 flex items-center justify-center rounded-full bg-on-accent/15 transition-all duration-500 group-hover:translate-x-0.5 ${small ? "h-5 w-5" : "h-7 w-7"}`}>
         <svg width={small ? 9 : 11} height={small ? 9 : 11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M5 12h14M13 6l6 6-6 6" />
         </svg>
@@ -263,7 +263,7 @@ function DeleteIcon() {
     <button
       type="submit"
       aria-label="Delete"
-      className="rounded-full bg-cream-100 border border-ink-300/40 p-2 text-ink-500 transition hover:bg-accent-rust hover:text-cream-50 hover:border-accent-rust"
+      className="rounded-full bg-cream-100 border border-ink-300/40 p-2 text-ink-500 transition hover:bg-accent-rust hover:text-on-accent hover:border-accent-rust"
     >
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14" />

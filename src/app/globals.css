@@ -9,12 +9,12 @@
   /* Serif solo se usa para el logo de Artefact (inline en ArtefactMark.tsx) */
   --font-serif: "DM Serif Display", "Iowan Old Style", "Apple Garamond", Georgia, serif;
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html, body {
-  background: #0A0A0B;
-  color: #FAFAFA;
+  background: #F2EDE0;
+  color: #1A1814;
   font-family: var(--font-sans);
   font-feature-settings: "ss01", "cv11", "cv02";
   -webkit-font-smoothing: antialiased;
@@ -30,18 +30,18 @@ input::-webkit-search-cancel-button { display: none; }
   color: #0A0A0B;
 }
 
-/* Scrollbar discreto pero visible en dark */
+/* Scrollbar discreto en light, con tinte warm para no quedar gris flotante */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(250, 250, 250, 0.08);
+  background: rgba(26, 24, 20, 0.12);
   border-radius: 999px;
 }
-::-webkit-scrollbar-thumb:hover { background: rgba(250, 250, 250, 0.18); }
+::-webkit-scrollbar-thumb:hover { background: rgba(26, 24, 20, 0.24); }
 
-/* Focus ring para accesibilidad en dark (más visible que el default del browser) */
+/* Focus ring para accesibilidad — lima sobre fondo cream lee bien */
 *:focus-visible {
-  outline: 2px solid rgba(163, 255, 18, 0.6);
+  outline: 2px solid rgba(163, 255, 18, 0.7);
   outline-offset: 2px;
   border-radius: 4px;
 }

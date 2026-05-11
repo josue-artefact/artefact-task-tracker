@@ -228,7 +228,7 @@ function MoveButton({ direction }: { direction: "left" | "right" }) {
     <button
       type="submit"
       aria-label={direction === "left" ? "Mover atrás" : "Mover adelante"}
-      className="flex h-7 w-7 items-center justify-center rounded-full bg-cream-100 text-ink-500 border border-ink-300/40 transition-all duration-300 hover:bg-accent-lime hover:text-cream-50 hover:border-accent-lime active:scale-95"
+      className="flex h-7 w-7 items-center justify-center rounded-full bg-cream-100 text-ink-500 border border-ink-300/40 transition-all duration-300 hover:bg-accent-lime hover:text-on-accent hover:border-accent-lime active:scale-95"
     >
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         {direction === "left" ? <path d="M19 12H5M11 18l-6-6 6-6" /> : <path d="M5 12h14M13 6l6 6-6 6" />}

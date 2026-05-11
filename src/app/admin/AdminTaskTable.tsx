@@ -205,7 +205,7 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
                             type="submit"
                             aria-label="Archivar tarea"
                             title="Archivar tarea"
-                            className="rounded-full bg-ink-900/[0.04] p-2 text-ink-500 ring-1 ring-ink-900/5 transition hover:bg-accent-lime hover:text-cream-50"
+                            className="rounded-full bg-ink-900/[0.04] p-2 text-ink-500 ring-1 ring-ink-900/5 transition hover:bg-accent-lime hover:text-on-accent"
                           >
                             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                               <rect x="3" y="4" width="18" height="4" rx="1" />
@@ -222,7 +222,7 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
                           type="submit"
                           aria-label="Borrar tarea"
                           title="Borrar tarea"
-                          className="rounded-full bg-ink-900/[0.04] p-2 text-ink-500 ring-1 ring-ink-900/5 transition hover:bg-accent-rust hover:text-cream-50"
+                          className="rounded-full bg-ink-900/[0.04] p-2 text-ink-500 ring-1 ring-ink-900/5 transition hover:bg-accent-rust hover:text-on-accent"
                         >
                           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14" />
@@ -241,7 +241,7 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
       {/* Bulk action bar */}
       {selected.size > 0 && (
         <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 animate-fade-up">
-          <div className="rounded-full bg-cream-100/90 p-1.5 ring-1 ring-ink-300/40 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.4)]">
+          <div className="rounded-full bg-cream-100/90 p-1.5 ring-1 ring-ink-300/40 backdrop-blur-xl shadow-[0_10px_40px_rgba(26,24,20,0.12)]">
             <div className="flex items-center gap-2 rounded-full bg-cream-200 px-4 py-2 text-ink-900">
               <span className="font-semibold tracking-tight text-[18px] leading-none">{selected.size}</span>
               <span className="text-[11px] uppercase tracking-[0.18em] opacity-80">
@@ -301,7 +301,7 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
                     <button
                       type="submit"
                       title="Mover a archivo las tareas marcadas como Hecho"
-                      className="rounded-full bg-accent-lime/15 px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-accent-lime ring-1 ring-accent-lime/30 transition hover:bg-accent-lime hover:text-cream-50"
+                      className="rounded-full bg-accent-lime/15 px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-accent-lime ring-1 ring-accent-lime/30 transition hover:bg-accent-lime hover:text-on-accent"
                     >
                       Archivar {doneSelectedIds.length}{" "}
                       {doneSelectedIds.length === 1 ? "hecha" : "hechas"}
@@ -324,7 +324,7 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
                 ))}
                 <button
                   type="submit"
-                  className="rounded-full bg-accent-rust/15 px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-accent-rust ring-1 ring-accent-rust/30 transition hover:bg-accent-rust hover:text-cream-50"
+                  className="rounded-full bg-accent-rust/15 px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-accent-rust ring-1 ring-accent-rust/30 transition hover:bg-accent-rust hover:text-on-accent"
                 >
                   Borrar
                 </button>

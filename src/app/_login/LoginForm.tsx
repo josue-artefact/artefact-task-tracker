@@ -41,7 +41,7 @@ export function LoginForm({ errorMessage }: { errorMessage: string | null }) {
           aria-label="Entrar"
           className={[
             "ml-2 flex h-11 w-11 items-center justify-center rounded-full transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
-            "bg-accent-lime text-cream-50",
+            "bg-accent-lime text-on-accent",
             "hover:scale-105 active:scale-[0.96]",
             "disabled:bg-cream-200 disabled:text-ink-500 disabled:hover:scale-100",
           ].join(" ")}

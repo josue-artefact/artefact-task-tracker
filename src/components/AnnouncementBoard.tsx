@@ -100,7 +100,7 @@ export async function AnnouncementBoard({ isPM }: { isPM: boolean }) {
                               <button
                                 type="submit"
                                 aria-label="Borrar anuncio"
-                                className="rounded-full bg-ink-900/[0.04] p-2 text-ink-500 ring-1 ring-ink-900/5 transition hover:bg-accent-rust hover:text-cream-50"
+                                className="rounded-full bg-ink-900/[0.04] p-2 text-ink-500 ring-1 ring-ink-900/5 transition hover:bg-accent-rust hover:text-on-accent"
                               >
                                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                                   <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14" />
@@ -161,7 +161,7 @@ function NewAnnouncementButton() {
         </svg>
         <span>Nuevo anuncio</span>
       </summary>
-      <div className="absolute right-0 top-full z-30 mt-2 w-[min(420px,90vw)] rounded-2xl bg-cream-100 border border-ink-300/40 shadow-[0_20px_60px_rgba(0,0,0,0.4)] animate-fade-up">
+      <div className="absolute right-0 top-full z-30 mt-2 w-[min(420px,90vw)] rounded-2xl bg-cream-100 border border-ink-300/40 shadow-[0_20px_60px_rgba(26,24,20,0.12)] animate-fade-up">
         <form action={createAnnouncement} className="p-5 space-y-3">
           <Input name="title" required placeholder="Título" />
           <Textarea name="body" required rows={3} placeholder="Mensaje" />

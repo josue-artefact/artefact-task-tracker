@@ -139,7 +139,7 @@ export default async function ArchivePage({
                     <input type="hidden" name="id" value={t.id} />
                     <button
                       type="submit"
-                      className="rounded-full bg-accent-lime px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-cream-50 transition hover:bg-accent-lime/85 active:scale-[0.98]"
+                      className="rounded-full bg-accent-lime px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-on-accent transition hover:bg-accent-lime/85 active:scale-[0.98]"
                     >
                       Desarchivar
                     </button>

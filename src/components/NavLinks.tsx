@@ -60,7 +60,7 @@ export function NavLinks({ isPM }: { isPM: boolean }) {
       {isPM && (
         <Link
           href="/admin/tasks/new"
-          className="shrink-0 rounded-full bg-accent-lime px-3 py-1.5 font-medium text-cream-50 transition hover:bg-accent-lime/85"
+          className="shrink-0 rounded-full bg-accent-lime px-3 py-1.5 font-medium text-on-accent transition hover:bg-accent-lime/85"
         >
           Nueva tarea
         </Link>

@@ -118,14 +118,14 @@ export function NotificationBell({ initialCount = 0 }: { initialCount?: number }
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
         </svg>
         {data.unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-accent-rust px-1 text-[9px] font-bold text-cream-50 ring-2 ring-cream-50">
+          <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-accent-rust px-1 text-[9px] font-bold text-on-accent ring-2 ring-cream-50">
             {data.unreadCount > 99 ? "99+" : data.unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-[360px] max-w-[92vw] origin-top-right animate-fade-up rounded-2xl bg-cream-100 border border-ink-300/40 shadow-[0_20px_60px_rgba(0,0,0,0.4)] overflow-hidden">
+        <div className="absolute right-0 top-full z-50 mt-2 w-[360px] max-w-[92vw] origin-top-right animate-fade-up rounded-2xl bg-cream-100 border border-ink-300/40 shadow-[0_20px_60px_rgba(26,24,20,0.12)] overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between gap-2 border-b border-ink-300/30 px-4 py-3">
             <div className="text-[11px] uppercase tracking-[0.22em] text-ink-700">
@@ -161,7 +161,7 @@ export function NotificationBell({ initialCount = 0 }: { initialCount?: number }
                 type="button"
                 onClick={handleEnablePush}
                 disabled={pushStatus === "subscribing"}
-                className="mt-2 rounded-full bg-accent-lime px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-cream-50 transition hover:bg-accent-lime/85 active:scale-[0.98] disabled:opacity-50 disabled:cursor-wait"
+                className="mt-2 rounded-full bg-accent-lime px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-on-accent transition hover:bg-accent-lime/85 active:scale-[0.98] disabled:opacity-50 disabled:cursor-wait"
               >
                 {pushStatus === "subscribing" ? "Activando…" : "Activar push notifications"}
               </button>

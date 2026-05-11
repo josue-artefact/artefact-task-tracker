@@ -82,7 +82,7 @@ export function ActiveTaskToggle({
         className={[
           "group flex w-full items-center justify-between gap-2 rounded-full py-2 pl-4 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98]",
           isActiveOnThisTask
-            ? "bg-accent-lime text-cream-50 hover:bg-accent-lime/85"
+            ? "bg-accent-lime text-on-accent hover:bg-accent-lime/85"
             : blockStart
               ? "bg-cream-100 text-ink-400 cursor-not-allowed border border-ink-300/30"
               : "bg-cream-300 text-ink-900 hover:bg-ink-800",
@@ -98,7 +98,7 @@ export function ActiveTaskToggle({
               </span>
               <span>Detener</span>
               {showElapsed && (
-                <span className="text-cream-50/80 font-mono normal-case tracking-tight text-[11px]">
+                <span className="text-on-accent/80 font-mono normal-case tracking-tight text-[11px]">
                   · {formatElapsed(elapsedMin)}
                 </span>
               )}
@@ -113,7 +113,7 @@ export function ActiveTaskToggle({
         </span>
         <span
           className={`flex h-7 w-7 items-center justify-center rounded-full transition-all duration-500 group-hover:translate-x-0.5 ${
-            isActiveOnThisTask ? "bg-cream-50/15" : "bg-cream-100/15"
+            isActiveOnThisTask ? "bg-on-accent/15" : "bg-cream-100/15"
           }`}
         >
           <svg

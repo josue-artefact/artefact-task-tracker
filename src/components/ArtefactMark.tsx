@@ -9,18 +9,18 @@ type Props = {
  * colores según el contexto.
  *
  * variant:
- *   - "auto" (default): círculo blanco con texto negro — pop sobre dark background
- *   - "dark":  círculo negro con texto blanco — sobre fondos claros
- *   - "light": círculo blanco con texto negro — sobre fondos oscuros (igual a auto)
+ *   - "auto" (default): círculo oscuro con texto crema — pop sobre la página cream
+ *   - "dark":  círculo oscuro con texto crema — sobre fondos claros (igual a auto)
+ *   - "light": círculo crema con texto oscuro — sobre fondos oscuros
  *
  * La forma física del logo es siempre la misma. Solo cambia qué color es "tinta"
  * y cuál es "papel".
  */
 export function ArtefactMark({ size = 88, className = "", variant = "auto" }: Props) {
-  // Default es "light over dark" porque la app vive en dark mode ahora.
-  const isLightBg = variant !== "dark";
-  const bg = isLightBg ? "#FAFAFA" : "#0A0A0B";
-  const fg = isLightBg ? "#0A0A0B" : "#FAFAFA";
+  // Default es "dark over light" porque la app vive en light mode editorial.
+  const isLightCircle = variant === "light";
+  const bg = isLightCircle ? "#FAFAFA" : "#1A1814";
+  const fg = isLightCircle ? "#1A1814" : "#FAFAFA";
 
   return (
     <svg

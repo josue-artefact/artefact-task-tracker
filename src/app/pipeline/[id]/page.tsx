@@ -116,7 +116,7 @@ export default async function PipelineDetailPage({
           <div className="flex shrink-0 flex-wrap items-start gap-2">
             <EditCard>
               <EditTrigger label="Duplicar" />
-              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-100 border border-ink-300/40 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.4)] z-20">
+              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-100 border border-ink-300/40 p-4 shadow-[0_20px_60px_rgba(26,24,20,0.12)] z-20">
                 <form action={duplicatePipeline} className="space-y-2">
                   <input type="hidden" name="sourceId" value={pipeline.id} />
                   <SmallLabel>Nombre del nuevo pipeline</SmallLabel>
@@ -133,7 +133,7 @@ export default async function PipelineDetailPage({
 
             <EditCard>
               <EditTrigger label="Editar" />
-              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-100 border border-ink-300/40 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.4)] z-20">
+              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-100 border border-ink-300/40 p-4 shadow-[0_20px_60px_rgba(26,24,20,0.12)] z-20">
                 <form action={updatePipeline} className="space-y-2">
                   <input type="hidden" name="id" value={pipeline.id} />
                   <SmallLabel>Nombre</SmallLabel>
@@ -167,7 +167,7 @@ export default async function PipelineDetailPage({
               <input type="hidden" name="id" value={pipeline.id} />
               <button
                 type="submit"
-                className="rounded-full bg-cream-50 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-accent-rust border border-accent-rust/30 transition hover:bg-accent-rust hover:text-cream-50 hover:border-accent-rust"
+                className="rounded-full bg-cream-50 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-accent-rust border border-accent-rust/30 transition hover:bg-accent-rust hover:text-on-accent hover:border-accent-rust"
               >
                 Borrar
               </button>
@@ -280,7 +280,7 @@ export default async function PipelineDetailPage({
                               <input type="hidden" name="taskId" value={t.id} />
                               <button
                                 type="submit"
-                                className="rounded-full bg-accent-warning/20 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-accent-warning border border-accent-warning/40 transition hover:bg-accent-warning hover:text-cream-50 hover:border-accent-warning"
+                                className="rounded-full bg-accent-warning/20 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-accent-warning border border-accent-warning/40 transition hover:bg-accent-warning hover:text-on-accent hover:border-accent-warning"
                               >
                                 Cliente respondió
                               </button>
@@ -351,7 +351,7 @@ function SmallSubmit({ children }: { children: React.ReactNode }) {
   return (
     <button
       type="submit"
-      className="rounded-full bg-accent-lime px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-cream-50 transition hover:bg-accent-lime/85 active:scale-[0.98]"
+      className="rounded-full bg-accent-lime px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-on-accent transition hover:bg-accent-lime/85 active:scale-[0.98]"
     >
       {children}
     </button>
