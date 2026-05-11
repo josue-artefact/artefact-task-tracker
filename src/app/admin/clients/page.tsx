@@ -33,18 +33,18 @@ export default async function ClientsPage({
 
   return (
     <AppShell user={user}>
-      <header className="mb-10 animate-fade-up">
+      <header className="mb-8 animate-fade-up">
         <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink-500">
-          <span className="inline-block h-1 w-6 bg-cream-300" />
+          <span className="inline-block h-1 w-6 bg-accent-lime" />
           Clientes
         </div>
-        <h1 className="mt-4 font-semibold tracking-tight text-[clamp(36px,5vw,56px)] leading-[1] text-ink-900">
+        <h1 className="mt-3 font-semibold tracking-tight text-[clamp(28px,4vw,44px)] leading-[1.05] text-ink-900">
           Para quién creamos.
         </h1>
       </header>
 
       {errorMessage && (
-        <div className="mb-8 rounded-2xl bg-accent-rust/10 px-5 py-4 ring-1 ring-accent-rust/20 animate-fade-up">
+        <div className="mb-6 rounded-2xl bg-accent-rust/10 border border-accent-rust/30 px-5 py-4 animate-fade-up">
           <div className="flex items-start gap-3 text-[13px] text-accent-rust">
             <span className="mt-0.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-accent-rust" />
             <span>{errorMessage}</span>
@@ -76,76 +76,74 @@ export default async function ClientsPage({
           {clients.map((c) => {
             const open = c.tasks.filter((t) => t.status !== "DONE").length;
             return (
-              <div key={c.id} className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up">
-                <div className="rounded-xl bg-cream-100 p-6">
-                  <EditCard>
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="min-w-0">
-                        <div className="text-[10px] uppercase tracking-[0.2em] text-ink-500">
-                          {c.tasks.length} {c.tasks.length === 1 ? "tarea" : "tareas"} · {open} {open === 1 ? "abierta" : "abiertas"}
-                        </div>
-                        <h2 className="mt-1 font-semibold tracking-tight text-[28px] leading-tight text-ink-900">
-                          {c.name}
-                        </h2>
-                        {c.description && (
-                          <p className="mt-2 max-w-xl text-[14px] text-ink-600">{c.description}</p>
-                        )}
+              <div key={c.id} className="rounded-2xl bg-cream-100 border border-ink-300/30 p-6 animate-fade-up">
+                <EditCard>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <div className="text-[10px] uppercase tracking-[0.2em] text-ink-500">
+                        {c.tasks.length} {c.tasks.length === 1 ? "tarea" : "tareas"} · {open} {open === 1 ? "abierta" : "abiertas"}
                       </div>
-                      <div className="flex shrink-0 items-start gap-2">
-                        <EditTrigger />
-                        <form action={deleteClient}>
-                          <input type="hidden" name="id" value={c.id} />
-                          <button
-                            type="submit"
-                            className="rounded-full bg-ink-900/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-500 ring-1 ring-ink-900/5 transition hover:bg-accent-rust hover:text-cream-50"
-                          >
-                            Borrar
-                          </button>
-                        </form>
-                      </div>
-                    </div>
-                    <EditPanel className="mt-4 rounded-2xl bg-ink-900/[0.03] p-4 ring-1 ring-ink-900/5">
-                      <form action={updateClient} className="space-y-2">
-                        <input type="hidden" name="id" value={c.id} />
-                        <Input name="name" required defaultValue={c.name} placeholder="Nombre" />
-                        <Textarea name="description" defaultValue={c.description ?? ""} placeholder="Brief (opcional)" rows={3} />
-                        <div className="flex justify-end">
-                          <Submit small>Guardar</Submit>
-                        </div>
-                      </form>
-                    </EditPanel>
-                  </EditCard>
-
-                  {c.tasks.length > 0 && (
-                    <ul className="mt-5 grid gap-1.5">
-                      {c.tasks.slice(0, 6).map((t) => (
-                        <li key={t.id}>
-                          <Link
-                            href={`/task/${t.id}`}
-                            className="flex items-center justify-between rounded-xl px-3 py-2 text-[13px] text-ink-700 transition hover:bg-ink-900/[0.03]"
-                          >
-                            <div className="min-w-0 flex-1">
-                              <span className={`font-semibold tracking-tight text-[15px] ${t.status === "DONE" ? "text-ink-400 line-through decoration-ink-300" : "text-ink-900"}`}>
-                                {t.title}
-                              </span>
-                              <span className="ml-2 text-[10px] uppercase tracking-[0.18em] text-ink-500">
-                                {t.team.name}
-                              </span>
-                            </div>
-                            <span className="ml-3 shrink-0 font-mono text-[11px] text-ink-500">
-                              {t.assignee ? `@${t.assignee.handle}` : "—"}
-                            </span>
-                          </Link>
-                        </li>
-                      ))}
-                      {c.tasks.length > 6 && (
-                        <li className="px-3 text-[10px] uppercase tracking-[0.18em] text-ink-400">
-                          + {c.tasks.length - 6} más
-                        </li>
+                      <h2 className="mt-1 font-semibold tracking-tight text-[22px] leading-tight text-ink-900">
+                        {c.name}
+                      </h2>
+                      {c.description && (
+                        <p className="mt-2 max-w-xl text-[14px] text-ink-600">{c.description}</p>
                       )}
-                    </ul>
-                  )}
-                </div>
+                    </div>
+                    <div className="flex shrink-0 items-start gap-2">
+                      <EditTrigger />
+                      <form action={deleteClient}>
+                        <input type="hidden" name="id" value={c.id} />
+                        <button
+                          type="submit"
+                          className="rounded-full bg-cream-50 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-accent-rust border border-accent-rust/30 transition hover:bg-accent-rust hover:text-cream-50 hover:border-accent-rust"
+                        >
+                          Borrar
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                  <EditPanel className="mt-4 rounded-2xl bg-cream-50 border border-ink-300/30 p-4">
+                    <form action={updateClient} className="space-y-2">
+                      <input type="hidden" name="id" value={c.id} />
+                      <Input name="name" required defaultValue={c.name} placeholder="Nombre" />
+                      <Textarea name="description" defaultValue={c.description ?? ""} placeholder="Brief (opcional)" rows={3} />
+                      <div className="flex justify-end">
+                        <Submit small>Guardar</Submit>
+                      </div>
+                    </form>
+                  </EditPanel>
+                </EditCard>
+
+                {c.tasks.length > 0 && (
+                  <ul className="mt-5 grid gap-1">
+                    {c.tasks.slice(0, 6).map((t) => (
+                      <li key={t.id}>
+                        <Link
+                          href={`/task/${t.id}`}
+                          className="flex items-center justify-between rounded-lg px-3 py-2 text-[13px] text-ink-700 transition hover:bg-cream-200"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <span className={`font-semibold tracking-tight text-[14px] ${t.status === "DONE" ? "text-ink-500 line-through decoration-ink-400/40" : "text-ink-900"}`}>
+                              {t.title}
+                            </span>
+                            <span className="ml-2 text-[10px] uppercase tracking-[0.18em] text-ink-500">
+                              {t.team.name}
+                            </span>
+                          </div>
+                          <span className="ml-3 shrink-0 font-mono text-[11px] text-ink-500">
+                            {t.assignee ? `@${t.assignee.handle}` : "—"}
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                    {c.tasks.length > 6 && (
+                      <li className="px-3 pt-1 text-[10px] uppercase tracking-[0.18em] text-ink-400">
+                        + {c.tasks.length - 6} más
+                      </li>
+                    )}
+                  </ul>
+                )}
               </div>
             );
           })}
@@ -157,8 +155,8 @@ export default async function ClientsPage({
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up">
-      <div className="rounded-xl bg-cream-100 p-6">{children}</div>
+    <div className="rounded-2xl bg-cream-100 border border-ink-300/30 p-6 animate-fade-up">
+      {children}
     </div>
   );
 }
@@ -169,7 +167,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className="w-full rounded-xl bg-ink-900/[0.04] px-3 py-2.5 text-[13px] text-ink-900 ring-1 ring-ink-900/5 placeholder:text-ink-400 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
+      className="w-full rounded-xl bg-cream-50 border border-ink-300/40 px-3 py-2.5 text-[13px] text-ink-900 placeholder:text-ink-400 transition-colors focus:outline-none focus:border-accent-lime/40"
     />
   );
 }
@@ -177,7 +175,7 @@ function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
       {...props}
-      className="w-full resize-none rounded-xl bg-ink-900/[0.04] px-3 py-2.5 text-[13px] text-ink-900 ring-1 ring-ink-900/5 placeholder:text-ink-400 focus:bg-ink-900/[0.06] focus:outline-none focus:ring-ink-900/20"
+      className="w-full resize-none rounded-xl bg-cream-50 border border-ink-300/40 px-3 py-2.5 text-[13px] text-ink-900 placeholder:text-ink-400 transition-colors focus:outline-none focus:border-accent-lime/40"
     />
   );
 }
@@ -186,12 +184,12 @@ function Submit({ children, small }: { children: React.ReactNode; small?: boolea
     <button
       type="submit"
       className={[
-        "group flex items-center justify-between gap-1 rounded-full bg-cream-300 text-ink-900 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]",
+        "group flex items-center justify-between gap-1 rounded-full bg-accent-lime text-cream-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-accent-lime/85 active:scale-[0.98]",
         small ? "py-1.5 pl-3 pr-1 text-[10px] font-medium uppercase tracking-[0.18em]" : "w-full py-2 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em]",
       ].join(" ")}
     >
       <span>{children}</span>
-      <span className={`ml-2 flex items-center justify-center rounded-full bg-cream-100/15 transition-all duration-500 group-hover:translate-x-0.5 ${small ? "h-5 w-5" : "h-7 w-7"}`}>
+      <span className={`ml-2 flex items-center justify-center rounded-full bg-cream-50/15 transition-all duration-500 group-hover:translate-x-0.5 ${small ? "h-5 w-5" : "h-7 w-7"}`}>
         <svg width={small ? 9 : 11} height={small ? 9 : 11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M5 12h14M13 6l6 6-6 6" />
         </svg>

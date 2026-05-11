@@ -139,12 +139,12 @@ export default async function InsightsPage() {
 
   return (
     <AppShell user={user}>
-      <header className="mb-10 animate-fade-up">
+      <header className="mb-8 animate-fade-up">
         <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink-500">
-          <span className="inline-block h-1 w-6 bg-cream-300" />
+          <span className="inline-block h-1 w-6 bg-accent-lime" />
           Insights
         </div>
-        <h1 className="mt-4 font-semibold tracking-tight text-[clamp(36px,5vw,56px)] leading-[1] text-ink-900">
+        <h1 className="mt-3 font-semibold tracking-tight text-[clamp(28px,4vw,44px)] leading-[1.05] text-ink-900">
           Lo que vemos en los datos.
         </h1>
         <p className="mt-3 max-w-xl text-[14px] text-ink-600">
@@ -152,10 +152,10 @@ export default async function InsightsPage() {
         </p>
       </header>
 
-      <div className="space-y-10">
+      <div className="space-y-8">
         {/* Saturación por miembro */}
         <section className="animate-fade-up [animation-delay:60ms]">
-          <h2 className="mb-4 text-[11px] uppercase tracking-[0.22em] text-ink-500">
+          <h2 className="mb-3 text-[11px] uppercase tracking-[0.22em] text-ink-500">
             Saturación por miembro · semana actual
           </h2>
           <Card>
@@ -175,10 +175,10 @@ export default async function InsightsPage() {
                         @{s.handle}
                       </div>
                     </div>
-                    <div className="h-2 overflow-hidden rounded-full bg-ink-900/[0.06]">
+                    <div className="h-2 overflow-hidden rounded-full bg-cream-50 border border-ink-300/30">
                       <div
                         className={`h-full rounded-full transition-all duration-700 ease-out ${
-                          isHigh ? "bg-accent-rust" : isLight ? "bg-cream-300" : "bg-accent-lime"
+                          isHigh ? "bg-accent-rust" : isLight ? "bg-accent-warning" : "bg-accent-lime"
                         }`}
                         style={{ width: `${pct}%` }}
                       />
@@ -190,9 +190,9 @@ export default async function InsightsPage() {
                 );
               })}
             </ul>
-            <div className="mt-5 flex items-center gap-4 text-[10px] uppercase tracking-[0.18em] text-ink-500">
-              <Legend color="bg-cream-300" label="< 20 h" />
-              <Legend color="bg-accent-lime" label="normal" />
+            <div className="mt-5 flex flex-wrap items-center gap-4 text-[10px] uppercase tracking-[0.18em] text-ink-500">
+              <Legend color="bg-accent-warning" label="< 20 h (poca carga)" />
+              <Legend color="bg-accent-lime" label="20–40 h (normal)" />
               <Legend color="bg-accent-rust" label="≥ 40 h (saturado)" />
             </div>
           </Card>
@@ -200,7 +200,7 @@ export default async function InsightsPage() {
 
         {/* Por cliente */}
         <section className="animate-fade-up [animation-delay:120ms]">
-          <h2 className="mb-4 text-[11px] uppercase tracking-[0.22em] text-ink-500">
+          <h2 className="mb-3 text-[11px] uppercase tracking-[0.22em] text-ink-500">
             Por cliente · mes actual
           </h2>
           <Card>
@@ -212,10 +212,10 @@ export default async function InsightsPage() {
                 const pct = (c.minutes / maxClientMin) * 100;
                 return (
                   <li key={c.name} className="grid grid-cols-[180px_1fr_90px] items-center gap-4">
-                    <div className="font-semibold tracking-tight text-[16px] text-ink-900">{c.name}</div>
-                    <div className="h-2 overflow-hidden rounded-full bg-ink-900/[0.06]">
+                    <div className="font-semibold tracking-tight text-[15px] text-ink-900">{c.name}</div>
+                    <div className="h-2 overflow-hidden rounded-full bg-cream-50 border border-ink-300/30">
                       <div
-                        className="h-full rounded-full bg-cream-300 transition-all duration-700 ease-out"
+                        className="h-full rounded-full bg-accent-lime transition-all duration-700 ease-out"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -231,40 +231,40 @@ export default async function InsightsPage() {
 
         {/* Performance por miembro — últimos 30 días */}
         <section className="animate-fade-up [animation-delay:180ms]">
-          <h2 className="mb-4 text-[11px] uppercase tracking-[0.22em] text-ink-500">
+          <h2 className="mb-3 text-[11px] uppercase tracking-[0.22em] text-ink-500">
             Performance por miembro · últimos 30 días
           </h2>
           <Card>
             {performance.length === 0 && (
               <p className="text-sm text-ink-400">Sin miembros registrados.</p>
             )}
-            <ul className="space-y-2.5">
+            <ul className="space-y-1">
               {performance.map((m) => {
                 const completedPct = (m.completed / maxCompleted) * 100;
                 const onTimeColor =
                   m.onTimeRate === null
                     ? "text-ink-400"
                     : m.onTimeRate >= 90
-                      ? "text-accent-lime-dark text-ink-900"
+                      ? "text-accent-lime"
                       : m.onTimeRate >= 50
-                        ? "text-amber-700"
+                        ? "text-accent-warning"
                         : "text-accent-rust";
                 return (
-                  <li key={m.id} className="grid grid-cols-[140px_1fr_70px_80px] items-center gap-3 rounded-xl px-2 py-1.5 transition hover:bg-ink-900/[0.02]">
+                  <li key={m.id} className="grid grid-cols-[140px_1fr_70px_90px] items-center gap-3 rounded-lg px-2 py-1.5 transition hover:bg-cream-200">
                     <div>
                       <div className="text-[13px] font-medium text-ink-900">{m.name}</div>
                       <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-500">@{m.handle}</div>
                     </div>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-ink-900/[0.06]">
+                    <div className="h-1.5 overflow-hidden rounded-full bg-cream-50 border border-ink-300/30">
                       <div
-                        className="h-full rounded-full bg-cream-300 transition-all duration-700 ease-out"
+                        className="h-full rounded-full bg-accent-lime transition-all duration-700 ease-out"
                         style={{ width: `${completedPct}%` }}
                       />
                     </div>
                     <div className="text-right text-[12px] text-ink-700">
                       {m.completed} {m.completed === 1 ? "tarea" : "tareas"}
                     </div>
-                    <div className={`text-right text-[12px] font-medium ${onTimeColor}`}>
+                    <div className={`text-right text-[11px] font-medium uppercase tracking-[0.14em] ${onTimeColor}`}>
                       {m.onTimeRate !== null ? `${m.onTimeRate}% on-time` : "—"}
                     </div>
                   </li>
@@ -279,7 +279,7 @@ export default async function InsightsPage() {
 
         {/* Calibración */}
         <section className="animate-fade-up [animation-delay:240ms]">
-          <h2 className="mb-4 text-[11px] uppercase tracking-[0.22em] text-ink-500">
+          <h2 className="mb-3 text-[11px] uppercase tracking-[0.22em] text-ink-500">
             Calibración · tareas hechas con estimación
           </h2>
           <Card>
@@ -288,22 +288,23 @@ export default async function InsightsPage() {
                 Aún no hay tareas cerradas con estimación + tiempo real para comparar.
               </p>
             )}
-            <ul className="space-y-2">
+            <ul className="space-y-1">
               {calibration.map((c) => {
+                const absDiff = Math.abs(c.diffPct);
                 const tone =
-                  Math.abs(c.diffPct) > 100
+                  absDiff > 100
                     ? "text-accent-rust"
-                    : Math.abs(c.diffPct) > 50
-                      ? "text-ink-700"
+                    : absDiff > 50
+                      ? "text-accent-warning"
                       : "text-ink-500";
                 const sign = c.diffPct > 0 ? "+" : "";
                 return (
                   <li
                     key={c.id}
-                    className="grid grid-cols-[1fr_auto_auto_70px] items-center gap-4 rounded-xl px-3 py-2 transition hover:bg-ink-900/[0.03]"
+                    className="grid grid-cols-[1fr_auto_auto_70px] items-center gap-4 rounded-lg px-3 py-2 transition hover:bg-cream-200"
                   >
                     <Link href={`/task/${c.id}`} className="min-w-0">
-                      <div className="truncate font-semibold tracking-tight text-[15px] text-ink-900">
+                      <div className="truncate font-semibold tracking-tight text-[14px] text-ink-900">
                         {c.title}
                       </div>
                       <div className="text-[10px] uppercase tracking-[0.18em] text-ink-500">
@@ -333,10 +334,8 @@ export default async function InsightsPage() {
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
-      <div className="rounded-xl bg-cream-100 p-6">
-        {children}
-      </div>
+    <div className="rounded-2xl bg-cream-100 border border-ink-300/30 p-6">
+      {children}
     </div>
   );
 }
