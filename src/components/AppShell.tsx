@@ -27,7 +27,7 @@ export async function AppShell({ user, children }: Props) {
             rounded-full p-1.5
             border border-ink-300/40
             bg-cream-100/70 backdrop-blur-xl
-            shadow-[0_8px_30px_rgba(26,24,20,0.08)]
+            shadow-[0_8px_30px_rgba(9,9,11,0.06)]
           "
         >
           <Link href={isPM ? "/admin" : "/inbox"} className="flex items-center gap-3 pl-2">

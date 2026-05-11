@@ -241,7 +241,7 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
       {/* Bulk action bar */}
       {selected.size > 0 && (
         <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 animate-fade-up">
-          <div className="rounded-full bg-cream-100/90 p-1.5 ring-1 ring-ink-300/40 backdrop-blur-xl shadow-[0_10px_40px_rgba(26,24,20,0.12)]">
+          <div className="rounded-full bg-cream-100/90 p-1.5 ring-1 ring-ink-300/40 backdrop-blur-xl shadow-[0_10px_40px_rgba(9,9,11,0.10)]">
             <div className="flex items-center gap-2 rounded-full bg-cream-200 px-4 py-2 text-ink-900">
               <span className="font-semibold tracking-tight text-[18px] leading-none">{selected.size}</span>
               <span className="text-[11px] uppercase tracking-[0.18em] opacity-80">

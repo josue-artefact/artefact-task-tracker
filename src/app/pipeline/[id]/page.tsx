@@ -116,7 +116,7 @@ export default async function PipelineDetailPage({
           <div className="flex shrink-0 flex-wrap items-start gap-2">
             <EditCard>
               <EditTrigger label="Duplicar" />
-              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-100 border border-ink-300/40 p-4 shadow-[0_20px_60px_rgba(26,24,20,0.12)] z-20">
+              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-100 border border-ink-300/40 p-4 shadow-[0_20px_60px_rgba(9,9,11,0.10)] z-20">
                 <form action={duplicatePipeline} className="space-y-2">
                   <input type="hidden" name="sourceId" value={pipeline.id} />
                   <SmallLabel>Nombre del nuevo pipeline</SmallLabel>
@@ -133,7 +133,7 @@ export default async function PipelineDetailPage({
 
             <EditCard>
               <EditTrigger label="Editar" />
-              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-100 border border-ink-300/40 p-4 shadow-[0_20px_60px_rgba(26,24,20,0.12)] z-20">
+              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-100 border border-ink-300/40 p-4 shadow-[0_20px_60px_rgba(9,9,11,0.10)] z-20">
                 <form action={updatePipeline} className="space-y-2">
                   <input type="hidden" name="id" value={pipeline.id} />
                   <SmallLabel>Nombre</SmallLabel>

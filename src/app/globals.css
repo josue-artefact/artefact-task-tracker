@@ -13,8 +13,8 @@
 }
 
 html, body {
-  background: #F2EDE0;
-  color: #1A1814;
+  background: #FAFAFA;
+  color: #09090B;
   font-family: var(--font-sans);
   font-feature-settings: "ss01", "cv11", "cv02";
   -webkit-font-smoothing: antialiased;
@@ -27,17 +27,17 @@ input::-webkit-search-cancel-button { display: none; }
 /* Selection con acento lima — pop visual al copiar texto */
 ::selection {
   background: #A3FF12;
-  color: #0A0A0B;
+  color: #09090B;
 }
 
-/* Scrollbar discreto en light, con tinte warm para no quedar gris flotante */
+/* Scrollbar discreto con tinte zinc neutro */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(26, 24, 20, 0.12);
+  background: rgba(9, 9, 11, 0.12);
   border-radius: 999px;
 }
-::-webkit-scrollbar-thumb:hover { background: rgba(26, 24, 20, 0.24); }
+::-webkit-scrollbar-thumb:hover { background: rgba(9, 9, 11, 0.24); }
 
 /* Focus ring para accesibilidad — lima sobre fondo cream lee bien */
 *:focus-visible {

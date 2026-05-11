@@ -161,7 +161,7 @@ function NewAnnouncementButton() {
         </svg>
         <span>Nuevo anuncio</span>
       </summary>
-      <div className="absolute right-0 top-full z-30 mt-2 w-[min(420px,90vw)] rounded-2xl bg-cream-100 border border-ink-300/40 shadow-[0_20px_60px_rgba(26,24,20,0.12)] animate-fade-up">
+      <div className="absolute right-0 top-full z-30 mt-2 w-[min(420px,90vw)] rounded-2xl bg-cream-100 border border-ink-300/40 shadow-[0_20px_60px_rgba(9,9,11,0.10)] animate-fade-up">
         <form action={createAnnouncement} className="p-5 space-y-3">
           <Input name="title" required placeholder="Título" />
           <Textarea name="body" required rows={3} placeholder="Mensaje" />

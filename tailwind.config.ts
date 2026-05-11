@@ -1,47 +1,51 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Studio Warm Light — paleta editorial cálida.
+ * Studio Light — paleta zinc moderna (Linear / Vercel / shadcn vibe).
  *
- * Conservamos los nombres semánticos `cream-*` (background scale) y `ink-*`
- * (foreground scale) — el patrón es el mismo que en dark, pero los valores
- * son ahora claros y cálidos.
+ * Cool neutrals con tinte gris-azulado imperceptible. El "nuevo negro"
+ * (#09090B / zinc-950) y "nuevo blanco" (#FAFAFA / zinc-50) en lugar
+ * de pure black/white para evitar el look default sin gracia.
  *
  * Convención preservada:
- *   - cream-50  = page background (más cálido/contextual)
- *   - cream-100 = card surfaces (más blanco — "elevado" por brillo)
+ *   - cream-50  = page background (soft white)
+ *   - cream-100 = card surfaces (pure white — "elevado" por brillo)
  *   - cream-200 = hover / sub-elevation
  *   - cream-300 = borders fuertes / pressed state
- *   - ink-900   = primary text (más oscuro)
- *   - ink-300   = dividers / hairlines (más claro)
+ *   - ink-900   = primary text (near-black)
+ *   - ink-300   = dividers / hairlines
  *
- * El token `on.accent` es FIJO (siempre #0A0A0B), independiente del modo —
+ * El token `on.accent` es FIJO (siempre #09090B), independiente del modo —
  * se usa para texto/iconos sobre fondos brand (lima, warning, rust) que
  * siempre necesitan contraste oscuro para legibilidad.
+ *
+ * Mapping a la escala oficial de Tailwind zinc:
+ *   cream-50 = zinc-50, cream-200 = zinc-100, cream-300 = zinc-200
+ *   ink-300 = zinc-300, ..., ink-900 = zinc-950
  */
 const config: Config = {
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        // BACKGROUND SCALE — de menos brillante (50, page) a más cargado (300, borders)
+        // BACKGROUND SCALE — page (50) → borders (300)
         // Los cards (100) son MÁS blancos que el page (50): elevación vía brillo.
         cream: {
-          50:  "#F2EDE0",  // page background — warm cream editorial
+          50:  "#FAFAFA",  // page background — zinc-50
           100: "#FFFFFF",  // surface — cards, dropdowns (pure white = "elevado")
-          200: "#FAF6EB",  // hover / sub-elevation (entre cream-50 y white)
-          300: "#E5DECC",  // borders fuertes / pressed state
+          200: "#F4F4F5",  // hover / sub-elevation — zinc-100
+          300: "#E4E4E7",  // borders fuertes / pressed state — zinc-200
         },
-        // FOREGROUND SCALE — de más oscuro (900) a más claro (300)
-        // Ligero tinte cálido para coherencia con el page cream.
+        // FOREGROUND SCALE — primary (900) → dividers (300)
+        // Cool zinc neutrals — sutil tinte gris-azulado, percepción "tech".
         ink: {
-          900: "#1A1814",  // primary text — warm near-black
-          800: "#2E2A22",  // high emphasis
-          700: "#56503F",  // secondary text
-          600: "#7A715D",  // tertiary / labels
-          500: "#9C9484",  // muted / placeholder
-          400: "#BFB8A7",  // very muted / disabled
-          300: "#DCD5C2",  // dividers, hairlines (low-contrast borders)
+          900: "#09090B",  // primary text — zinc-950, "new black"
+          800: "#27272A",  // high emphasis — zinc-800
+          700: "#3F3F46",  // secondary text — zinc-700
+          600: "#52525B",  // tertiary / labels — zinc-600
+          500: "#71717A",  // muted / placeholder — zinc-500
+          400: "#A1A1AA",  // very muted / disabled — zinc-400
+          300: "#D4D4D8",  // dividers, hairlines — zinc-300
         },
         // ACCENTS — brand colors, sin cambios entre modos
         accent: {
@@ -52,7 +56,7 @@ const config: Config = {
         // FIXED — siempre oscuro, para texto/iconos sobre fondos brand
         // (lima/warning/rust son brillantes y siempre necesitan contraste oscuro)
         on: {
-          accent: "#0A0A0B",
+          accent: "#09090B",
         },
       },
       fontFamily: {
