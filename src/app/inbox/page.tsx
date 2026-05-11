@@ -12,7 +12,7 @@ export default async function InboxPage() {
   const user = await requireUser();
 
   const tasks = await prisma.task.findMany({
-    where: { assigneeId: user.id },
+    where: { assigneeId: user.id, archivedAt: null },
     include: { client: true, team: true },
     orderBy: [{ status: "asc" }, { updatedAt: "desc" }],
   });

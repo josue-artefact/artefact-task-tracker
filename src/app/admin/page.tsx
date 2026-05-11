@@ -25,9 +25,13 @@ export default async function AdminPage({
   const sortKey: SortKey = (VALID_SORT.includes(sp.sort as SortKey) ? sp.sort : "updated") as SortKey;
   const sortDir: SortDir = sp.dir === "asc" ? "asc" : "desc";
 
-  // Build the where clause
+  // Build the where clause.
+  // - Excluimos tareas que pertenecen a un pipeline (esas viven en su propia vista)
+  // - Excluimos archivadas (esas viven en /admin/archive)
+  const baseWhere = { pipelineId: null, archivedAt: null };
   const where = query
     ? {
+        ...baseWhere,
         OR: [
           { title: { contains: query } },
           { description: { contains: query } },
@@ -36,7 +40,7 @@ export default async function AdminPage({
           { assignee: { handle: { contains: query } } },
         ],
       }
-    : undefined;
+    : baseWhere;
 
   // Priority and status need manual rank-based sort (Prisma sorts the enum
   // string alphabetically, which gives wrong results — HIGH/LOW/MEDIUM/URGENT).
@@ -55,7 +59,7 @@ export default async function AdminPage({
     }
   })();
 
-  const [displayTasksRaw, allTasks, teams, users, clients] = await Promise.all([
+  const [displayTasksRaw, allTasks, archivedCount, teams, users, clients] = await Promise.all([
     prisma.task.findMany({
       where,
       include: {
@@ -65,7 +69,8 @@ export default async function AdminPage({
       },
       orderBy,
     }),
-    prisma.task.findMany({ select: { status: true, priority: true } }),
+    prisma.task.findMany({ where: { archivedAt: null }, select: { status: true, priority: true } }),
+    prisma.task.count({ where: { archivedAt: { not: null } } }),
     prisma.team.findMany({ include: { _count: { select: { members: true, tasks: true } } } }),
     prisma.user.findMany({
       include: { team: true, _count: { select: { assignedTasks: true } } },
@@ -154,7 +159,21 @@ export default async function AdminPage({
       {/* Tasks table */}
       <section>
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-          <h2 className="text-[11px] uppercase tracking-[0.22em] text-ink-500">Todas las tareas</h2>
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-[11px] uppercase tracking-[0.22em] text-ink-500">Todas las tareas</h2>
+            {archivedCount > 0 && (
+              <Link
+                href="/admin/archive"
+                className="inline-flex items-center gap-1.5 rounded-full bg-ink-900/[0.04] px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/5 transition hover:bg-ink-900 hover:text-cream-50"
+              >
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="4" width="18" height="4" rx="1" />
+                  <path d="M5 8v11a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8M10 12h4" />
+                </svg>
+                Ver archivadas ({archivedCount})
+              </Link>
+            )}
+          </div>
           <span className="text-[11px] uppercase tracking-[0.22em] text-ink-400">
             {query
               ? `${displayTasks.length} ${displayTasks.length === 1 ? "resultado" : "resultados"} · ${allTasks.length} total`

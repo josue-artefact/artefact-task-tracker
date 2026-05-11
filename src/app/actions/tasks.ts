@@ -104,6 +104,46 @@ export async function bulkDeleteTasks(formData: FormData) {
   revalidatePath("/inbox");
 }
 
+/**
+ * Archiva una tarea (solo PM, solo cuando status=DONE).
+ * Archivar = sacar de listados activos. Data preservada para insights/historial.
+ */
+export async function archiveTask(formData: FormData) {
+  await requirePM();
+  const id = formData.get("id") as string;
+  if (!id) return;
+
+  const task = await prisma.task.findUnique({ where: { id } });
+  if (!task) return;
+  if (task.status !== "DONE") return; // guard: solo DONE se archiva
+  if (task.archivedAt) return; // ya está archivada
+
+  await prisma.task.update({
+    where: { id },
+    data: { archivedAt: new Date() },
+  });
+  revalidatePath("/admin");
+  revalidatePath("/admin/archive");
+  revalidatePath("/inbox");
+  revalidatePath(`/task/${id}`);
+}
+
+/** Desarchiva una tarea (PM only). El status que tenía se preserva. */
+export async function unarchiveTask(formData: FormData) {
+  await requirePM();
+  const id = formData.get("id") as string;
+  if (!id) return;
+
+  await prisma.task.updateMany({
+    where: { id, archivedAt: { not: null } },
+    data: { archivedAt: null },
+  });
+  revalidatePath("/admin");
+  revalidatePath("/admin/archive");
+  revalidatePath("/inbox");
+  revalidatePath(`/task/${id}`);
+}
+
 export async function bulkAssignTasks(formData: FormData) {
   await requirePM();
   const ids = formData.getAll("ids").map(String).filter(Boolean);

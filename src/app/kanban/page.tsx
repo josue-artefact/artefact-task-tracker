@@ -28,6 +28,7 @@ export default async function KanbanPage({
     prisma.team.findMany({ orderBy: { name: "asc" } }),
     prisma.task.findMany({
       where: {
+        archivedAt: null,
         // Members only see their own tasks. PMs see everything.
         ...(isPM ? {} : { assigneeId: user.id }),
         ...(sp.client ? { clientId: sp.client } : {}),

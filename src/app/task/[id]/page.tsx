@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { AppShell } from "@/components/AppShell";
 import { PriorityPill, StatusPill } from "@/components/PriorityPill";
 import { PRIORITIES, STATUSES, formatDate, formatRelative, priorityLabel, statusLabel, isOverdue } from "@/lib/format";
-import { addComment, transferTask, setStatus, setPriority, deleteTask, updateTask } from "@/app/actions/tasks";
+import { addComment, transferTask, setStatus, setPriority, deleteTask, updateTask, archiveTask, unarchiveTask } from "@/app/actions/tasks";
 import { setTaskEstimate } from "@/app/actions/time";
 import { toggleActiveTask } from "@/app/actions/active";
 import { EditCard, EditTrigger, EditPanel } from "@/components/EditDisclosure";
@@ -113,6 +113,22 @@ export default async function TaskPage({
           <span>{task.team.name}</span>
         </div>
       </div>
+
+      {/* Banner si está archivada */}
+      {task.archivedAt && (
+        <div className="mb-6 rounded-2xl bg-ink-900/[0.06] px-4 py-3 ring-1 ring-ink-900/10 animate-fade-up">
+          <div className="flex items-start gap-3 text-[13px] text-ink-700">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0">
+              <rect x="3" y="4" width="18" height="4" rx="1" />
+              <path d="M5 8v11a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8M10 12h4" />
+            </svg>
+            <span>
+              Esta tarea está <strong>archivada</strong> desde {formatDate(task.archivedAt)}. Es solo de lectura.
+              {isPM && " El PM puede desarchivarla desde el panel lateral."}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Header */}
       <header className="mb-10 animate-fade-up">
@@ -465,6 +481,44 @@ export default async function TaskPage({
                   <SubmitButton>Transferir</SubmitButton>
                 </div>
               </form>
+            </Card>
+          )}
+
+          {/* Archive (PM only) — visible solo cuando aplica */}
+          {isPM && (task.archivedAt || task.status === "DONE") && (
+            <Card>
+              <SectionLabel>Archivo</SectionLabel>
+              {task.archivedAt ? (
+                <>
+                  <p className="mb-3 text-[12px] text-ink-600">
+                    Esta tarea está archivada desde {formatDate(task.archivedAt)}. Sus datos (comentarios, tiempo, historial) están preservados.
+                  </p>
+                  <form action={unarchiveTask}>
+                    <input type="hidden" name="id" value={task.id} />
+                    <button
+                      type="submit"
+                      className="w-full rounded-full bg-ink-900 px-4 py-2.5 text-[12px] font-medium uppercase tracking-[0.18em] text-cream-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]"
+                    >
+                      Desarchivar
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <>
+                  <p className="mb-3 text-[12px] text-ink-600">
+                    Archivar saca esta tarea de los listados activos pero preserva todos sus datos. Se puede desarchivar en cualquier momento.
+                  </p>
+                  <form action={archiveTask}>
+                    <input type="hidden" name="id" value={task.id} />
+                    <button
+                      type="submit"
+                      className="w-full rounded-full bg-cream-100 px-4 py-2.5 text-[12px] font-medium uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/10 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-900 hover:text-cream-50"
+                    >
+                      Archivar tarea
+                    </button>
+                  </form>
+                </>
+              )}
             </Card>
           )}
 

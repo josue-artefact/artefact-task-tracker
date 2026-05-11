@@ -23,6 +23,7 @@ export default async function ClientsPage({
   const clients = await prisma.client.findMany({
     include: {
       tasks: {
+        where: { archivedAt: null },
         include: { team: true, assignee: true },
         orderBy: [{ status: "asc" }, { updatedAt: "desc" }],
       },
