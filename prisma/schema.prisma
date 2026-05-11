@@ -150,6 +150,7 @@ model TimeEntry {
   minutes   Int       // siempre positivo
   note      String?
   loggedFor DateTime  // fecha del trabajo (puede ser hoy o hasta 14 días atrás)
+  source    String    @default("MANUAL") // "MANUAL" (form) | "TIMER" (sesión cronometrada por toggle active)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // soft delete para preservar audit trail

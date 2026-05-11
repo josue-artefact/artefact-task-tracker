@@ -7,6 +7,7 @@ import { requireUser, requirePM } from "@/lib/auth";
 import { PRIORITIES, STATUSES } from "@/lib/format";
 import { parseDuration } from "@/lib/time";
 import { notifyAssigned, notifyTransferredFromMe, notifyCommented } from "@/lib/notify";
+import { autoStopIfActive } from "./active";
 
 export async function createTask(formData: FormData) {
   const pm = await requirePM();
@@ -197,9 +198,22 @@ export async function setStatus(formData: FormData) {
   if (user.role !== "PM" && task.assigneeId !== user.id) return;
 
   await prisma.task.update({ where: { id }, data: { status } });
+
+  // Si la tarea pasa a DONE y el usuario actual estaba cronometrando aquí,
+  // cerramos la sesión y la logueamos antes de salir. Evita que el "active state"
+  // quede colgado en una tarea cerrada.
+  let loggedMinutes: number | null = null;
+  if (status === "DONE") {
+    loggedMinutes = await autoStopIfActive(user.id, id);
+  }
+
   revalidatePath("/admin");
   revalidatePath("/inbox");
   revalidatePath(`/task/${id}`);
+  if (loggedMinutes !== null) {
+    revalidatePath("/admin/insights");
+    redirect(`/task/${id}?logged=${loggedMinutes}`);
+  }
 }
 
 export async function addComment(formData: FormData) {

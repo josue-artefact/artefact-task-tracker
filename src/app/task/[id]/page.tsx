@@ -7,10 +7,11 @@ import { PriorityPill, StatusPill } from "@/components/PriorityPill";
 import { PRIORITIES, STATUSES, formatDate, formatRelative, priorityLabel, statusLabel, isOverdue } from "@/lib/format";
 import { addComment, transferTask, setStatus, setPriority, deleteTask, updateTask, archiveTask, unarchiveTask } from "@/app/actions/tasks";
 import { setTaskEstimate } from "@/app/actions/time";
-import { toggleActiveTask } from "@/app/actions/active";
 import { EditCard, EditTrigger, EditPanel } from "@/components/EditDisclosure";
 import { ImproveBriefButton } from "@/components/ImproveBriefButton";
 import { TimeSection } from "@/components/TimeSection";
+import { ActiveTaskToggle } from "@/components/ActiveTaskToggle";
+import { TimeLoggedBanner } from "@/components/TimeLoggedBanner";
 import { formatDurationCompact } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
@@ -20,11 +21,16 @@ export default async function TaskPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ time_error?: string }>;
+  searchParams: Promise<{ time_error?: string; logged?: string; from?: string }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
   const user = await requireUser();
+
+  // Banner de confirmación tras una sesión cronometrada
+  const loggedMinutes = sp.logged ? parseInt(sp.logged, 10) : null;
+  const showLoggedBanner =
+    loggedMinutes !== null && Number.isFinite(loggedMinutes) && loggedMinutes > 0;
 
   const task = await prisma.task.findUnique({
     where: { id },
@@ -91,6 +97,15 @@ export default async function TaskPage({
 
   return (
     <AppShell user={user}>
+      {/* Banner de confirmación tras sesión cronometrada */}
+      {showLoggedBanner && (
+        <TimeLoggedBanner
+          minutes={loggedMinutes}
+          fromTaskId={sp.from ?? null}
+          taskId={task.id}
+        />
+      )}
+
       {/* Eyebrow */}
       <div className="mb-6 flex items-center justify-between text-[11px] uppercase tracking-[0.22em] text-ink-500">
         <Link href={isPM ? "/admin" : "/inbox"} className="inline-flex items-center gap-2 text-ink-500 transition hover:text-ink-900">
@@ -308,61 +323,33 @@ export default async function TaskPage({
 
         {/* Side column */}
         <aside className="space-y-6">
-          {/* Active now toggle */}
+          {/* Active now toggle — sesión cronometrada */}
           <Card>
             <SectionLabel>
-              {isActiveOnThisTask ? "Trabajando aquí" : "Activo"}
+              {isActiveOnThisTask ? "Trabajando aquí" : "Tiempo"}
             </SectionLabel>
-            <form action={toggleActiveTask}>
-              <input type="hidden" name="taskId" value={task.id} />
-              <button
-                type="submit"
-                className={[
-                  "group flex w-full items-center justify-between gap-2 rounded-full py-2 pl-4 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98]",
-                  isActiveOnThisTask
-                    ? "bg-accent-lime text-cream-50 hover:bg-accent-lime/85"
-                    : "bg-cream-300 text-ink-900 hover:bg-ink-800",
-                ].join(" ")}
-              >
-                <span className="flex items-center gap-2">
-                  {isActiveOnThisTask ? (
-                    <>
-                      <span className="relative inline-flex h-2 w-2">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cream-50 opacity-60" />
-                        <span className="relative inline-flex h-2 w-2 rounded-full bg-cream-50" />
-                      </span>
-                      Detener
-                    </>
-                  ) : isActiveOnOther ? (
-                    "Cambiar a esta"
-                  ) : (
-                    "Empezar a trabajar"
-                  )}
-                </span>
-                <span className={`flex h-7 w-7 items-center justify-center rounded-full transition-all duration-500 group-hover:translate-x-0.5 ${
-                  isActiveOnThisTask ? "bg-cream-50/15" : "bg-cream-100/15"
-                }`}>
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    {isActiveOnThisTask ? (
-                      <rect x="6" y="6" width="12" height="12" rx="1" fill="currentColor" />
-                    ) : (
-                      <polygon points="6,4 20,12 6,20" fill="currentColor" />
-                    )}
-                  </svg>
-                </span>
-              </button>
-            </form>
-            {isActiveOnThisTask && meActive?.activeSince && (
+            <ActiveTaskToggle
+              taskId={task.id}
+              activeSince={meActive?.activeSince ? meActive.activeSince.toISOString() : null}
+              isActiveOnThisTask={!!isActiveOnThisTask}
+              isActiveOnOther={!!isActiveOnOther}
+              isDone={task.status === "DONE"}
+            />
+            {isActiveOnThisTask && meActive?.activeSince ? (
               <p className="mt-3 text-[11px] uppercase tracking-[0.18em] text-ink-500">
-                activo {formatRelative(meActive.activeSince)}
+                arrancó {formatRelative(meActive.activeSince)} · se registra al detener
               </p>
-            )}
-            {isActiveOnOther && meActive?.activeTask && (
+            ) : isActiveOnOther && meActive?.activeTask ? (
               <p className="mt-3 text-[11px] text-ink-500">
                 Ahora estás en{" "}
                 <Link href={`/task/${meActive.activeTask.id}`} className="font-semibold tracking-tight text-ink-700 hover:text-ink-900 underline-offset-2 hover:underline">
-                  "{meActive.activeTask.title}"
+                  &ldquo;{meActive.activeTask.title}&rdquo;
                 </Link>
+                . Si tocas aquí, esa sesión se registra y arranca una nueva.
+              </p>
+            ) : task.status === "DONE" ? null : (
+              <p className="mt-3 text-[11px] uppercase tracking-[0.18em] text-ink-500">
+                el tiempo se registra automáticamente
               </p>
             )}
           </Card>
