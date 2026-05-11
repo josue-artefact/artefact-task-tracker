@@ -13,8 +13,8 @@
 }
 
 html, body {
-  background: #FAFAFA;
-  color: #09090B;
+  background: #F1F5F9;
+  color: #0F172A;
   font-family: var(--font-sans);
   font-feature-settings: "ss01", "cv11", "cv02";
   -webkit-font-smoothing: antialiased;
@@ -24,24 +24,24 @@ html, body {
 input:focus { outline: none; }
 input::-webkit-search-cancel-button { display: none; }
 
-/* Selection con acento lima — pop visual al copiar texto */
+/* Selection con acento cyan — pop visual al copiar texto */
 ::selection {
-  background: #A3FF12;
-  color: #09090B;
+  background: #22D3EE;
+  color: #0F172A;
 }
 
-/* Scrollbar discreto con tinte zinc neutro */
+/* Scrollbar discreto con tinte slate */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(9, 9, 11, 0.12);
+  background: rgba(15, 23, 42, 0.14);
   border-radius: 999px;
 }
-::-webkit-scrollbar-thumb:hover { background: rgba(9, 9, 11, 0.24); }
+::-webkit-scrollbar-thumb:hover { background: rgba(15, 23, 42, 0.28); }
 
-/* Focus ring para accesibilidad — lima sobre fondo cream lee bien */
+/* Focus ring para accesibilidad — cyan sobre fondo slate lee bien */
 *:focus-visible {
-  outline: 2px solid rgba(163, 255, 18, 0.7);
+  outline: 2px solid rgba(34, 211, 238, 0.7);
   outline-offset: 2px;
   border-radius: 4px;
 }

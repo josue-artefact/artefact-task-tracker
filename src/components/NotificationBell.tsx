@@ -125,7 +125,7 @@ export function NotificationBell({ initialCount = 0 }: { initialCount?: number }
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-[360px] max-w-[92vw] origin-top-right animate-fade-up rounded-2xl bg-cream-100 border border-ink-300/40 shadow-[0_20px_60px_rgba(9,9,11,0.10)] overflow-hidden">
+        <div className="absolute right-0 top-full z-50 mt-2 w-[360px] max-w-[92vw] origin-top-right animate-fade-up rounded-2xl bg-cream-100 border border-ink-300/40 shadow-[0_20px_60px_rgba(15,23,42,0.10)] overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between gap-2 border-b border-ink-300/30 px-4 py-3">
             <div className="text-[11px] uppercase tracking-[0.22em] text-ink-700">

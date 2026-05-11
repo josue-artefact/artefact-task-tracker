@@ -1,27 +1,27 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Studio Light — paleta zinc moderna (Linear / Vercel / shadcn vibe).
+ * Studio Light — paleta slate + cyan (Linear redesign 2024 vibe).
  *
- * Cool neutrals con tinte gris-azulado imperceptible. El "nuevo negro"
- * (#09090B / zinc-950) y "nuevo blanco" (#FAFAFA / zinc-50) en lugar
- * de pure black/white para evitar el look default sin gracia.
+ * Cool slate neutrals con tinte navy sutil. El primario es cyan-400 (bright
+ * cool blue) en lugar del lima neon original — pop pero sin gritar.
  *
- * Convención preservada:
- *   - cream-50  = page background (soft white)
- *   - cream-100 = card surfaces (pure white — "elevado" por brillo)
- *   - cream-200 = hover / sub-elevation
- *   - cream-300 = borders fuertes / pressed state
- *   - ink-900   = primary text (near-black)
- *   - ink-300   = dividers / hairlines
+ * Convención preservada (mismos nombres semánticos que antes):
+ *   - cream-50  = page background (slate-100, navy-tinted)
+ *   - cream-100 = card surfaces (pure white — escalón claro vs page)
+ *   - cream-200 = hover / sub-elevation (slate-200)
+ *   - cream-300 = borders fuertes / pressed state (slate-300)
+ *   - ink-900   = primary text (slate-900, navy near-black)
+ *   - ink-300   = dividers / hairlines (slate-300)
  *
- * El token `on.accent` es FIJO (siempre #09090B), independiente del modo —
- * se usa para texto/iconos sobre fondos brand (lima, warning, rust) que
- * siempre necesitan contraste oscuro para legibilidad.
+ * Importante: el key `accent.lime` se conserva por compatibilidad pero su
+ * VALOR ahora es cyan-400. El sistema sigue pidiendo texto oscuro sobre el
+ * acento, igual que con lima — la pieza estructural no cambia.
  *
- * Mapping a la escala oficial de Tailwind zinc:
- *   cream-50 = zinc-50, cream-200 = zinc-100, cream-300 = zinc-200
- *   ink-300 = zinc-300, ..., ink-900 = zinc-950
+ * Mapping a la escala oficial de Tailwind:
+ *   cream-50/200/300 = slate-100/200/300
+ *   ink-300..900 = slate-300..900
+ *   accent.lime = cyan-400, accent.warning = amber-500, accent.rust = orange-400
  */
 const config: Config = {
   content: ["./src/**/*.{ts,tsx}"],
@@ -29,34 +29,35 @@ const config: Config = {
     extend: {
       colors: {
         // BACKGROUND SCALE — page (50) → borders (300)
-        // Los cards (100) son MÁS blancos que el page (50): elevación vía brillo.
+        // Los cards (100) son pure white, "elevados" por brillo sobre el slate-100 page.
         cream: {
-          50:  "#FAFAFA",  // page background — zinc-50
-          100: "#FFFFFF",  // surface — cards, dropdowns (pure white = "elevado")
-          200: "#F4F4F5",  // hover / sub-elevation — zinc-100
-          300: "#E4E4E7",  // borders fuertes / pressed state — zinc-200
+          50:  "#F1F5F9",  // page background — slate-100 (tinte navy sutil)
+          100: "#FFFFFF",  // surface — cards, dropdowns
+          200: "#E2E8F0",  // hover / sub-elevation — slate-200
+          300: "#CBD5E1",  // borders fuertes / pressed state — slate-300
         },
         // FOREGROUND SCALE — primary (900) → dividers (300)
-        // Cool zinc neutrals — sutil tinte gris-azulado, percepción "tech".
+        // Slate neutrals — navy near-black con character.
         ink: {
-          900: "#09090B",  // primary text — zinc-950, "new black"
-          800: "#27272A",  // high emphasis — zinc-800
-          700: "#3F3F46",  // secondary text — zinc-700
-          600: "#52525B",  // tertiary / labels — zinc-600
-          500: "#71717A",  // muted / placeholder — zinc-500
-          400: "#A1A1AA",  // very muted / disabled — zinc-400
-          300: "#D4D4D8",  // dividers, hairlines — zinc-300
+          900: "#0F172A",  // primary text — slate-900, navy near-black
+          800: "#1E293B",  // high emphasis — slate-800
+          700: "#334155",  // secondary text — slate-700
+          600: "#475569",  // tertiary / labels — slate-600
+          500: "#64748B",  // muted / placeholder — slate-500
+          400: "#94A3B8",  // very muted / disabled — slate-400
+          300: "#CBD5E1",  // dividers, hairlines — slate-300
         },
-        // ACCENTS — brand colors, sin cambios entre modos
+        // ACCENTS — brand colors
+        // Mantenemos el key `lime` para minimizar refactor; su valor pasa a cyan-400.
         accent: {
-          lime:    "#A3FF12",  // brand: actions, positive states, "en tiempo"
-          warning: "#D4A82E",  // watch this: pipeline en riesgo, esperando cliente
-          rust:    "#FF7A5C",  // danger: overdue, critical, delete
+          lime:    "#22D3EE",  // brand action (era #A3FF12 neon lima) — cyan-400
+          warning: "#F59E0B",  // watch this — amber-500 (más saturado que antes)
+          rust:    "#FB923C",  // danger — orange-400 (mejor en slate que rust antiguo)
         },
-        // FIXED — siempre oscuro, para texto/iconos sobre fondos brand
-        // (lima/warning/rust son brillantes y siempre necesitan contraste oscuro)
+        // FIXED — texto/iconos sobre fondos brand. Los 3 accents son brillantes
+        // y siempre necesitan contraste oscuro para legibilidad óptima.
         on: {
-          accent: "#09090B",
+          accent: "#0F172A",
         },
       },
       fontFamily: {

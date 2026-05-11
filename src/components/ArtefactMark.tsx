@@ -17,10 +17,10 @@ type Props = {
  * y cuál es "papel".
  */
 export function ArtefactMark({ size = 88, className = "", variant = "auto" }: Props) {
-  // Default es "dark over light" porque la app vive en light mode (zinc).
+  // Default es "dark over light" porque la app vive en light mode (slate).
   const isLightCircle = variant === "light";
-  const bg = isLightCircle ? "#FAFAFA" : "#09090B";
-  const fg = isLightCircle ? "#09090B" : "#FAFAFA";
+  const bg = isLightCircle ? "#F1F5F9" : "#0F172A";
+  const fg = isLightCircle ? "#0F172A" : "#F1F5F9";
 
   return (
     <svg
