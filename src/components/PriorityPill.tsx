@@ -13,7 +13,7 @@ export function StatusPill({ status }: { status: string }) {
   const dot = {
     TODO: "bg-ink-300",
     DOING: "bg-accent-lime",
-    DONE: "bg-ink-900",
+    DONE: "bg-cream-300",
   }[status] ?? "bg-ink-300";
   const label = { TODO: "To do", DOING: "Doing", DONE: "Done" }[status] ?? status;
   return (

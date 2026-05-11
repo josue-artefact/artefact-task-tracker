@@ -38,10 +38,10 @@ export default async function TeamsPage({
     <AppShell user={user}>
       <header className="mb-10 animate-fade-up">
         <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink-500">
-          <span className="inline-block h-1 w-6 bg-ink-900" />
+          <span className="inline-block h-1 w-6 bg-cream-300" />
           Equipos & miembros
         </div>
-        <h1 className="mt-4 font-serif italic text-[clamp(36px,5vw,56px)] leading-[1] tracking-tightest text-ink-900">
+        <h1 className="mt-4 font-semibold tracking-tight text-[clamp(36px,5vw,56px)] leading-[1] text-ink-900">
           El estudio, organizado.
         </h1>
       </header>
@@ -118,12 +118,12 @@ export default async function TeamsPage({
             </Card>
           )}
           {teams.map((team) => (
-            <div key={team.id} className="rounded-[2rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up">
-              <div className="rounded-[calc(2rem-0.375rem)] bg-cream-50 p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)]">
+            <div key={team.id} className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up">
+              <div className="rounded-xl bg-cream-100 p-6">
                 <EditCard>
                   <div className="mb-4 flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <h2 className="font-serif italic text-[28px] leading-none tracking-tightest text-ink-900">
+                      <h2 className="font-semibold tracking-tight text-[28px] leading-none text-ink-900">
                         {team.name}
                       </h2>
                       <div className="mt-1 text-[10px] uppercase tracking-[0.2em] text-ink-500">
@@ -184,7 +184,7 @@ export default async function TeamsPage({
                             )}
                           </div>
                         </div>
-                        <EditPanel className="mt-3 rounded-xl bg-cream-50 p-3 ring-1 ring-ink-900/[0.05]">
+                        <EditPanel className="mt-3 rounded-xl bg-cream-100 p-3 ring-1 ring-ink-900/[0.05]">
                           <form action={updateMember} className="space-y-2">
                             <input type="hidden" name="id" value={m.id} />
                             <Input name="name" required defaultValue={m.name} placeholder="Nombre" />
@@ -216,8 +216,8 @@ export default async function TeamsPage({
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-[2rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up">
-      <div className="rounded-[calc(2rem-0.375rem)] bg-cream-50 p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)]">{children}</div>
+    <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up">
+      <div className="rounded-xl bg-cream-100 p-6">{children}</div>
     </div>
   );
 }
@@ -247,12 +247,12 @@ function Submit({ children, small }: { children: React.ReactNode; small?: boolea
     <button
       type="submit"
       className={[
-        "group flex items-center justify-between gap-1 rounded-full bg-ink-900 text-cream-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]",
+        "group flex items-center justify-between gap-1 rounded-full bg-cream-300 text-ink-900 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]",
         small ? "py-1.5 pl-3 pr-1 text-[10px] font-medium uppercase tracking-[0.18em]" : "w-full py-2 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em]",
       ].join(" ")}
     >
       <span>{children}</span>
-      <span className={`ml-2 flex items-center justify-center rounded-full bg-cream-50/15 transition-all duration-500 group-hover:translate-x-0.5 ${small ? "h-5 w-5" : "h-7 w-7"}`}>
+      <span className={`ml-2 flex items-center justify-center rounded-full bg-cream-100/15 transition-all duration-500 group-hover:translate-x-0.5 ${small ? "h-5 w-5" : "h-7 w-7"}`}>
         <svg width={small ? 9 : 11} height={small ? 9 : 11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M5 12h14M13 6l6 6-6 6" />
         </svg>

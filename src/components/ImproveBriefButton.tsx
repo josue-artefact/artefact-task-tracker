@@ -96,7 +96,7 @@ export function ImproveBriefButton() {
           "ring-1 ring-ink-900/10 transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
           loading
             ? "bg-ink-900/[0.06] text-ink-500"
-            : "bg-accent-lime/30 text-ink-900 hover:bg-accent-lime hover:scale-[1.03] active:scale-95",
+            : "bg-accent-lime/30 text-cream-50 hover:bg-accent-lime hover:scale-[1.03] active:scale-95",
         ].join(" ")}
       >
         {loading ? <Spinner /> : <SparkleIcon />}

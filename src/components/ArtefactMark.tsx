@@ -1,13 +1,27 @@
 type Props = {
   size?: number;
   className?: string;
-  variant?: "dark" | "light";
+  variant?: "auto" | "dark" | "light";
 };
 
-/** Recreated Artefact studio. mark — italic serif on a black disk. */
-export function ArtefactMark({ size = 88, className = "", variant = "dark" }: Props) {
-  const bg = variant === "dark" ? "#0A0907" : "#FDFBF7";
-  const fg = variant === "dark" ? "#FDFBF7" : "#0A0907";
+/**
+ * Logo de Artefact Studio. SVG inline para escalar nítido y poder invertir
+ * colores según el contexto.
+ *
+ * variant:
+ *   - "auto" (default): círculo blanco con texto negro — pop sobre dark background
+ *   - "dark":  círculo negro con texto blanco — sobre fondos claros
+ *   - "light": círculo blanco con texto negro — sobre fondos oscuros (igual a auto)
+ *
+ * La forma física del logo es siempre la misma. Solo cambia qué color es "tinta"
+ * y cuál es "papel".
+ */
+export function ArtefactMark({ size = 88, className = "", variant = "auto" }: Props) {
+  // Default es "light over dark" porque la app vive en dark mode ahora.
+  const isLightBg = variant !== "dark";
+  const bg = isLightBg ? "#FAFAFA" : "#0A0A0B";
+  const fg = isLightBg ? "#0A0A0B" : "#FAFAFA";
+
   return (
     <svg
       width={size}

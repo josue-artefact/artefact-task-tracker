@@ -73,7 +73,7 @@ export default async function PipelineDetailPage({
           Pipelines
         </Link>
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-ink-900 px-2 py-0.5 text-cream-50">{pipeline.client.name}</span>
+          <span className="rounded-full bg-cream-300 px-2 py-0.5 text-ink-900">{pipeline.client.name}</span>
           <span className="opacity-30">·</span>
           <span>arranca {formatDate(pipeline.startDate)}</span>
         </div>
@@ -82,7 +82,7 @@ export default async function PipelineDetailPage({
       {/* Header */}
       <header className="mb-8 flex flex-wrap items-end justify-between gap-6 animate-fade-up">
         <div className="min-w-0">
-          <h1 className="font-serif italic text-[clamp(36px,5vw,60px)] leading-[1] tracking-tightest text-ink-900">
+          <h1 className="font-semibold tracking-tight text-[clamp(36px,5vw,60px)] leading-[1] text-ink-900">
             {pipeline.name}
           </h1>
           {pipeline.description && (
@@ -114,7 +114,7 @@ export default async function PipelineDetailPage({
           <div className="flex shrink-0 flex-wrap items-start gap-2">
             <EditCard>
               <EditTrigger label="Duplicar" />
-              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-50 p-4 shadow-[0_10px_40px_rgba(10,9,7,0.1)] ring-1 ring-ink-900/10 z-20">
+              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-100 p-4 shadow-[0_10px_40px_rgba(10,9,7,0.1)] ring-1 ring-ink-900/10 z-20">
                 <form action={duplicatePipeline} className="space-y-2">
                   <input type="hidden" name="sourceId" value={pipeline.id} />
                   <SmallLabel>Nombre del nuevo pipeline</SmallLabel>
@@ -131,7 +131,7 @@ export default async function PipelineDetailPage({
 
             <EditCard>
               <EditTrigger label="Editar" />
-              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-50 p-4 shadow-[0_10px_40px_rgba(10,9,7,0.1)] ring-1 ring-ink-900/10 z-20">
+              <EditPanel className="absolute right-0 mt-2 w-80 rounded-2xl bg-cream-100 p-4 shadow-[0_10px_40px_rgba(10,9,7,0.1)] ring-1 ring-ink-900/10 z-20">
                 <form action={updatePipeline} className="space-y-2">
                   <input type="hidden" name="id" value={pipeline.id} />
                   <SmallLabel>Nombre</SmallLabel>
@@ -192,8 +192,8 @@ export default async function PipelineDetailPage({
       </h2>
 
       {pipeline.tasks.length === 0 && (
-        <div className="rounded-[2rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
-          <div className="rounded-[calc(2rem-0.375rem)] bg-cream-50 px-8 py-12 text-center text-sm text-ink-400">
+        <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
+          <div className="rounded-xl bg-cream-100 px-8 py-12 text-center text-sm text-ink-400">
             Este pipeline no tiene tareas.
           </div>
         </div>
@@ -213,17 +213,17 @@ export default async function PipelineDetailPage({
 
           return (
             <li key={t.id}>
-              <div className="rounded-[1.5rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
-                <div className="rounded-[calc(1.5rem-0.375rem)] bg-cream-50 p-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)]">
+              <div className="rounded-xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
+                <div className="rounded-lg bg-cream-100 p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="rounded-full bg-ink-900 px-2 py-0.5 text-[10px] font-medium text-cream-50">
+                        <span className="rounded-full bg-cream-300 px-2 py-0.5 text-[10px] font-medium text-ink-900">
                           #{t.pipelineOrder ?? "—"}
                         </span>
                         <Link
                           href={`/task/${t.id}`}
-                          className="font-serif italic text-[20px] text-ink-900 hover:text-ink-700"
+                          className="font-semibold tracking-tight text-[20px] text-ink-900 hover:text-ink-700"
                         >
                           {t.title}
                         </Link>
@@ -342,7 +342,7 @@ function SmallSubmit({ children }: { children: React.ReactNode }) {
   return (
     <button
       type="submit"
-      className="rounded-full bg-ink-900 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-cream-50 transition hover:bg-ink-800"
+      className="rounded-full bg-cream-300 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-900 transition hover:bg-ink-800"
     >
       {children}
     </button>

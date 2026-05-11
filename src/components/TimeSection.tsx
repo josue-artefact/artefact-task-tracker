@@ -65,8 +65,8 @@ export function TimeSection({
   });
 
   return (
-    <div className="rounded-[2rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up">
-      <div className="rounded-[calc(2rem-0.375rem)] bg-cream-50 p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]">
+    <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up">
+      <div className="rounded-xl bg-cream-100 p-6">
         <div className="mb-5 text-[10px] uppercase tracking-[0.22em] text-ink-500">Tiempo</div>
 
         {/* Stats top */}
@@ -145,7 +145,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl bg-ink-900/[0.04] px-4 py-3 ring-1 ring-ink-900/5">
       <div className="text-[10px] uppercase tracking-[0.22em] text-ink-500">{label}</div>
-      <div className="mt-1 font-serif italic text-[22px] leading-none tracking-tightest text-ink-900">
+      <div className="mt-1 font-semibold tracking-tight text-[22px] leading-none text-ink-900">
         {value}
       </div>
     </div>
@@ -210,7 +210,7 @@ function EntryRow({
           <div className="flex shrink-0 items-center gap-1.5">
             <EditCard>
               <EditTrigger />
-              <EditPanel className="mt-3 rounded-xl bg-cream-50 p-3 ring-1 ring-ink-900/5">
+              <EditPanel className="mt-3 rounded-xl bg-cream-100 p-3 ring-1 ring-ink-900/5">
                 <form action={updateTimeEntry} className="space-y-2">
                   <input type="hidden" name="id" value={entry.id} />
                   <div className="grid grid-cols-[1fr_140px] gap-2">
@@ -257,7 +257,7 @@ function Input({ className = "", ...rest }: React.InputHTMLAttributes<HTMLInputE
   return (
     <input
       {...rest}
-      className={`w-full rounded-xl bg-cream-50 px-3 py-2 text-[13px] text-ink-900 ring-1 ring-ink-900/5 placeholder:text-ink-400 focus:bg-cream-50 focus:outline-none focus:ring-ink-900/20 ${className}`}
+      className={`w-full rounded-xl bg-cream-100 px-3 py-2 text-[13px] text-ink-900 ring-1 ring-ink-900/5 placeholder:text-ink-400 focus:bg-cream-100 focus:outline-none focus:ring-ink-900/20 ${className}`}
     />
   );
 }
@@ -267,12 +267,12 @@ function SubmitButton({ children, small }: { children: React.ReactNode; small?: 
     <button
       type="submit"
       className={[
-        "group flex items-center justify-between gap-1 rounded-full bg-ink-900 text-cream-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]",
+        "group flex items-center justify-between gap-1 rounded-full bg-cream-300 text-ink-900 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]",
         small ? "py-1.5 pl-3 pr-1 text-[10px] font-medium uppercase tracking-[0.18em]" : "py-2 pl-5 pr-2 text-[11px] font-medium uppercase tracking-[0.18em]",
       ].join(" ")}
     >
       <span>{children}</span>
-      <span className={`ml-2 flex items-center justify-center rounded-full bg-cream-50/15 transition-all duration-500 group-hover:translate-x-0.5 ${small ? "h-5 w-5" : "h-6 w-6"}`}>
+      <span className={`ml-2 flex items-center justify-center rounded-full bg-cream-100/15 transition-all duration-500 group-hover:translate-x-0.5 ${small ? "h-5 w-5" : "h-6 w-6"}`}>
         <svg width={small ? 9 : 10} height={small ? 9 : 10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M5 12h14M13 6l6 6-6 6" />
         </svg>

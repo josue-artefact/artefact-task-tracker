@@ -141,10 +141,10 @@ export default async function InsightsPage() {
     <AppShell user={user}>
       <header className="mb-10 animate-fade-up">
         <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink-500">
-          <span className="inline-block h-1 w-6 bg-ink-900" />
+          <span className="inline-block h-1 w-6 bg-cream-300" />
           Insights
         </div>
-        <h1 className="mt-4 font-serif italic text-[clamp(36px,5vw,56px)] leading-[1] tracking-tightest text-ink-900">
+        <h1 className="mt-4 font-semibold tracking-tight text-[clamp(36px,5vw,56px)] leading-[1] text-ink-900">
           Lo que vemos en los datos.
         </h1>
         <p className="mt-3 max-w-xl text-[14px] text-ink-600">
@@ -212,10 +212,10 @@ export default async function InsightsPage() {
                 const pct = (c.minutes / maxClientMin) * 100;
                 return (
                   <li key={c.name} className="grid grid-cols-[180px_1fr_90px] items-center gap-4">
-                    <div className="font-serif italic text-[16px] text-ink-900">{c.name}</div>
+                    <div className="font-semibold tracking-tight text-[16px] text-ink-900">{c.name}</div>
                     <div className="h-2 overflow-hidden rounded-full bg-ink-900/[0.06]">
                       <div
-                        className="h-full rounded-full bg-ink-900 transition-all duration-700 ease-out"
+                        className="h-full rounded-full bg-cream-300 transition-all duration-700 ease-out"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -257,7 +257,7 @@ export default async function InsightsPage() {
                     </div>
                     <div className="h-1.5 overflow-hidden rounded-full bg-ink-900/[0.06]">
                       <div
-                        className="h-full rounded-full bg-ink-900 transition-all duration-700 ease-out"
+                        className="h-full rounded-full bg-cream-300 transition-all duration-700 ease-out"
                         style={{ width: `${completedPct}%` }}
                       />
                     </div>
@@ -303,7 +303,7 @@ export default async function InsightsPage() {
                     className="grid grid-cols-[1fr_auto_auto_70px] items-center gap-4 rounded-xl px-3 py-2 transition hover:bg-ink-900/[0.03]"
                   >
                     <Link href={`/task/${c.id}`} className="min-w-0">
-                      <div className="truncate font-serif italic text-[15px] text-ink-900">
+                      <div className="truncate font-semibold tracking-tight text-[15px] text-ink-900">
                         {c.title}
                       </div>
                       <div className="text-[10px] uppercase tracking-[0.18em] text-ink-500">
@@ -333,8 +333,8 @@ export default async function InsightsPage() {
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-[2rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
-      <div className="rounded-[calc(2rem-0.375rem)] bg-cream-50 p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)]">
+    <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
+      <div className="rounded-xl bg-cream-100 p-6">
         {children}
       </div>
     </div>

@@ -111,21 +111,21 @@ export function NotificationBell({ initialCount = 0 }: { initialCount?: number }
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-label="Notificaciones"
-        className="relative flex h-9 w-9 items-center justify-center rounded-full bg-ink-900/[0.04] text-ink-700 ring-1 ring-ink-900/5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-900 hover:text-cream-50 hover:scale-105 active:scale-95"
+        className="relative flex h-9 w-9 items-center justify-center rounded-full bg-ink-900/[0.04] text-ink-700 ring-1 ring-ink-900/5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-cream-300 hover:text-ink-900 hover:scale-105 active:scale-95"
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
         </svg>
         {data.unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-accent-rust px-1 text-[9px] font-bold text-cream-50 ring-2 ring-cream-50">
+          <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-accent-rust px-1 text-[9px] font-bold text-ink-900 ring-2 ring-cream-50">
             {data.unreadCount > 99 ? "99+" : data.unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-[360px] max-w-[92vw] origin-top-right animate-fade-up rounded-2xl bg-cream-50 p-1.5 ring-1 ring-ink-900/10 shadow-[0_10px_40px_rgba(10,9,7,0.12)]">
+        <div className="absolute right-0 top-full z-50 mt-2 w-[360px] max-w-[92vw] origin-top-right animate-fade-up rounded-2xl bg-cream-100 p-1.5 ring-1 ring-ink-900/10 shadow-[0_10px_40px_rgba(10,9,7,0.12)]">
           <div className="rounded-xl bg-cream-100/50">
             {/* Header */}
             <div className="flex items-center justify-between gap-2 border-b border-ink-900/[0.05] px-4 py-3">
@@ -139,7 +139,7 @@ export function NotificationBell({ initialCount = 0 }: { initialCount?: number }
                 <button
                   type="button"
                   onClick={handleMarkAll}
-                  className="rounded-full bg-ink-900/[0.04] px-2 py-1 text-[10px] uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/5 transition hover:bg-ink-900 hover:text-cream-50"
+                  className="rounded-full bg-ink-900/[0.04] px-2 py-1 text-[10px] uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/5 transition hover:bg-cream-300 hover:text-ink-900"
                 >
                   Marcar todas
                 </button>
@@ -156,7 +156,7 @@ export function NotificationBell({ initialCount = 0 }: { initialCount?: number }
                   type="button"
                   onClick={handleEnablePush}
                   disabled={pushStatus === "subscribing"}
-                  className="mt-2 rounded-full bg-ink-900 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-cream-50 transition hover:bg-ink-800 disabled:opacity-50"
+                  className="mt-2 rounded-full bg-cream-300 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-900 transition hover:bg-ink-800 disabled:opacity-50"
                 >
                   {pushStatus === "subscribing" ? "Activando…" : "Activar push notifications"}
                 </button>
@@ -240,7 +240,7 @@ function NotificationDot({ kind, unread }: { kind: string; unread: boolean }) {
       : kind === "task_transferred_from_me"
         ? "bg-amber-500"
         : kind === "task_commented"
-          ? "bg-ink-900"
+          ? "bg-cream-300"
           : "bg-ink-400";
   return (
     <span className={`mt-1.5 inline-flex h-2 w-2 shrink-0 rounded-full ${unread ? color : "bg-ink-300"}`} />

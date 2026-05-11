@@ -108,7 +108,7 @@ export default async function TaskPage({
               <span className="opacity-30">·</span>
             </>
           )}
-          <span className="rounded-full bg-ink-900 px-2 py-0.5 text-cream-50">{task.client.name}</span>
+          <span className="rounded-full bg-cream-300 px-2 py-0.5 text-ink-900">{task.client.name}</span>
           <span className="opacity-30">·</span>
           <span>{task.team.name}</span>
         </div>
@@ -132,7 +132,7 @@ export default async function TaskPage({
 
       {/* Header */}
       <header className="mb-10 animate-fade-up">
-        <h1 className="font-serif italic text-[clamp(36px,5vw,60px)] leading-[1] tracking-tightest text-ink-900">
+        <h1 className="font-semibold tracking-tight text-[clamp(36px,5vw,60px)] leading-[1] text-ink-900">
           {task.title}
         </h1>
         <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -165,7 +165,7 @@ export default async function TaskPage({
                 {(isPM || isAssignee) && <EditTrigger label="Editar tarea" />}
               </div>
               {task.description ? (
-                <p className="font-serif italic text-[20px] leading-relaxed text-ink-800 whitespace-pre-wrap">
+                <p className="font-semibold tracking-tight text-[20px] leading-relaxed text-ink-800 whitespace-pre-wrap">
                   {task.description}
                 </p>
               ) : (
@@ -179,7 +179,7 @@ export default async function TaskPage({
                       name="title"
                       required
                       defaultValue={task.title}
-                      className="w-full rounded-xl bg-cream-50 px-3 py-2.5 text-[14px] text-ink-900 ring-1 ring-ink-900/5 focus:outline-none focus:ring-ink-900/20"
+                      className="w-full rounded-xl bg-cream-100 px-3 py-2.5 text-[14px] text-ink-900 ring-1 ring-ink-900/5 focus:outline-none focus:ring-ink-900/20"
                     />
                   </Field>
                   <div className="block">
@@ -191,7 +191,7 @@ export default async function TaskPage({
                       name="description"
                       rows={3}
                       defaultValue={task.description ?? ""}
-                      className="w-full resize-none rounded-xl bg-cream-50 px-3 py-2.5 text-[14px] text-ink-900 ring-1 ring-ink-900/5 focus:outline-none focus:ring-ink-900/20"
+                      className="w-full resize-none rounded-xl bg-cream-100 px-3 py-2.5 text-[14px] text-ink-900 ring-1 ring-ink-900/5 focus:outline-none focus:ring-ink-900/20"
                     />
                   </div>
                   {isPM && (
@@ -217,7 +217,7 @@ export default async function TaskPage({
                       type="date"
                       name="dueDate"
                       defaultValue={dueDateValue}
-                      className="w-full rounded-xl bg-cream-50 px-3 py-2.5 text-[13px] text-ink-900 ring-1 ring-ink-900/5 focus:outline-none focus:ring-ink-900/20"
+                      className="w-full rounded-xl bg-cream-100 px-3 py-2.5 text-[13px] text-ink-900 ring-1 ring-ink-900/5 focus:outline-none focus:ring-ink-900/20"
                     />
                   </Field>
                   <div className="flex justify-end">
@@ -271,7 +271,7 @@ export default async function TaskPage({
                     required
                     rows={3}
                     placeholder="Escribe un comentario…"
-                    className="w-full resize-none rounded-xl bg-cream-50 p-4 text-[15px] text-ink-900 placeholder:text-ink-400 focus:outline-none"
+                    className="w-full resize-none rounded-xl bg-cream-100 p-4 text-[15px] text-ink-900 placeholder:text-ink-400 focus:outline-none"
                   />
                 </div>
                 <div className="mt-3 flex justify-end">
@@ -318,16 +318,16 @@ export default async function TaskPage({
                 className={[
                   "group flex w-full items-center justify-between gap-2 rounded-full py-2 pl-4 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98]",
                   isActiveOnThisTask
-                    ? "bg-accent-lime text-ink-900 ring-1 ring-ink-900/10 hover:bg-accent-lime/80"
-                    : "bg-ink-900 text-cream-50 hover:bg-ink-800",
+                    ? "bg-accent-lime text-cream-50 ring-1 ring-ink-900/10 hover:bg-accent-lime/80"
+                    : "bg-cream-300 text-ink-900 hover:bg-ink-800",
                 ].join(" ")}
               >
                 <span className="flex items-center gap-2">
                   {isActiveOnThisTask ? (
                     <>
                       <span className="relative inline-flex h-2 w-2">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ink-900 opacity-50" />
-                        <span className="relative inline-flex h-2 w-2 rounded-full bg-ink-900" />
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cream-300 opacity-50" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-cream-300" />
                       </span>
                       Detener
                     </>
@@ -338,7 +338,7 @@ export default async function TaskPage({
                   )}
                 </span>
                 <span className={`flex h-7 w-7 items-center justify-center rounded-full transition-all duration-500 group-hover:translate-x-0.5 ${
-                  isActiveOnThisTask ? "bg-ink-900/15" : "bg-cream-50/15"
+                  isActiveOnThisTask ? "bg-ink-900/15" : "bg-cream-100/15"
                 }`}>
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     {isActiveOnThisTask ? (
@@ -358,7 +358,7 @@ export default async function TaskPage({
             {isActiveOnOther && meActive?.activeTask && (
               <p className="mt-3 text-[11px] text-ink-500">
                 Ahora estás en{" "}
-                <Link href={`/task/${meActive.activeTask.id}`} className="font-serif italic text-ink-700 hover:text-ink-900 underline-offset-2 hover:underline">
+                <Link href={`/task/${meActive.activeTask.id}`} className="font-semibold tracking-tight text-ink-700 hover:text-ink-900 underline-offset-2 hover:underline">
                   "{meActive.activeTask.title}"
                 </Link>
               </p>
@@ -422,7 +422,7 @@ export default async function TaskPage({
                       className={[
                         "rounded-full px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
                         task.status === s
-                          ? "bg-ink-900 text-cream-50"
+                          ? "bg-cream-300 text-ink-900"
                           : "bg-ink-900/[0.04] text-ink-700 ring-1 ring-ink-900/5 hover:bg-ink-900/[0.08]",
                       ].join(" ")}
                     >
@@ -448,7 +448,7 @@ export default async function TaskPage({
                       className={[
                         "rounded-full px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
                         task.priority === p
-                          ? "bg-ink-900 text-cream-50"
+                          ? "bg-cream-300 text-ink-900"
                           : "bg-ink-900/[0.04] text-ink-700 ring-1 ring-ink-900/5 hover:bg-ink-900/[0.08]",
                       ].join(" ")}
                     >
@@ -497,7 +497,7 @@ export default async function TaskPage({
                     <input type="hidden" name="id" value={task.id} />
                     <button
                       type="submit"
-                      className="w-full rounded-full bg-ink-900 px-4 py-2.5 text-[12px] font-medium uppercase tracking-[0.18em] text-cream-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]"
+                      className="w-full rounded-full bg-cream-300 px-4 py-2.5 text-[12px] font-medium uppercase tracking-[0.18em] text-ink-900 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]"
                     >
                       Desarchivar
                     </button>
@@ -512,7 +512,7 @@ export default async function TaskPage({
                     <input type="hidden" name="id" value={task.id} />
                     <button
                       type="submit"
-                      className="w-full rounded-full bg-cream-100 px-4 py-2.5 text-[12px] font-medium uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/10 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-900 hover:text-cream-50"
+                      className="w-full rounded-full bg-cream-100 px-4 py-2.5 text-[12px] font-medium uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/10 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-cream-300 hover:text-ink-900"
                     >
                       Archivar tarea
                     </button>
@@ -552,8 +552,8 @@ export default async function TaskPage({
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-[2rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up">
-      <div className="rounded-[calc(2rem-0.375rem)] bg-cream-50 p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]">
+    <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up">
+      <div className="rounded-xl bg-cream-100 p-6">
         {children}
       </div>
     </div>
@@ -578,7 +578,7 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 function Avatar({ name }: { name: string }) {
   const initial = (name?.[0] ?? "?").toUpperCase();
   return (
-    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink-900 font-serif italic text-[16px] text-cream-50">
+    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cream-300 font-semibold tracking-tight text-[16px] text-ink-900">
       {initial}
     </div>
   );
@@ -617,10 +617,10 @@ function SubmitButton({ children }: { children: React.ReactNode }) {
   return (
     <button
       type="submit"
-      className="group flex items-center gap-1 rounded-full bg-ink-900 py-2 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-cream-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]"
+      className="group flex items-center gap-1 rounded-full bg-cream-300 py-2 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-ink-900 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]"
     >
       <span>{children}</span>
-      <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-50/15 transition-all duration-500 group-hover:translate-x-0.5">
+      <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-100/15 transition-all duration-500 group-hover:translate-x-0.5">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M5 12h14M13 6l6 6-6 6" />
         </svg>

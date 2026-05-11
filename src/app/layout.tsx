@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="grain antialiased">{children}</body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

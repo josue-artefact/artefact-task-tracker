@@ -50,19 +50,19 @@ export default async function PipelinesPage({
       <header className="mb-8 flex flex-wrap items-end justify-between gap-6 animate-fade-up">
         <div>
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink-500">
-            <span className="inline-block h-1 w-6 bg-ink-900" />
+            <span className="inline-block h-1 w-6 bg-cream-300" />
             Pipelines
           </div>
-          <h1 className="mt-4 font-serif italic text-[clamp(36px,5vw,56px)] leading-[1] tracking-tightest text-ink-900">
+          <h1 className="mt-4 font-semibold tracking-tight text-[clamp(36px,5vw,56px)] leading-[1] text-ink-900">
             Cuerpos de trabajo, paso a paso.
           </h1>
         </div>
         <Link
           href="/admin/pipelines/new"
-          className="group inline-flex items-center gap-1 rounded-full bg-ink-900 py-2.5 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-cream-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]"
+          className="group inline-flex items-center gap-1 rounded-full bg-cream-300 py-2.5 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-ink-900 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]"
         >
           <span>Nuevo pipeline</span>
-          <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-50/15 transition-all duration-500 group-hover:translate-x-0.5">
+          <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-100/15 transition-all duration-500 group-hover:translate-x-0.5">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 5v14M5 12h14" />
             </svg>
@@ -78,9 +78,9 @@ export default async function PipelinesPage({
       </div>
 
       {pipelines.length === 0 && (
-        <div className="rounded-[2rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
-          <div className="rounded-[calc(2rem-0.375rem)] bg-cream-50 px-8 py-16 text-center">
-            <p className="font-serif italic text-2xl text-ink-700">
+        <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
+          <div className="rounded-xl bg-cream-100 px-8 py-16 text-center">
+            <p className="font-semibold tracking-tight text-2xl text-ink-700">
               {filter === "templates" ? "Aún no tienes templates." : "Aún no hay pipelines."}
             </p>
             <p className="mt-2 text-sm text-ink-500">
@@ -103,13 +103,13 @@ export default async function PipelinesPage({
             <Link
               key={p.id}
               href={`/pipeline/${p.id}`}
-              className="group block rounded-[2rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-900/[0.06] hover:ring-ink-900/10 animate-fade-up"
+              className="group block rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-900/[0.06] hover:ring-ink-900/10 animate-fade-up"
             >
-              <article className="rounded-[calc(2rem-0.375rem)] bg-cream-50 p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)]">
+              <article className="rounded-xl bg-cream-100 p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] text-ink-500">
-                      <span className="rounded-full bg-ink-900 px-2.5 py-0.5 text-cream-50">{p.client.name}</span>
+                      <span className="rounded-full bg-cream-300 px-2.5 py-0.5 text-ink-900">{p.client.name}</span>
                       <span className="opacity-30">·</span>
                       <span>arranca {formatDate(p.startDate)}</span>
                       {p.savedAsTemplate && (
@@ -127,7 +127,7 @@ export default async function PipelinesPage({
                         </>
                       )}
                     </div>
-                    <h2 className="mt-2 font-serif italic text-[28px] leading-tight tracking-tightest text-ink-900">
+                    <h2 className="mt-2 font-semibold tracking-tight text-[28px] leading-tight text-ink-900">
                       {p.name}
                     </h2>
                     {p.description && (
@@ -174,7 +174,7 @@ function FilterTab({ href, label, active }: { href: string; label: string; activ
       href={href}
       className={[
         "rounded-full px-3 py-1.5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
-        active ? "bg-ink-900 text-cream-50" : "text-ink-700 hover:bg-cream-50",
+        active ? "bg-cream-300 text-ink-900" : "text-ink-700 hover:bg-cream-200",
       ].join(" ")}
     >
       {label}

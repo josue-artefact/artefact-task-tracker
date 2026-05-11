@@ -29,7 +29,7 @@ export function RotatingQuote({ initial }: { initial: Quote }) {
 
   return (
     <figure key={key} className="animate-quote-in mx-auto max-w-2xl text-center">
-      <blockquote className="font-serif italic text-ink-900 text-balance text-[clamp(28px,4vw,44px)] leading-[1.1] tracking-tightest">
+      <blockquote className="font-serif italic text-ink-900 text-balance text-[clamp(28px,4vw,44px)] leading-[1.15]">
         &ldquo;{quote.q}&rdquo;
       </blockquote>
       <figcaption className="mt-5 text-[11px] uppercase tracking-[0.22em] text-ink-500">

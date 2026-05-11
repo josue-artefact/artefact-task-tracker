@@ -43,10 +43,10 @@ export default async function NewPipelinePage({
 
         <header className="mb-8 animate-fade-up">
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink-500">
-            <span className="inline-block h-1 w-6 bg-ink-900" />
+            <span className="inline-block h-1 w-6 bg-cream-300" />
             Nuevo pipeline
           </div>
-          <h1 className="mt-4 font-serif italic text-[clamp(36px,5vw,56px)] leading-[1] tracking-tightest text-ink-900">
+          <h1 className="mt-4 font-semibold tracking-tight text-[clamp(36px,5vw,56px)] leading-[1] text-ink-900">
             Encadena el trabajo de un mes.
           </h1>
         </header>

@@ -60,7 +60,7 @@ export function AdminSearchInput({ initial, sortKey, sortDir }: Props) {
         <button
           type="button"
           onClick={() => setValue("")}
-          className="rounded-full bg-ink-900/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-500 ring-1 ring-ink-900/5 transition hover:bg-ink-900 hover:text-cream-50"
+          className="rounded-full bg-ink-900/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-500 ring-1 ring-ink-900/5 transition hover:bg-cream-300 hover:text-ink-900"
         >
           Limpiar
         </button>

@@ -3,43 +3,48 @@
 @tailwind utilities;
 
 :root {
-  --font-serif: "DM Serif Display", "Cormorant Garamond", "Iowan Old Style", "Apple Garamond", Georgia, serif;
-  --font-sans: "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  /* Sans-serif moderno + mono — Geist es nuestro stack principal. */
+  --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Helvetica, Arial, sans-serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  /* Serif solo se usa para el logo de Artefact (inline en ArtefactMark.tsx) */
+  --font-serif: "DM Serif Display", "Iowan Old Style", "Apple Garamond", Georgia, serif;
+
+  color-scheme: dark;
 }
 
 html, body {
-  background: #FDFBF7;
-  color: #0A0907;
+  background: #0A0A0B;
+  color: #FAFAFA;
   font-family: var(--font-sans);
-  font-feature-settings: "ss01", "cv11";
+  font-feature-settings: "ss01", "cv11", "cv02";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Subtle film-grain noise — fixed overlay so it never repaints */
-.grain::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 50;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  mix-blend-mode: multiply;
-}
-
-/* Hide native input artifacts */
-input::-webkit-search-cancel-button { display: none; }
 input:focus { outline: none; }
+input::-webkit-search-cancel-button { display: none; }
 
+/* Selection con acento lima — pop visual al copiar texto */
 ::selection {
-  background: #0A0907;
-  color: #FDFBF7;
+  background: #A3FF12;
+  color: #0A0A0B;
 }
 
-/* Scrollbar */
+/* Scrollbar discreto pero visible en dark */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(10,9,7,0.12); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(10,9,7,0.22); }
+::-webkit-scrollbar-thumb {
+  background: rgba(250, 250, 250, 0.08);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(250, 250, 250, 0.18); }
+
+/* Focus ring para accesibilidad en dark (más visible que el default del browser) */
+*:focus-visible {
+  outline: 2px solid rgba(163, 255, 18, 0.6);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+button:focus-visible, a:focus-visible, [role="button"]:focus-visible {
+  outline-offset: 3px;
+}

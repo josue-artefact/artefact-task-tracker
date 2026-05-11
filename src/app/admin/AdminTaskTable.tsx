@@ -84,8 +84,8 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
 
   return (
     <>
-      <div className="rounded-[2rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
-        <div className="overflow-x-auto rounded-[calc(2rem-0.375rem)] bg-cream-50">
+      <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
+        <div className="overflow-x-auto rounded-xl bg-cream-100">
           <table className="w-full text-left text-[13px]">
             <thead className="border-b border-ink-900/5 text-[10px] uppercase tracking-[0.18em] text-ink-500">
               <tr>
@@ -143,7 +143,7 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
                     </td>
                     <td className="px-3 py-3.5">
                       <Link href={`/task/${t.id}`} className="block">
-                        <span className="font-serif italic text-[16px] text-ink-900 transition group-hover:text-ink-700">
+                        <span className="font-semibold tracking-tight text-[16px] text-ink-900 transition group-hover:text-ink-700">
                           {t.title}
                         </span>
                         {/* Meta visible solo en mobile (lg-hidden) — muestra cliente · equipo cuando las columnas están ocultas */}
@@ -175,7 +175,7 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
                       <div className="flex items-center justify-end gap-2">
                         <Link
                           href={`/task/${t.id}`}
-                          className="rounded-full bg-ink-900/[0.04] px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/5 transition hover:bg-ink-900 hover:text-cream-50"
+                          className="rounded-full bg-ink-900/[0.04] px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/5 transition hover:bg-cream-300 hover:text-ink-900"
                         >
                           Abrir
                         </Link>
@@ -205,13 +205,13 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
       {selected.size > 0 && (
         <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 animate-fade-up">
           <div className="rounded-full bg-ink-900/10 p-1.5 ring-1 ring-ink-900/10 backdrop-blur-xl shadow-[0_10px_40px_rgba(10,9,7,0.18)]">
-            <div className="flex items-center gap-2 rounded-full bg-ink-900 px-4 py-2 text-cream-50">
-              <span className="font-serif italic text-[18px] leading-none">{selected.size}</span>
+            <div className="flex items-center gap-2 rounded-full bg-cream-300 px-4 py-2 text-ink-900">
+              <span className="font-semibold tracking-tight text-[18px] leading-none">{selected.size}</span>
               <span className="text-[11px] uppercase tracking-[0.18em] opacity-80">
                 seleccionada{selected.size === 1 ? "" : "s"}
               </span>
 
-              <div className="mx-2 h-5 w-px bg-cream-50/15" />
+              <div className="mx-2 h-5 w-px bg-cream-100/15" />
 
               {/* Bulk reassign */}
               <form
@@ -227,28 +227,28 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
                 <select
                   name="assigneeId"
                   defaultValue=""
-                  className="rounded-full bg-cream-50/10 px-3 py-1.5 text-[11px] text-cream-50 ring-1 ring-cream-50/10 focus:outline-none"
+                  className="rounded-full bg-cream-100/10 px-3 py-1.5 text-[11px] text-ink-900 ring-1 ring-cream-50/10 focus:outline-none"
                   aria-label="Reasignar a"
                 >
-                  <option value="" disabled className="bg-ink-900">
+                  <option value="" disabled className="bg-cream-300">
                     Reasignar a…
                   </option>
-                  <option value="" className="bg-ink-900">Sin asignar</option>
+                  <option value="" className="bg-cream-300">Sin asignar</option>
                   {users.map((u) => (
-                    <option key={u.id} value={u.id} className="bg-ink-900">
+                    <option key={u.id} value={u.id} className="bg-cream-300">
                       @{u.handle} · {u.team?.name ?? "—"}
                     </option>
                   ))}
                 </select>
                 <button
                   type="submit"
-                  className="rounded-full bg-cream-50/10 px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] transition hover:bg-cream-50 hover:text-ink-900"
+                  className="rounded-full bg-cream-100/10 px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] transition hover:bg-cream-200 hover:text-ink-900"
                 >
                   Aplicar
                 </button>
               </form>
 
-              <div className="mx-2 h-5 w-px bg-cream-50/15" />
+              <div className="mx-2 h-5 w-px bg-cream-100/15" />
 
               {/* Bulk delete */}
               <form
@@ -262,13 +262,13 @@ export function AdminTaskTable({ tasks, users, query, sortKey, sortDir }: Props)
                 ))}
                 <button
                   type="submit"
-                  className="rounded-full bg-accent-rust/20 px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-cream-50 ring-1 ring-accent-rust/30 transition hover:bg-accent-rust"
+                  className="rounded-full bg-accent-rust/20 px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-ink-900 ring-1 ring-accent-rust/30 transition hover:bg-accent-rust"
                 >
                   Borrar
                 </button>
               </form>
 
-              <div className="mx-2 h-5 w-px bg-cream-50/15" />
+              <div className="mx-2 h-5 w-px bg-cream-100/15" />
 
               <button
                 type="button"

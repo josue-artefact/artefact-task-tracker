@@ -52,10 +52,10 @@ export default async function ArchivePage({
 
       <header className="mb-10 animate-fade-up">
         <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink-500">
-          <span className="inline-block h-1 w-6 bg-ink-900" />
+          <span className="inline-block h-1 w-6 bg-cream-300" />
           Archivo
         </div>
-        <h1 className="mt-4 font-serif italic text-[clamp(36px,5vw,56px)] leading-[1] tracking-tightest text-ink-900">
+        <h1 className="mt-4 font-semibold tracking-tight text-[clamp(36px,5vw,56px)] leading-[1] text-ink-900">
           Tareas guardadas.
         </h1>
         <p className="mt-3 max-w-xl text-[14px] text-ink-600">
@@ -80,7 +80,7 @@ export default async function ArchivePage({
         {query && (
           <Link
             href="/admin/archive"
-            className="rounded-full bg-ink-900/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-500 ring-1 ring-ink-900/5 transition hover:bg-ink-900 hover:text-cream-50"
+            className="rounded-full bg-ink-900/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-500 ring-1 ring-ink-900/5 transition hover:bg-cream-300 hover:text-ink-900"
           >
             Limpiar
           </Link>
@@ -95,9 +95,9 @@ export default async function ArchivePage({
       </div>
 
       {tasks.length === 0 ? (
-        <div className="rounded-[2rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
-          <div className="rounded-[calc(2rem-0.375rem)] bg-cream-50 px-8 py-16 text-center">
-            <p className="font-serif italic text-2xl text-ink-700">
+        <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
+          <div className="rounded-xl bg-cream-100 px-8 py-16 text-center">
+            <p className="font-semibold tracking-tight text-2xl text-ink-700">
               {query ? "Sin resultados." : "Aún no hay archivadas."}
             </p>
             <p className="mt-2 text-sm text-ink-500">
@@ -114,7 +114,7 @@ export default async function ArchivePage({
               key={t.id}
               className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up"
             >
-              <div className="flex flex-col gap-3 rounded-[calc(1rem)] bg-cream-50 px-5 py-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 rounded-[calc(1rem)] bg-cream-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <Link href={`/task/${t.id}`} className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-500">
                     <span>{t.client.name}</span>
@@ -127,7 +127,7 @@ export default async function ArchivePage({
                       </>
                     )}
                   </div>
-                  <h3 className="mt-1 truncate font-serif italic text-[18px] leading-tight text-ink-900">
+                  <h3 className="mt-1 truncate font-semibold tracking-tight text-[18px] leading-tight text-ink-900">
                     {t.title}
                   </h3>
                 </Link>
@@ -141,7 +141,7 @@ export default async function ArchivePage({
                     <input type="hidden" name="id" value={t.id} />
                     <button
                       type="submit"
-                      className="rounded-full bg-ink-900 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-cream-50 transition hover:bg-ink-800"
+                      className="rounded-full bg-cream-300 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-900 transition hover:bg-ink-800"
                     >
                       Desarchivar
                     </button>

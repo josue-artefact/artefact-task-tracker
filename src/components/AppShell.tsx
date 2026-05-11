@@ -18,19 +18,20 @@ export async function AppShell({ user, children }: Props) {
   });
   return (
     <div className="relative min-h-[100dvh] bg-cream-50">
-      {/* Floating glass nav island */}
+      {/* Floating glass nav island — dark variant con backdrop-blur sobre el page bg */}
       <header className="sticky top-0 z-40 flex justify-center px-4 pt-6">
         <nav
           className="
             flex w-full max-w-5xl items-center justify-between gap-4
-            rounded-full p-1.5 ring-1 ring-ink-900/10
-            bg-cream-50/70 backdrop-blur-xl
-            shadow-[0_1px_0_rgba(255,255,255,0.6)_inset,0_8px_30px_rgba(10,9,7,0.04)]
+            rounded-full p-1.5
+            border border-ink-300/40
+            bg-cream-100/70 backdrop-blur-xl
+            shadow-[0_8px_30px_rgba(0,0,0,0.3)]
           "
         >
           <Link href={isPM ? "/admin" : "/inbox"} className="flex items-center gap-3 pl-2">
             <ArtefactMark size={36} />
-            <span className="hidden font-serif italic text-[15px] tracking-tight text-ink-900 sm:inline">
+            <span className="hidden text-[14px] font-medium tracking-tight text-ink-900 sm:inline">
               Task Tracker
             </span>
           </Link>
@@ -38,30 +39,30 @@ export async function AppShell({ user, children }: Props) {
           <div className="flex min-w-0 items-center gap-1 overflow-x-auto rounded-full bg-ink-900/[0.04] p-1 text-[12px] [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
             <Link
               href={isPM ? "/admin" : "/inbox"}
-              className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900"
+              className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-200 hover:text-ink-900"
             >
               {isPM ? "Resumen" : "Bandeja"}
             </Link>
-            <Link href="/kanban" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
+            <Link href="/kanban" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-200 hover:text-ink-900">
               Kanban
             </Link>
             {isPM && (
               <>
-                <Link href="/admin/pipelines" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
+                <Link href="/admin/pipelines" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-200 hover:text-ink-900">
                   Pipelines
                 </Link>
-                <Link href="/admin/clients" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
+                <Link href="/admin/clients" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-200 hover:text-ink-900">
                   Clientes
                 </Link>
-                <Link href="/admin/teams" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
+                <Link href="/admin/teams" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-200 hover:text-ink-900">
                   Equipos
                 </Link>
-                <Link href="/admin/insights" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-50 hover:text-ink-900">
+                <Link href="/admin/insights" className="shrink-0 rounded-full px-3 py-1.5 text-ink-700 transition hover:bg-cream-200 hover:text-ink-900">
                   Insights
                 </Link>
                 <Link
                   href="/admin/tasks/new"
-                  className="shrink-0 rounded-full bg-ink-900 px-3 py-1.5 text-cream-50 transition hover:bg-ink-800"
+                  className="shrink-0 rounded-full bg-accent-lime px-3 py-1.5 font-medium text-cream-50 transition hover:bg-accent-lime/85"
                 >
                   Nueva tarea
                 </Link>
@@ -85,7 +86,7 @@ export async function AppShell({ user, children }: Props) {
                   flex h-9 w-9 items-center justify-center rounded-full
                   bg-ink-900/[0.04] text-ink-700 ring-1 ring-ink-900/5
                   transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
-                  hover:bg-ink-900 hover:text-cream-50 hover:scale-105 active:scale-95
+                  hover:bg-cream-300 hover:text-ink-900 hover:scale-105 active:scale-95
                 "
                 title="Sign out"
               >

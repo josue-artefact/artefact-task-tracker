@@ -125,19 +125,19 @@ export default async function AdminPage({
       <section className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between animate-fade-up">
         <div>
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink-500">
-            <span className="inline-block h-1 w-6 bg-ink-900" />
+            <span className="inline-block h-1 w-6 bg-cream-300" />
             Resumen del estudio
           </div>
-          <h1 className="mt-4 font-serif italic text-[clamp(40px,6vw,72px)] leading-[0.95] tracking-tightest text-ink-900">
+          <h1 className="mt-4 font-semibold tracking-tight text-[clamp(40px,6vw,72px)] leading-[0.95] text-ink-900">
             El estudio, de un vistazo.
           </h1>
         </div>
         <Link
           href="/admin/tasks/new"
-          className="group inline-flex items-center gap-1 self-start rounded-full bg-ink-900 py-2.5 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-cream-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98] md:self-auto"
+          className="group inline-flex items-center gap-1 self-start rounded-full bg-cream-300 py-2.5 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-ink-900 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98] md:self-auto"
         >
           <span>Nueva tarea</span>
-          <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-50/15 transition-all duration-500 group-hover:translate-x-0.5">
+          <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-100/15 transition-all duration-500 group-hover:translate-x-0.5">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 5v14M5 12h14" />
             </svg>
@@ -147,12 +147,12 @@ export default async function AdminPage({
 
       {/* Bento metrics */}
       <section className="mb-12 grid grid-cols-2 gap-4 md:grid-cols-12 md:grid-rows-2">
-        <BentoStat span="md:col-span-6 md:row-span-2"  tone="bg-ink-900 text-cream-50"   label="Tareas abiertas" value={stats.open}     delay={0}   hero />
+        <BentoStat span="md:col-span-6 md:row-span-2"  tone="bg-cream-300 text-ink-900"   label="Tareas abiertas" value={stats.open}     delay={0}   hero />
         <BentoStat span="md:col-span-2"                tone="bg-cream-100 text-ink-900"  label="Urgentes"        value={stats.urgent}   delay={60} />
         <BentoStat span="md:col-span-2"                tone="bg-cream-100 text-ink-900"  label="Clientes"        value={stats.clients}  delay={100} />
         <BentoStat span="md:col-span-2"                tone="bg-cream-100 text-ink-900"  label="Equipos"         value={stats.teams}    delay={140} />
         <BentoStat span="md:col-span-2"                tone="bg-cream-100 text-ink-900"  label="Miembros"        value={stats.members}  delay={180} />
-        <BentoStat span="md:col-span-2"                tone="bg-accent-lime text-ink-900" label="En curso"        value={doing}          delay={220} />
+        <BentoStat span="md:col-span-2"                tone="bg-accent-lime text-cream-50" label="En curso"        value={doing}          delay={220} />
         <BentoStat span="md:col-span-2"                tone="bg-cream-100 text-ink-900"  label="Hechas"          value={stats.done}     delay={260} />
       </section>
 
@@ -164,7 +164,7 @@ export default async function AdminPage({
             {archivedCount > 0 && (
               <Link
                 href="/admin/archive"
-                className="inline-flex items-center gap-1.5 rounded-full bg-ink-900/[0.04] px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/5 transition hover:bg-ink-900 hover:text-cream-50"
+                className="inline-flex items-center gap-1.5 rounded-full bg-ink-900/[0.04] px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/5 transition hover:bg-cream-300 hover:text-ink-900"
               >
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="4" width="18" height="4" rx="1" />
@@ -210,18 +210,18 @@ function BentoStat({
   delay: number;
   hero?: boolean;
 }) {
-  const isDark = tone.includes("bg-ink-900");
+  const isDark = tone.includes("bg-cream-300");
   return (
     <div
-      className={`rounded-[2rem] p-1.5 ring-1 ring-ink-900/5 animate-fade-up ${span} ${isDark ? "bg-ink-900/[0.06]" : "bg-ink-900/[0.04]"}`}
+      className={`rounded-2xl p-1.5 ring-1 ring-ink-900/5 animate-fade-up ${span} ${isDark ? "bg-ink-900/[0.06]" : "bg-ink-900/[0.04]"}`}
       style={{ animationDelay: `${delay}ms` }}
     >
       <div
-        className={`flex h-full flex-col justify-between rounded-[calc(2rem-0.375rem)] p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] ${tone}`}
+        className={`flex h-full flex-col justify-between rounded-xl p-6 ${tone}`}
       >
         <span className="text-[11px] uppercase tracking-[0.22em] opacity-70">{label}</span>
         <span
-          className={`font-serif italic leading-none tracking-tightest ${hero ? "text-[clamp(80px,12vw,180px)]" : "text-[56px]"}`}
+          className={`font-semibold tracking-tight leading-none ${hero ? "text-[clamp(80px,12vw,180px)]" : "text-[56px]"}`}
         >
           {value}
         </span>

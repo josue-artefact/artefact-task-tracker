@@ -39,8 +39,8 @@ export async function ActiveNow() {
         </span>
       </div>
 
-      <div className="rounded-[2rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
-        <div className="rounded-[calc(2rem-0.375rem)] bg-cream-50 px-6 py-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]">
+      <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
+        <div className="rounded-xl bg-cream-100 px-6 py-5">
           {active.length === 0 && inactive.length === 0 && (
             <p className="text-sm text-ink-400">Sin miembros aún.</p>
           )}
@@ -67,7 +67,7 @@ export async function ActiveNow() {
                   href={`/task/${u.activeTask!.id}`}
                   className="min-w-0 truncate transition hover:text-ink-700"
                 >
-                  <span className="font-serif italic text-[16px] text-ink-900">
+                  <span className="font-semibold tracking-tight text-[16px] text-ink-900">
                     {u.activeTask!.title}
                   </span>
                   <span className="ml-2 text-[10px] uppercase tracking-[0.18em] text-ink-500">

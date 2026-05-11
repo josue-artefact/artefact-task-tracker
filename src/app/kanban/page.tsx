@@ -10,8 +10,8 @@ export const dynamic = "force-dynamic";
 
 const COLUMNS: { status: "TODO" | "DOING" | "DONE"; label: string; tone: string }[] = [
   { status: "TODO",  label: "Por hacer",  tone: "bg-cream-100 text-ink-700" },
-  { status: "DOING", label: "En curso",   tone: "bg-accent-lime text-ink-900" },
-  { status: "DONE",  label: "Hecho",      tone: "bg-ink-900 text-cream-50" },
+  { status: "DOING", label: "En curso",   tone: "bg-accent-lime text-cream-50" },
+  { status: "DONE",  label: "Hecho",      tone: "bg-cream-300 text-ink-900" },
 ];
 
 export default async function KanbanPage({
@@ -69,10 +69,10 @@ export default async function KanbanPage({
       <header className="mb-8 flex flex-wrap items-end justify-between gap-6 animate-fade-up">
         <div>
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink-500">
-            <span className="inline-block h-1 w-6 bg-ink-900" />
+            <span className="inline-block h-1 w-6 bg-cream-300" />
             Kanban
           </div>
-          <h1 className="mt-4 font-serif italic text-[clamp(36px,5vw,56px)] leading-[1] tracking-tightest text-ink-900">
+          <h1 className="mt-4 font-semibold tracking-tight text-[clamp(36px,5vw,56px)] leading-[1] text-ink-900">
             {isPM ? "Todo el estudio." : "Tu trabajo, en movimiento."}
           </h1>
         </div>
@@ -81,7 +81,7 @@ export default async function KanbanPage({
           {(activeClient || activeTeam) && (
             <Link
               href="/kanban"
-              className="rounded-full bg-ink-900/[0.04] px-3 py-1.5 uppercase tracking-[0.18em] text-ink-500 ring-1 ring-ink-900/5 transition hover:bg-ink-900 hover:text-cream-50"
+              className="rounded-full bg-ink-900/[0.04] px-3 py-1.5 uppercase tracking-[0.18em] text-ink-500 ring-1 ring-ink-900/5 transition hover:bg-cream-300 hover:text-ink-900"
             >
               Limpiar
             </Link>
@@ -117,17 +117,17 @@ export default async function KanbanPage({
           return (
             <div
               key={col.status}
-              className="rounded-[2rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up"
+              className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up"
               style={{ animationDelay: `${120 + idx * 80}ms` }}
             >
-              <div className="flex h-full flex-col rounded-[calc(2rem-0.375rem)] bg-cream-50 p-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)]">
+              <div className="flex h-full flex-col rounded-xl bg-cream-100 p-4">
                 <div className="mb-4 flex items-center justify-between px-2">
                   <div className="flex items-center gap-2">
                     <span className={`rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] ${col.tone}`}>
                       {col.label}
                     </span>
                   </div>
-                  <span className="font-serif italic text-[20px] text-ink-700">{items.length}</span>
+                  <span className="font-semibold tracking-tight text-[20px] text-ink-700">{items.length}</span>
                 </div>
 
                 <div className="flex flex-col gap-2.5">
@@ -184,7 +184,7 @@ function KanbanCard({
           <span className="opacity-30">·</span>
           <span className="truncate">{task.team.name}</span>
         </div>
-        <h4 className={`mt-1.5 font-serif italic text-[17px] leading-snug ${currentStatus === "DONE" ? "text-ink-500 line-through decoration-ink-300" : "text-ink-900"}`}>
+        <h4 className={`mt-1.5 font-semibold tracking-tight text-[17px] leading-snug ${currentStatus === "DONE" ? "text-ink-500 line-through decoration-ink-300" : "text-ink-900"}`}>
           {task.title}
         </h4>
       </Link>
@@ -230,7 +230,7 @@ function MoveButton({ direction }: { direction: "left" | "right" }) {
     <button
       type="submit"
       aria-label={direction === "left" ? "Mover atrás" : "Mover adelante"}
-      className="flex h-7 w-7 items-center justify-center rounded-full bg-ink-900/[0.05] text-ink-700 ring-1 ring-ink-900/5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-900 hover:text-cream-50 hover:scale-105 active:scale-95"
+      className="flex h-7 w-7 items-center justify-center rounded-full bg-ink-900/[0.05] text-ink-700 ring-1 ring-ink-900/5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-cream-300 hover:text-ink-900 hover:scale-105 active:scale-95"
     >
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         {direction === "left" ? <path d="M19 12H5M11 18l-6-6 6-6" /> : <path d="M5 12h14M13 6l6 6-6 6" />}
@@ -255,7 +255,7 @@ function FilterChip({ href, active, children }: { href: string; active?: boolean
       className={[
         "rounded-full px-2.5 py-1 text-[11px] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
         active
-          ? "bg-ink-900 text-cream-50"
+          ? "bg-cream-300 text-ink-900"
           : "bg-ink-900/[0.04] text-ink-700 ring-1 ring-ink-900/5 hover:bg-ink-900/[0.08]",
       ].join(" ")}
     >

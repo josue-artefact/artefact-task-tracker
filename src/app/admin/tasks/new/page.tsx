@@ -30,22 +30,22 @@ export default async function NewTaskPage() {
 
         <header className="mb-10 animate-fade-up">
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink-500">
-            <span className="inline-block h-1 w-6 bg-ink-900" />
+            <span className="inline-block h-1 w-6 bg-cream-300" />
             Nueva tarea
           </div>
-          <h1 className="mt-4 font-serif italic text-[clamp(36px,5vw,56px)] leading-[1] tracking-tightest text-ink-900">
+          <h1 className="mt-4 font-semibold tracking-tight text-[clamp(36px,5vw,56px)] leading-[1] text-ink-900">
             Lanza una nueva tarea al estudio.
           </h1>
         </header>
 
-        <div className="rounded-[2rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up">
-          <form action={createTask} className="rounded-[calc(2rem-0.375rem)] bg-cream-50 p-8 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] space-y-5">
+        <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up">
+          <form action={createTask} className="rounded-xl bg-cream-100 p-8 space-y-5">
             <Field label="Título">
               <input
                 name="title"
                 required
                 placeholder="¿Qué hay que hacer?"
-                className="w-full bg-transparent font-serif italic text-[28px] leading-tight text-ink-900 placeholder:text-ink-300 focus:outline-none"
+                className="w-full bg-transparent font-semibold tracking-tight text-[28px] leading-tight text-ink-900 placeholder:text-ink-300 focus:outline-none"
               />
             </Field>
 
@@ -118,10 +118,10 @@ export default async function NewTaskPage() {
             <div className="flex justify-end pt-2">
               <button
                 type="submit"
-                className="group flex items-center gap-1 rounded-full bg-ink-900 py-2.5 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-cream-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]"
+                className="group flex items-center gap-1 rounded-full bg-cream-300 py-2.5 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-ink-900 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]"
               >
                 <span>Crear tarea</span>
-                <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-50/15 transition-all duration-500 group-hover:translate-x-0.5">
+                <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-100/15 transition-all duration-500 group-hover:translate-x-0.5">
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>

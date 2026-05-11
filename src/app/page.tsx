@@ -24,14 +24,14 @@ export default async function HomePage({
 
   return (
     <main className="relative min-h-[100dvh] w-full overflow-hidden bg-cream-50">
-      {/* Soft radial wash, top-left */}
+      {/* Soft radial wash con lima — más sutil en dark mode */}
       <div
         aria-hidden
         className="pointer-events-none absolute -left-[20%] -top-[30%] h-[80vh] w-[80vh] rounded-full"
         style={{
           background:
-            "radial-gradient(closest-side, rgba(200,230,107,0.18), rgba(200,230,107,0) 70%)",
-          filter: "blur(40px)",
+            "radial-gradient(closest-side, rgba(163,255,18,0.06), rgba(163,255,18,0) 70%)",
+          filter: "blur(60px)",
         }}
       />
       <div
@@ -39,8 +39,8 @@ export default async function HomePage({
         className="pointer-events-none absolute -right-[15%] -bottom-[25%] h-[70vh] w-[70vh] rounded-full"
         style={{
           background:
-            "radial-gradient(closest-side, rgba(200,101,74,0.10), rgba(200,101,74,0) 70%)",
-          filter: "blur(40px)",
+            "radial-gradient(closest-side, rgba(255,122,92,0.04), rgba(255,122,92,0) 70%)",
+          filter: "blur(60px)",
         }}
       />
 

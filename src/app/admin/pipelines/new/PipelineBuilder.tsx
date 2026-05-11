@@ -59,14 +59,14 @@ export function PipelineBuilder({
   return (
     <form action={createPipeline} className="space-y-8">
       {/* Pipeline-level fields */}
-      <div className="rounded-[2rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
-        <div className="space-y-4 rounded-[calc(2rem-0.375rem)] bg-cream-50 p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)]">
+      <div className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
+        <div className="space-y-4 rounded-xl bg-cream-100 p-6">
           <Field label="Nombre del pipeline">
             <input
               name="name"
               required
               placeholder="ej. Majadas — Mayo 2026"
-              className="w-full bg-transparent font-serif italic text-[26px] leading-tight text-ink-900 placeholder:text-ink-300 focus:outline-none"
+              className="w-full bg-transparent font-semibold tracking-tight text-[26px] leading-tight text-ink-900 placeholder:text-ink-300 focus:outline-none"
             />
           </Field>
           <Field label="Descripción">
@@ -118,7 +118,7 @@ export function PipelineBuilder({
           <button
             type="button"
             onClick={addTask}
-            className="rounded-full bg-ink-900/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/5 transition hover:bg-ink-900 hover:text-cream-50"
+            className="rounded-full bg-ink-900/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-ink-700 ring-1 ring-ink-900/5 transition hover:bg-cream-300 hover:text-ink-900"
           >
             + Agregar tarea
           </button>
@@ -128,10 +128,10 @@ export function PipelineBuilder({
           {tasks.map((t, idx) => {
             const order = idx + 1;
             return (
-              <div key={t.id} className="rounded-[1.5rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
-                <div className="rounded-[calc(1.5rem-0.375rem)] bg-cream-50 p-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)]">
+              <div key={t.id} className="rounded-xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
+                <div className="rounded-lg bg-cream-100 p-4">
                   <div className="mb-2 flex items-center justify-between">
-                    <span className="rounded-full bg-ink-900 px-2.5 py-0.5 text-[10px] font-medium text-cream-50">
+                    <span className="rounded-full bg-cream-300 px-2.5 py-0.5 text-[10px] font-medium text-ink-900">
                       #{order}
                     </span>
                     {tasks.length > 1 && (
@@ -153,7 +153,7 @@ export function PipelineBuilder({
                     value={t.title}
                     onChange={(e) => updateTask(t.id, "title", e.target.value)}
                     placeholder={`ej. ${["Propuesta de ideas de contenido", "Callsheet para aprobación", "Photoshoot mensual", "Línea gráfica", "KVs de actividades"][idx % 5]}`}
-                    className="w-full bg-transparent font-serif italic text-[18px] text-ink-900 placeholder:text-ink-300 focus:outline-none"
+                    className="w-full bg-transparent font-semibold tracking-tight text-[18px] text-ink-900 placeholder:text-ink-300 focus:outline-none"
                     required
                   />
 
@@ -236,10 +236,10 @@ export function PipelineBuilder({
       <div className="flex justify-end gap-3">
         <button
           type="submit"
-          className="group flex items-center gap-1 rounded-full bg-ink-900 py-2.5 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-cream-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]"
+          className="group flex items-center gap-1 rounded-full bg-cream-300 py-2.5 pl-5 pr-2 text-[12px] font-medium uppercase tracking-[0.18em] text-ink-900 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-800 active:scale-[0.98]"
         >
           <span>Crear pipeline</span>
-          <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-50/15 transition-all duration-500 group-hover:translate-x-0.5">
+          <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-cream-100/15 transition-all duration-500 group-hover:translate-x-0.5">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>

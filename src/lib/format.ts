@@ -19,18 +19,18 @@ export function statusLabel(s: string): string {
 export function priorityDot(p: string): string {
   return {
     URGENT: "bg-accent-rust",
-    HIGH: "bg-ink-900",
-    MEDIUM: "bg-ink-500",
-    LOW: "bg-ink-300",
-  }[p as Priority] ?? "bg-ink-300";
+    HIGH: "bg-accent-lime",
+    MEDIUM: "bg-ink-600",
+    LOW: "bg-ink-400",
+  }[p as Priority] ?? "bg-ink-400";
 }
 
 export function statusDot(s: string): string {
   return {
-    TODO: "bg-ink-300",
+    TODO: "bg-ink-500",
     DOING: "bg-accent-lime",
-    DONE: "bg-ink-900",
-  }[s as Status] ?? "bg-ink-300";
+    DONE: "bg-ink-700",
+  }[s as Status] ?? "bg-ink-500";
 }
 
 export function formatDate(d: Date | string): string {
