@@ -2,16 +2,16 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { AppShell } from "@/components/AppShell";
-import { PriorityPill } from "@/components/PriorityPill";
+import { PriorityPill, StatusPill } from "@/components/PriorityPill";
 import { setStatus } from "@/app/actions/tasks";
 import { priorityRank, formatRelative } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
-const COLUMNS: { status: "TODO" | "DOING" | "DONE"; label: string; tone: string }[] = [
-  { status: "TODO",  label: "Por hacer",  tone: "bg-cream-100 text-ink-700" },
-  { status: "DOING", label: "En curso",   tone: "bg-accent-lime text-cream-50" },
-  { status: "DONE",  label: "Hecho",      tone: "bg-cream-300 text-ink-900" },
+const COLUMNS: { status: "TODO" | "DOING" | "DONE"; label: string }[] = [
+  { status: "TODO",  label: "Por hacer" },
+  { status: "DOING", label: "En curso"  },
+  { status: "DONE",  label: "Hecho"     },
 ];
 
 export default async function KanbanPage({
@@ -66,13 +66,13 @@ export default async function KanbanPage({
   return (
     <AppShell user={user}>
       {/* Header */}
-      <header className="mb-8 flex flex-wrap items-end justify-between gap-6 animate-fade-up">
+      <header className="mb-8 flex flex-wrap items-end justify-between gap-4 animate-fade-up">
         <div>
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink-500">
-            <span className="inline-block h-1 w-6 bg-cream-300" />
+            <span className="inline-block h-1 w-6 bg-accent-lime" />
             Kanban
           </div>
-          <h1 className="mt-4 font-semibold tracking-tight text-[clamp(36px,5vw,56px)] leading-[1] text-ink-900">
+          <h1 className="mt-3 font-semibold tracking-tight text-[clamp(28px,4vw,44px)] leading-[1.05] text-ink-900">
             {isPM ? "Todo el estudio." : "Tu trabajo, en movimiento."}
           </h1>
         </div>
@@ -117,34 +117,31 @@ export default async function KanbanPage({
           return (
             <div
               key={col.status}
-              className="rounded-2xl bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5 animate-fade-up"
+              className="flex h-full flex-col rounded-2xl bg-cream-100 border border-ink-300/30 p-4 animate-fade-up"
               style={{ animationDelay: `${120 + idx * 80}ms` }}
             >
-              <div className="flex h-full flex-col rounded-xl bg-cream-100 p-4">
-                <div className="mb-4 flex items-center justify-between px-2">
-                  <div className="flex items-center gap-2">
-                    <span className={`rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] ${col.tone}`}>
-                      {col.label}
-                    </span>
-                  </div>
-                  <span className="font-semibold tracking-tight text-[20px] text-ink-700">{items.length}</span>
+              <div className="mb-4 flex items-center justify-between px-1">
+                <div className="flex items-center gap-2">
+                  <StatusPill status={col.status} />
+                  <span className="text-[10px] uppercase tracking-[0.22em] text-ink-500">{col.label}</span>
                 </div>
+                <span className="font-semibold tracking-tight text-[18px] text-ink-700">{items.length}</span>
+              </div>
 
-                <div className="flex flex-col gap-2.5">
-                  {items.length === 0 && (
-                    <p className="px-2 py-8 text-center text-[12px] uppercase tracking-[0.18em] text-ink-300">
-                      Nada por aquí.
-                    </p>
-                  )}
-                  {items.map((t) => (
-                    <KanbanCard
-                      key={t.id}
-                      task={t}
-                      currentStatus={col.status}
-                      canMove={isPM || t.assigneeId === user.id}
-                    />
-                  ))}
-                </div>
+              <div className="flex flex-col gap-2">
+                {items.length === 0 && (
+                  <p className="px-2 py-8 text-center text-[11px] uppercase tracking-[0.18em] text-ink-400">
+                    Nada por aquí.
+                  </p>
+                )}
+                {items.map((t) => (
+                  <KanbanCard
+                    key={t.id}
+                    task={t}
+                    currentStatus={col.status}
+                    canMove={isPM || t.assigneeId === user.id}
+                  />
+                ))}
               </div>
             </div>
           );
@@ -175,16 +172,17 @@ function KanbanCard({
   const idx = order.indexOf(currentStatus);
   const prev = idx > 0 ? order[idx - 1] : null;
   const next = idx < order.length - 1 ? order[idx + 1] : null;
+  const isDone = currentStatus === "DONE";
 
   return (
-    <article className="group rounded-2xl bg-ink-900/[0.025] p-3 ring-1 ring-ink-900/5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-ink-900/[0.05] hover:ring-ink-900/10">
+    <article className="group rounded-xl bg-cream-200 border border-ink-300/30 p-3 transition-all duration-300 hover:border-ink-300/60 hover:bg-cream-200/80">
       <Link href={`/task/${task.id}`} className="block">
         <div className="flex items-center gap-1.5 text-[9px] uppercase tracking-[0.2em] text-ink-500">
           <span className="truncate">{task.client.name}</span>
           <span className="opacity-30">·</span>
           <span className="truncate">{task.team.name}</span>
         </div>
-        <h4 className={`mt-1.5 font-semibold tracking-tight text-[17px] leading-snug ${currentStatus === "DONE" ? "text-ink-500 line-through decoration-ink-300" : "text-ink-900"}`}>
+        <h4 className={`mt-1.5 font-semibold tracking-tight text-[15px] leading-snug ${isDone ? "text-ink-500 line-through decoration-ink-400/40" : "text-ink-900"}`}>
           {task.title}
         </h4>
       </Link>
@@ -204,7 +202,7 @@ function KanbanCard({
       </div>
 
       {canMove && (prev || next) && (
-        <div className="mt-3 flex items-center justify-end gap-1.5 border-t border-ink-900/[0.05] pt-2.5">
+        <div className="mt-3 flex items-center justify-end gap-1.5 border-t border-ink-300/30 pt-2.5">
           {prev && (
             <form action={setStatus}>
               <input type="hidden" name="id" value={task.id} />
@@ -230,7 +228,7 @@ function MoveButton({ direction }: { direction: "left" | "right" }) {
     <button
       type="submit"
       aria-label={direction === "left" ? "Mover atrás" : "Mover adelante"}
-      className="flex h-7 w-7 items-center justify-center rounded-full bg-ink-900/[0.05] text-ink-700 ring-1 ring-ink-900/5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-cream-300 hover:text-ink-900 hover:scale-105 active:scale-95"
+      className="flex h-7 w-7 items-center justify-center rounded-full bg-cream-100 text-ink-500 border border-ink-300/40 transition-all duration-300 hover:bg-accent-lime hover:text-cream-50 hover:border-accent-lime active:scale-95"
     >
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         {direction === "left" ? <path d="M19 12H5M11 18l-6-6 6-6" /> : <path d="M5 12h14M13 6l6 6-6 6" />}
@@ -253,9 +251,9 @@ function FilterChip({ href, active, children }: { href: string; active?: boolean
     <Link
       href={href}
       className={[
-        "rounded-full px-2.5 py-1 text-[11px] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
+        "rounded-full px-2.5 py-1 text-[11px] transition-all duration-300",
         active
-          ? "bg-cream-300 text-ink-900"
+          ? "bg-accent-lime/15 text-accent-lime ring-1 ring-accent-lime/30"
           : "bg-ink-900/[0.04] text-ink-700 ring-1 ring-ink-900/5 hover:bg-ink-900/[0.08]",
       ].join(" ")}
     >
