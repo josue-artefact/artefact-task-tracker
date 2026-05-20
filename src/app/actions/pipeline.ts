@@ -246,15 +246,38 @@ export async function updatePipeline(formData: FormData) {
 
 /* --------------------------- Delete pipeline --------------------------- */
 
+/**
+ * Borra un pipeline y **todas sus tareas en cascada**.
+ *
+ * Decisión de diseño: cuando un PM borra un pipeline, su expectativa es que
+ * se borre el pipeline + su contenido. La versión anterior usaba el onDelete:
+ * SetNull del schema, lo que dejaba las tareas huérfanas en los inboxes de
+ * los asignees como "zombies" (bug reportado por @nolita, 2026-05-20).
+ *
+ * Ahora la transacción borra explícitamente:
+ *   1. timeEntries de esas tareas (cascade en schema, pero explícito por claridad)
+ *   2. las tareas asociadas al pipeline
+ *   3. el pipeline mismo
+ *
+ * Si en el futuro algún caso requiere "borrar pipeline conservando tareas
+ * sueltas", se debe agregar como acción separada y opt-in explícito, NO como
+ * comportamiento default.
+ */
 export async function deletePipeline(formData: FormData) {
   await requirePM();
   const id = formData.get("id") as string;
   if (!id) return;
 
-  // Las tareas conservan su independencia (pipelineId queda null vía SetNull)
-  await prisma.pipeline.delete({ where: { id } });
+  await prisma.$transaction([
+    // task.deleteMany lleva en cascade sus timeEntries, comments, transfers,
+    // notifications (todos onDelete:Cascade en el schema)
+    prisma.task.deleteMany({ where: { pipelineId: id } }),
+    prisma.pipeline.delete({ where: { id } }),
+  ]);
+
   revalidatePath("/admin/pipelines");
   revalidatePath("/admin");
+  revalidatePath("/inbox");
   redirect("/admin/pipelines");
 }
 

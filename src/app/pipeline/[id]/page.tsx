@@ -15,8 +15,9 @@ import {
   taskRiskLabel,
   taskRiskTone,
 } from "@/lib/pipeline";
-import { duplicatePipeline, updatePipeline, deletePipeline, toggleClientBlocker, markClientReminderSent } from "@/app/actions/pipeline";
+import { duplicatePipeline, updatePipeline, toggleClientBlocker, markClientReminderSent } from "@/app/actions/pipeline";
 import { EditCard, EditTrigger, EditPanel } from "@/components/EditDisclosure";
+import { DeletePipelineButton } from "@/components/DeletePipelineButton";
 
 export const dynamic = "force-dynamic";
 
@@ -163,15 +164,11 @@ export default async function PipelineDetailPage({
               </EditPanel>
             </EditCard>
 
-            <form action={deletePipeline}>
-              <input type="hidden" name="id" value={pipeline.id} />
-              <button
-                type="submit"
-                className="rounded-full bg-cream-50 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-accent-rust border border-accent-rust/30 transition hover:bg-accent-rust hover:text-on-accent hover:border-accent-rust"
-              >
-                Borrar
-              </button>
-            </form>
+            <DeletePipelineButton
+              pipelineId={pipeline.id}
+              pipelineName={pipeline.name}
+              taskCount={pipeline.tasks.length}
+            />
           </div>
         )}
       </header>
