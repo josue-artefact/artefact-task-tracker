@@ -15,9 +15,19 @@ import {
   taskRiskLabel,
   taskRiskTone,
 } from "@/lib/pipeline";
-import { duplicatePipeline, updatePipeline, toggleClientBlocker, markClientReminderSent } from "@/app/actions/pipeline";
+import {
+  duplicatePipeline,
+  updatePipeline,
+  toggleClientBlocker,
+  markClientReminderSent,
+  addTaskToPipeline,
+  reorderPipelineTask,
+  deletePipelineTask,
+} from "@/app/actions/pipeline";
+import { PRIORITIES, priorityLabel } from "@/lib/format";
 import { EditCard, EditTrigger, EditPanel } from "@/components/EditDisclosure";
 import { DeletePipelineButton } from "@/components/DeletePipelineButton";
+import { DeleteTaskRowButton } from "@/components/DeleteTaskRowButton";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +57,17 @@ export default async function PipelineDetailPage({
   });
 
   if (!pipeline) return notFound();
+
+  // Cargar teams + users para el form "Agregar tarea". Solo si es PM.
+  const [teams, users] = isPM
+    ? await Promise.all([
+        prisma.team.findMany({ orderBy: { name: "asc" } }),
+        prisma.user.findMany({
+          include: { team: true },
+          orderBy: [{ team: { name: "asc" } }, { handle: "asc" }],
+        }),
+      ])
+    : [[], []];
 
   const today = new Date().toISOString().slice(0, 10);
   const health = getPipelineHealth(pipeline.tasks);
@@ -195,10 +216,12 @@ export default async function PipelineDetailPage({
       )}
 
       <ol className="space-y-2">
-        {pipeline.tasks.map((t) => {
+        {pipeline.tasks.map((t, idx) => {
           const risk = getTaskRisk(t, taskRefs);
           const tone = taskRiskTone(risk);
           const canToggleBlocker = isPM || t.assigneeId === user.id;
+          const isFirst = idx === 0;
+          const isLast = idx === pipeline.tasks.length - 1;
           const blockedDays = t.blockedSince
             ? Math.floor((Date.now() - t.blockedSince.getTime()) / (1000 * 60 * 60 * 24))
             : 0;
@@ -306,6 +329,43 @@ export default async function PipelineDetailPage({
                         </button>
                       </form>
                     )}
+
+                    {/* PM actions: reorder + delete */}
+                    {isPM && (
+                      <div className="flex items-center gap-1">
+                        <form action={reorderPipelineTask}>
+                          <input type="hidden" name="taskId" value={t.id} />
+                          <input type="hidden" name="direction" value="up" />
+                          <button
+                            type="submit"
+                            disabled={isFirst}
+                            aria-label="Mover arriba"
+                            title="Mover arriba"
+                            className="flex h-7 w-7 items-center justify-center rounded-full bg-cream-50 border border-ink-300/40 text-ink-500 transition hover:bg-cream-200 hover:text-ink-900 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-cream-50 disabled:hover:text-ink-500"
+                          >
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M12 19V5M5 12l7-7 7 7" />
+                            </svg>
+                          </button>
+                        </form>
+                        <form action={reorderPipelineTask}>
+                          <input type="hidden" name="taskId" value={t.id} />
+                          <input type="hidden" name="direction" value="down" />
+                          <button
+                            type="submit"
+                            disabled={isLast}
+                            aria-label="Mover abajo"
+                            title="Mover abajo"
+                            className="flex h-7 w-7 items-center justify-center rounded-full bg-cream-50 border border-ink-300/40 text-ink-500 transition hover:bg-cream-200 hover:text-ink-900 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-cream-50 disabled:hover:text-ink-500"
+                          >
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M12 5v14M5 12l7 7 7-7" />
+                            </svg>
+                          </button>
+                        </form>
+                        <DeleteTaskRowButton taskId={t.id} taskTitle={t.title} />
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -317,6 +377,20 @@ export default async function PipelineDetailPage({
           );
         })}
       </ol>
+
+      {/* Add task form (PM only) */}
+      {isPM && (
+        <AddTaskForm
+          pipelineId={pipeline.id}
+          existingTasks={pipeline.tasks.map((t) => ({
+            id: t.id,
+            order: t.pipelineOrder ?? 0,
+            title: t.title,
+          }))}
+          teams={teams}
+          users={users}
+        />
+      )}
     </AppShell>
   );
 }
@@ -352,5 +426,117 @@ function SmallSubmit({ children }: { children: React.ReactNode }) {
     >
       {children}
     </button>
+  );
+}
+
+/* ---------------- Add task form ---------------- */
+
+type AddTaskFormProps = {
+  pipelineId: string;
+  existingTasks: { id: string; order: number; title: string }[];
+  teams: { id: string; name: string }[];
+  users: { id: string; handle: string; team: { name: string } | null }[];
+};
+
+/**
+ * Form colapsable (vía <details>) para agregar una tarea nueva al pipeline.
+ * Se ubica al final de la lista. Hereda el cliente del pipeline; el PM elige
+ * equipo, asignee, prioridad, due date, estimación y dependencia opcional.
+ */
+function AddTaskForm({ pipelineId, existingTasks, teams, users }: AddTaskFormProps) {
+  return (
+    <details className="group mt-3 rounded-xl bg-cream-100 border border-ink-300/30">
+      <summary className="flex cursor-pointer items-center gap-2 px-4 py-3 text-[11px] uppercase tracking-[0.18em] text-ink-700 transition hover:text-ink-900 [&::-webkit-details-marker]:hidden">
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="transition-transform duration-300 group-open:rotate-45 text-accent-lime"
+        >
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+        Agregar tarea al pipeline
+      </summary>
+      <form action={addTaskToPipeline} className="space-y-3 px-4 pb-4">
+        <input type="hidden" name="pipelineId" value={pipelineId} />
+
+        {/* Título */}
+        <input
+          name="title"
+          required
+          placeholder="Título de la tarea…"
+          className="w-full bg-transparent font-semibold tracking-tight text-[17px] text-ink-900 placeholder:text-ink-500/50 focus:outline-none border-b border-ink-300/30 pb-2"
+        />
+
+        <div className="grid gap-2 sm:grid-cols-3">
+          <SmallField label="Equipo">
+            <SmallSelect name="teamId" required defaultValue="">
+              <option value="" disabled>Elige…</option>
+              {teams.map((tm) => (
+                <option key={tm.id} value={tm.id}>{tm.name}</option>
+              ))}
+            </SmallSelect>
+          </SmallField>
+
+          <SmallField label="Asignar a">
+            <SmallSelect name="assigneeId" defaultValue="">
+              <option value="">Sin asignar</option>
+              {users.map((u) => (
+                <option key={u.id} value={u.id}>
+                  @{u.handle} · {u.team?.name ?? "—"}
+                </option>
+              ))}
+            </SmallSelect>
+          </SmallField>
+
+          <SmallField label="Prioridad">
+            <SmallSelect name="priority" defaultValue="MEDIUM">
+              {PRIORITIES.map((p) => (
+                <option key={p} value={p}>{priorityLabel(p)}</option>
+              ))}
+            </SmallSelect>
+          </SmallField>
+        </div>
+
+        <div className="grid gap-2 sm:grid-cols-3">
+          <SmallField label="Vencimiento">
+            <SmallInput type="date" name="dueDate" />
+          </SmallField>
+
+          <SmallField label="Estimación (min)">
+            <SmallInput type="number" name="estimatedMinutes" placeholder="ej. 240" />
+          </SmallField>
+
+          <SmallField label="Depende de">
+            <SmallSelect name="blockedByTaskId" defaultValue="">
+              <option value="">— ninguna</option>
+              {existingTasks.map((t) => (
+                <option key={t.id} value={t.id}>
+                  #{t.order} · {t.title}
+                </option>
+              ))}
+            </SmallSelect>
+          </SmallField>
+        </div>
+
+        <div className="flex justify-end pt-1">
+          <SmallSubmit>Agregar tarea</SmallSubmit>
+        </div>
+      </form>
+    </details>
+  );
+}
+
+function SmallField({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <div className="mb-1 text-[10px] uppercase tracking-[0.18em] text-ink-500">{label}</div>
+      {children}
+    </label>
   );
 }

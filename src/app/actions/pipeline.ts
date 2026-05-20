@@ -281,6 +281,158 @@ export async function deletePipeline(formData: FormData) {
   redirect("/admin/pipelines");
 }
 
+/* --------------------------- Add task to existing pipeline --------------------------- */
+
+/**
+ * Agrega una tarea nueva al final de un pipeline existente (pipelineOrder =
+ * max + 1). Heredamos el clientId del pipeline para garantizar consistencia.
+ *
+ * Form fields:
+ *   pipelineId, title, teamId, assigneeId?, priority?, dueDate?,
+ *   estimatedMinutes?, blockedByTaskId? (opcional, FK directa)
+ */
+export async function addTaskToPipeline(formData: FormData) {
+  const pm = await requirePM();
+
+  const pipelineId = formData.get("pipelineId") as string;
+  const title = ((formData.get("title") as string) || "").trim();
+  const teamId = formData.get("teamId") as string;
+  if (!pipelineId || !title || !teamId) return;
+
+  const pipeline = await prisma.pipeline.findUnique({
+    where: { id: pipelineId },
+    select: { clientId: true },
+  });
+  if (!pipeline) return;
+
+  const assigneeId = ((formData.get("assigneeId") as string) || "") || null;
+  const priority = (formData.get("priority") as string) || "MEDIUM";
+  const dueDateRaw = (formData.get("dueDate") as string) || "";
+  const dueDate = dueDateRaw ? new Date(dueDateRaw) : null;
+  const blockedByTaskId = ((formData.get("blockedByTaskId") as string) || "") || null;
+  const estimateRaw = ((formData.get("estimatedMinutes") as string) || "").trim();
+  const estimatedMinutes = estimateRaw ? parseInt(estimateRaw, 10) : null;
+
+  // pipelineOrder = max + 1 dentro del pipeline
+  const maxOrder = await prisma.task.aggregate({
+    where: { pipelineId },
+    _max: { pipelineOrder: true },
+  });
+  const nextOrder = (maxOrder._max.pipelineOrder ?? 0) + 1;
+
+  await prisma.task.create({
+    data: {
+      title,
+      clientId: pipeline.clientId,
+      teamId,
+      assigneeId,
+      priority,
+      dueDate,
+      estimatedMinutes: estimatedMinutes && estimatedMinutes > 0 ? estimatedMinutes : null,
+      createdById: pm.id,
+      pipelineId,
+      pipelineOrder: nextOrder,
+      blockedByTaskId,
+    },
+  });
+
+  revalidatePath(`/pipeline/${pipelineId}`);
+  revalidatePath("/admin/pipelines");
+  revalidatePath("/inbox");
+}
+
+/* --------------------------- Reorder pipeline task --------------------------- */
+
+/**
+ * Intercambia el pipelineOrder de una tarea con su vecina (arriba o abajo).
+ * Idempotente: si no hay vecina en la dirección pedida (ya está en el extremo),
+ * no hace nada.
+ */
+export async function reorderPipelineTask(formData: FormData) {
+  await requirePM();
+  const taskId = formData.get("taskId") as string;
+  const direction = formData.get("direction") as "up" | "down";
+  if (!taskId || (direction !== "up" && direction !== "down")) return;
+
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    select: { id: true, pipelineId: true, pipelineOrder: true },
+  });
+  if (!task?.pipelineId || task.pipelineOrder == null) return;
+
+  // Buscar vecina:
+  //   up   = pipelineOrder más cercano por debajo (orden menor)
+  //   down = pipelineOrder más cercano por arriba (orden mayor)
+  const neighbor = await prisma.task.findFirst({
+    where: {
+      pipelineId: task.pipelineId,
+      pipelineOrder: direction === "up"
+        ? { lt: task.pipelineOrder }
+        : { gt: task.pipelineOrder },
+    },
+    orderBy: { pipelineOrder: direction === "up" ? "desc" : "asc" },
+    select: { id: true, pipelineOrder: true },
+  });
+  if (!neighbor?.pipelineOrder) return;
+
+  // Swap en transacción. Usamos un sentinela temporal porque hay índice único
+  // (no estrictamente, pero por buenas prácticas) y para no chocar si hubiera.
+  // Como pipelineOrder no es unique en el schema, podemos hacer un swap directo.
+  await prisma.$transaction([
+    prisma.task.update({ where: { id: task.id }, data: { pipelineOrder: neighbor.pipelineOrder } }),
+    prisma.task.update({ where: { id: neighbor.id }, data: { pipelineOrder: task.pipelineOrder } }),
+  ]);
+
+  revalidatePath(`/pipeline/${task.pipelineId}`);
+}
+
+/* --------------------------- Delete pipeline task (con cierre de gaps) --------------------------- */
+
+/**
+ * Borra una tarea de un pipeline cerrando el gap de pipelineOrder.
+ *
+ * Si la tarea tiene timeEntries, comentarios o transferencias, se eliminan en
+ * cascade (mismo comportamiento que deleteTask). Las tareas posteriores se
+ * re-numeran -1 para mantener la secuencia limpia (#1, #2, #3 sin huecos).
+ *
+ * Si la tarea NO pertenece a un pipeline, esto se delega a deleteTask normal.
+ */
+export async function deletePipelineTask(formData: FormData) {
+  await requirePM();
+  const taskId = formData.get("taskId") as string;
+  if (!taskId) return;
+
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    select: { id: true, pipelineId: true, pipelineOrder: true },
+  });
+  if (!task) return;
+
+  if (!task.pipelineId || task.pipelineOrder == null) {
+    // Tarea suelta — borrar normal sin tocar orden
+    await prisma.task.delete({ where: { id: taskId } });
+    revalidatePath("/admin");
+    revalidatePath("/inbox");
+    return;
+  }
+
+  // En pipeline: borrar + re-numerar las posteriores
+  const removedOrder = task.pipelineOrder;
+  const pipelineId = task.pipelineId;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.task.delete({ where: { id: taskId } });
+    await tx.task.updateMany({
+      where: { pipelineId, pipelineOrder: { gt: removedOrder } },
+      data: { pipelineOrder: { decrement: 1 } },
+    });
+  });
+
+  revalidatePath(`/pipeline/${pipelineId}`);
+  revalidatePath("/admin/pipelines");
+  revalidatePath("/inbox");
+}
+
 /* --------------------------- Client blocker toggle --------------------------- */
 
 export async function toggleClientBlocker(formData: FormData) {
