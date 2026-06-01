@@ -39,7 +39,10 @@ export default async function CalendarPage({
     if (target) viewedUserId = target.id;
   }
 
-  const [viewedUser, allMembers, tasksRaw] = await Promise.all([
+  // El scheduler corre GLOBALMENTE para resolver dependencias entre usuarios.
+  // Cargamos todas las tareas activas del sistema, scheduleamos, y filtramos
+  // al final por el viewedUserId.
+  const [viewedUser, allMembers, allTasksRaw, viewedUserTasksRaw] = await Promise.all([
     prisma.user.findUnique({
       where: { id: viewedUserId },
       select: { id: true, name: true, handle: true, role: true, team: { select: { name: true } } },
@@ -50,6 +53,17 @@ export default async function CalendarPage({
           orderBy: [{ role: "asc" }, { name: "asc" }],
         })
       : Promise.resolve([]),
+    // Todas las tareas activas con estimación (para scheduling global)
+    prisma.task.findMany({
+      where: {
+        archivedAt: null,
+        estimatedMinutes: { not: null, gt: 0 },
+        assigneeId: { not: null },
+        status: { notIn: ["DONE", "REVIEW"] },
+      },
+      include: { client: { select: { name: true } } },
+    }),
+    // Tareas del viewed user para la sección "Sin estimar"
     prisma.task.findMany({
       where: { assigneeId: viewedUserId, archivedAt: null },
       include: { client: { select: { name: true } } },
@@ -58,23 +72,24 @@ export default async function CalendarPage({
 
   if (!viewedUser) redirect("/calendar");
 
-  // Bloques scheduleados — todo lo schedulable, no solo la semana visible.
-  // Después filtramos por la ventana semanal.
-  const schedulable: SchedulableTask[] = tasksRaw
-    .filter((t) => t.estimatedMinutes != null && t.estimatedMinutes > 0)
-    .map((t) => ({
-      id: t.id,
-      title: t.title,
-      priority: t.priority,
-      status: t.status,
-      estimatedMinutes: t.estimatedMinutes!,
-      dueDate: t.dueDate,
-      createdAt: t.createdAt,
-      client: t.client,
-    }));
+  // Schedule globalmente
+  const schedulable: SchedulableTask[] = allTasksRaw.map((t) => ({
+    id: t.id,
+    title: t.title,
+    priority: t.priority,
+    status: t.status,
+    estimatedMinutes: t.estimatedMinutes!,
+    dueDate: t.dueDate,
+    createdAt: t.createdAt,
+    assigneeId: t.assigneeId!,
+    blockedByTaskId: t.blockedByTaskId,
+    client: t.client,
+  }));
 
   const today = startOfDay(new Date());
-  const allBlocks = scheduleTasks(schedulable, { startDate: today });
+  const globalBlocks = scheduleTasks(schedulable, { startDate: today });
+  // Filtramos al viewed user — el resto del cómputo igual
+  const allBlocks = globalBlocks.filter((b) => b.task.assigneeId === viewedUserId);
 
   // Semana visible — defaults a la semana actual (lunes).
   let weekStart = sp.weekStart ? isoToDate(sp.weekStart) : null;
@@ -84,8 +99,8 @@ export default async function CalendarPage({
   const visibleBlocks = blocksInRange(allBlocks, days[0], weekEnd);
   const loadByDay = dayLoadSummary(visibleBlocks);
 
-  // Tareas sin estimar (no aparecen en calendario)
-  const unestimated = tasksRaw.filter(
+  // Tareas sin estimar (no aparecen en calendario) — solo del viewed user
+  const unestimated = viewedUserTasksRaw.filter(
     (t) => (t.estimatedMinutes == null || t.estimatedMinutes <= 0) && t.status !== "DONE" && t.status !== "REVIEW",
   );
 
@@ -251,7 +266,11 @@ export default async function CalendarPage({
                         key={`${b.taskId}-${b.partIndex}`}
                         href={`/task/${b.taskId}`}
                         style={{ minHeight: heightPx }}
-                        className="group block rounded-lg bg-cream-50 border border-ink-300/40 px-3 py-2 transition hover:bg-cream-200 hover:border-ink-300/60"
+                        className={`group block rounded-lg border px-3 py-2 transition hover:border-ink-300/60 ${
+                          b.predecessorTitle
+                            ? "bg-accent-warning/8 border-accent-warning/30 hover:bg-accent-warning/12"
+                            : "bg-cream-50 border-ink-300/40 hover:bg-cream-200"
+                        }`}
                       >
                         <div className="flex items-center gap-1.5">
                           <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${priorityDot(b.task.priority)}`} />
@@ -270,6 +289,18 @@ export default async function CalendarPage({
                           {b.task.client.name} · {priorityLabel(b.task.priority)}
                           {b.task.dueDate && ` · vence ${formatDate(b.task.dueDate)}`}
                         </div>
+                        {b.predecessorTitle && (
+                          <div
+                            className="mt-1.5 flex items-center gap-1 text-[9px] text-accent-warning truncate"
+                            title={`Empieza después de: ${b.predecessorTitle}`}
+                          >
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                              <path d="M4 4v6h6M20 20v-6h-6" />
+                              <path d="M20 10A8 8 0 0 0 6.5 5.5L4 8M4 14a8 8 0 0 0 13.5 4.5L20 16" />
+                            </svg>
+                            <span className="truncate">tras: {b.predecessorTitle}</span>
+                          </div>
+                        )}
                       </Link>
                     );
                   })
