@@ -21,6 +21,7 @@ function buildItems(isPM: boolean): NavItem[] {
       ? { href: "/admin", label: "Resumen", match: (p) => p === "/admin" || p.startsWith("/admin/archive") || p.startsWith("/admin/tasks") }
       : { href: "/inbox", label: "Bandeja", match: (p) => p === "/inbox" },
     { href: "/kanban", label: "Kanban", match: (p) => p === "/kanban" },
+    { href: "/calendar", label: "Calendario", match: (p) => p.startsWith("/calendar") },
   ];
   if (isPM) {
     items.push(
