@@ -37,6 +37,8 @@ export type SchedulableTask = {
   createdAt: Date;
   assigneeId: string;
   blockedByTaskId: string | null;
+  /** Si está set, la tarea es inamovible y vive en esta fecha. */
+  scheduledAt: Date | null;
   client: { name: string };
 };
 
@@ -55,6 +57,8 @@ export type ScheduledBlock = {
   partIndex: number;
   /** Si esta tarea arrancó tarde porque esperaba una predecesora, el título de esa. */
   predecessorTitle: string | null;
+  /** True si esta tarea es inamovible (tiene scheduledAt set). */
+  isFixed: boolean;
 };
 
 export function isWorkday(date: Date): boolean {
@@ -103,24 +107,36 @@ function priorityCompare(a: SchedulableTask, b: SchedulableTask): number {
 }
 
 /**
- * Algoritmo de scheduling global con dependencias.
+ * Algoritmo de scheduling global con dependencias + tareas inamovibles +
+ * capacidad por usuario.
  *
  * Maneja:
+ * - Tareas fijas (`scheduledAt`): se colocan PRIMERO en su fecha exacta,
+ *   consumiendo capacidad. El resto del schedule fluye alrededor.
  * - Topological sort: tasks con predecessor sin completar esperan
- * - Per-user capacity: cada assignee tiene su propio buffer por día
+ * - Per-user capacity con override individual (User.dailyCapacityMinutes)
  * - Multi-day splits: tareas que exceden capacidad del día se parten
  * - Cross-user deps: si B (Frida) depende de A (Marce), B espera el end-day de A
  *
  * `startDate` debe ser pasado por el caller — la lib es pura.
+ *
+ * `capacityByUser` es un mapping userId → minutes/día. Para usuarios fuera del
+ * map, se usa `defaultCapacityMinutes` (que default a DEFAULT_DAILY_CAPACITY_MIN).
  */
 export function scheduleTasks(
   tasks: SchedulableTask[],
   opts: {
     startDate: Date;
+    /** Override de capacidad por usuario. Si no, default global. */
+    capacityByUser?: Map<string, number>;
+    /** Capacidad default cuando un user no está en el map. */
+    defaultCapacityMinutes?: number;
+    /** @deprecated Usar `defaultCapacityMinutes`. Mantenido por compat. */
     capacityMinutesPerDay?: number;
   },
 ): ScheduledBlock[] {
-  const capacity = opts.capacityMinutesPerDay ?? DEFAULT_DAILY_CAPACITY_MIN;
+  const defaultCapacity =
+    opts.defaultCapacityMinutes ?? opts.capacityMinutesPerDay ?? DEFAULT_DAILY_CAPACITY_MIN;
   const baseDate = startOfDay(opts.startDate);
 
   // Filtra schedulable: estimate > 0, no DONE, no REVIEW, assignee set.
@@ -134,24 +150,11 @@ export function scheduleTasks(
 
   const taskMap = new Map(schedulable.map((t) => [t.id, t]));
 
-  // Construir grafo de dependencias. Solo cuenta predecessors que ESTÁN
-  // en el conjunto schedulable. Si la predecesora ya está DONE / archivada
-  // / no existe, no contamos la dependencia (la tarea actual puede arrancar).
-  const indegree = new Map<string, number>();
-  const successors = new Map<string, string[]>();
-  for (const t of schedulable) {
-    indegree.set(t.id, 0);
-    successors.set(t.id, []);
-  }
-  for (const t of schedulable) {
-    if (t.blockedByTaskId && taskMap.has(t.blockedByTaskId)) {
-      indegree.set(t.id, (indegree.get(t.id) ?? 0) + 1);
-      successors.get(t.blockedByTaskId)!.push(t.id);
-    }
-  }
-
   // Per-user day capacity: Map<userId, Map<dateIso, remainingMinutes>>
   const userDayCapacity = new Map<string, Map<string, number>>();
+  function userDailyCap(userId: string): number {
+    return opts.capacityByUser?.get(userId) ?? defaultCapacity;
+  }
   function getRemaining(userId: string, date: Date): number {
     let userCap = userDayCapacity.get(userId);
     if (!userCap) {
@@ -159,7 +162,7 @@ export function scheduleTasks(
       userDayCapacity.set(userId, userCap);
     }
     const key = dateToIso(date);
-    if (!userCap.has(key)) userCap.set(key, capacity);
+    if (!userCap.has(key)) userCap.set(key, userDailyCap(userId));
     return userCap.get(key)!;
   }
   function consume(userId: string, date: Date, minutes: number): void {
@@ -168,22 +171,93 @@ export function scheduleTasks(
     userCap.set(key, getRemaining(userId, date) - minutes);
   }
 
-  // Ready set: tasks con indegree = 0 al arrancar
+  const taskEndDay = new Map<string, Date>();
+  const blocks: ScheduledBlock[] = [];
+
+  // ───────────────────────────────────────────────────────────────────
+  // PASO 1: tareas fijas (scheduledAt != null) se colocan PRIMERO.
+  // Estas no se mueven por prioridad ni dependencia — viven en su fecha.
+  // Consumen capacidad del/los día(s) en los que caen.
+  // ───────────────────────────────────────────────────────────────────
+  const fixedTasks = schedulable.filter((t) => t.scheduledAt != null);
+  for (const task of fixedTasks) {
+    let currentDay = startOfDay(task.scheduledAt!);
+    // Si scheduledAt cae en weekend, lo respetamos igual (puede ser un shoot
+    // de sábado). El user puede mover la fecha si fue error.
+    let remaining = task.estimatedMinutes;
+    const parts: ScheduledBlock[] = [];
+    let partIdx = 0;
+
+    while (remaining > 0) {
+      // Para fixed tasks, NO saltamos a "next workday" si la capacidad está
+      // llena — la fecha es ley. El bloque se mete aunque el día esté en
+      // overcommit (UI lo muestra como ≥100%).
+      const dailyCap = userDailyCap(task.assigneeId);
+      const slot = Math.min(remaining, dailyCap);
+      partIdx++;
+      parts.push({
+        taskId: task.id,
+        task,
+        date: new Date(currentDay),
+        durationMinutes: slot,
+        isContinuation: partIdx > 1,
+        totalParts: 0,
+        partIndex: partIdx,
+        predecessorTitle: null,
+        isFixed: true,
+      });
+      consume(task.assigneeId, currentDay, slot);
+      remaining -= slot;
+      if (remaining > 0) {
+        // Tarea fija multi-día: avanza al siguiente workday (no más weekends
+        // para los días subsecuentes, eso es trabajo continuo)
+        currentDay = nextWorkday(currentDay);
+      }
+    }
+    const total = parts.length;
+    for (const p of parts) p.totalParts = total;
+    blocks.push(...parts);
+    taskEndDay.set(task.id, currentDay);
+  }
+
+  // ───────────────────────────────────────────────────────────────────
+  // PASO 2: tareas flexibles via topological sort + dependency-aware.
+  // ───────────────────────────────────────────────────────────────────
+  const flexibleTasks = schedulable.filter((t) => t.scheduledAt == null);
+
+  // Construir grafo de dependencias entre flexibles. Si una flexible depende
+  // de una fija, también respetamos esa dependencia (la fija ya fue scheduled
+  // y su endDay está en taskEndDay).
+  const indegree = new Map<string, number>();
+  const successors = new Map<string, string[]>();
+  for (const t of flexibleTasks) {
+    indegree.set(t.id, 0);
+    successors.set(t.id, []);
+  }
+  for (const t of flexibleTasks) {
+    if (t.blockedByTaskId && taskMap.has(t.blockedByTaskId)) {
+      // Si la predecesora es fija, ya está en taskEndDay y no entra al grafo
+      // de pendientes. La trato como "ya cumplida" para indegree.
+      const pred = taskMap.get(t.blockedByTaskId)!;
+      if (pred.scheduledAt == null) {
+        indegree.set(t.id, (indegree.get(t.id) ?? 0) + 1);
+        const succ = successors.get(pred.id);
+        if (succ) succ.push(t.id);
+      }
+    }
+  }
+
   const ready = new Set<string>();
   for (const [id, d] of indegree) {
     if (d === 0) ready.add(id);
   }
 
-  const taskEndDay = new Map<string, Date>();
-  const blocks: ScheduledBlock[] = [];
-
   while (ready.size > 0) {
-    // Tomamos el de prioridad más alta entre los listos
     const readyTasks = [...ready].map((id) => taskMap.get(id)!).sort(priorityCompare);
     const task = readyTasks[0];
     ready.delete(task.id);
 
-    // Determinar earliest start date — después de su predecessor si aplica
+    // Earliest start: max(baseDate, predEndDay + 1 workday)
     let taskStartDate = baseDate;
     let predecessorTitle: string | null = null;
     if (task.blockedByTaskId && taskEndDay.has(task.blockedByTaskId)) {
@@ -193,14 +267,11 @@ export function scheduleTasks(
     }
     if (!isWorkday(taskStartDate)) taskStartDate = nextWorkday(taskStartDate);
 
-    // Schedulear bloques respetando capacidad per-user
     let currentDay = taskStartDate;
     let remaining = task.estimatedMinutes;
     const parts: ScheduledBlock[] = [];
     let partIdx = 0;
 
-    // Si en startDate el usuario ya tiene compromisos previos, avanza al
-    // siguiente día con capacidad.
     while (remaining > 0) {
       let available = getRemaining(task.assigneeId, currentDay);
       while (available <= 0) {
@@ -215,9 +286,10 @@ export function scheduleTasks(
         date: new Date(currentDay),
         durationMinutes: slot,
         isContinuation: partIdx > 1,
-        totalParts: 0, // se completa después
+        totalParts: 0,
         partIndex: partIdx,
         predecessorTitle: partIdx === 1 ? predecessorTitle : null,
+        isFixed: false,
       });
       consume(task.assigneeId, currentDay, slot);
       remaining -= slot;
@@ -228,16 +300,13 @@ export function scheduleTasks(
     blocks.push(...parts);
     taskEndDay.set(task.id, currentDay);
 
-    // Desbloquear sucesores
     for (const succId of successors.get(task.id) ?? []) {
       indegree.set(succId, (indegree.get(succId) ?? 1) - 1);
       if ((indegree.get(succId) ?? 0) === 0) ready.add(succId);
     }
   }
 
-  // Defensa: si quedaron tareas sin schedulear, es por un ciclo en la
-  // dependencia. No debería pasar (la UI evita crear ciclos), pero por
-  // si acaso, logueamos en dev.
+  // Defensa: detectar ciclos
   const unscheduled = [...indegree.keys()].filter((id) => !taskEndDay.has(id));
   if (unscheduled.length > 0 && process.env.NODE_ENV === "development") {
     console.warn(

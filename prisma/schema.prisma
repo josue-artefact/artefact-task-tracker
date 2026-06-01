@@ -25,6 +25,10 @@ model User {
   team      Team?     @relation(fields: [teamId], references: [id], onDelete: SetNull)
   createdAt DateTime  @default(now())
 
+  // Capacidad diaria personalizada (en minutos). Null = usar default global (360 = 6h).
+  // Útil para PMs que tienen más meetings, freelancers part-time, etc.
+  dailyCapacityMinutes Int?
+
   // "Active now" — qué tarea estoy trabajando ahora mismo.
   // Stale después de 8h, se trata como inactivo en displays.
   activeTaskId  String?
@@ -69,6 +73,12 @@ model Task {
   reviewer           User?     @relation("Reviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
   reviewerIsClient   Boolean   @default(false)
   reviewRequestedAt  DateTime?
+
+  // Tarea inamovible (pin): fija la ejecución a esta fecha en el calendario.
+  // El scheduler NO mueve estas tareas por prioridad ni dependencias — viven
+  // exactamente en su fecha. Útil para shoots, juntas con cliente, recordings.
+  // Si null, la tarea es flexible y se schedulea por prioridad/dependencia.
+  scheduledAt        DateTime?
   dueDate          DateTime?
   estimatedMinutes Int?     // PM puede setear; opcional
   clientId         String

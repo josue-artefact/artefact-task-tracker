@@ -74,12 +74,24 @@ export async function updateMember(formData: FormData) {
   if (!id || !name) return;
   if (!["PM", "MEMBER"].includes(role)) return;
 
+  // Capacidad diaria opcional. Acepta horas (ej. "6", "5.5") y convierte a min.
+  // Vacío o inválido → null (usa default global).
+  const capacityRaw = ((formData.get("dailyCapacityHours") as string) || "").trim();
+  let dailyCapacityMinutes: number | null = null;
+  if (capacityRaw) {
+    const parsed = parseFloat(capacityRaw);
+    if (Number.isFinite(parsed) && parsed > 0 && parsed <= 16) {
+      dailyCapacityMinutes = Math.round(parsed * 60);
+    }
+  }
+
   await prisma.user.update({
     where: { id },
-    data: { name, role, teamId },
+    data: { name, role, teamId, dailyCapacityMinutes },
   });
   revalidatePath("/admin/teams");
   revalidatePath("/admin");
+  revalidatePath("/calendar");
 }
 
 export async function deleteMember(formData: FormData) {

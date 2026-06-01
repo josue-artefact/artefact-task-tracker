@@ -193,6 +193,39 @@ export async function setPriority(formData: FormData) {
   revalidatePath(`/task/${id}`);
 }
 
+/**
+ * Fija o desfija la fecha de ejecución de una tarea (Pin).
+ *
+ * Una tarea con `scheduledAt` set:
+ * - En el calendario, vive exactamente en esa fecha (no se mueve por
+ *   prioridad ni dependencia)
+ * - Otras tareas se acomodan alrededor consumiendo capacidad restante
+ *
+ * Vacío o "clear" para desfijar.
+ */
+export async function setTaskScheduledAt(formData: FormData) {
+  await requirePM();
+  const id = formData.get("id") as string;
+  const dateRaw = ((formData.get("scheduledAt") as string) || "").trim();
+  if (!id) return;
+
+  let scheduledAt: Date | null = null;
+  if (dateRaw) {
+    const m = dateRaw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (m) {
+      // Local 00:00 del día — la fecha es lo que importa, no la hora.
+      scheduledAt = new Date(parseInt(m[1]), parseInt(m[2]) - 1, parseInt(m[3]));
+    } else {
+      return; // formato inválido — no-op
+    }
+  }
+
+  await prisma.task.update({ where: { id }, data: { scheduledAt } });
+  revalidatePath(`/task/${id}`);
+  revalidatePath("/calendar");
+  revalidatePath("/admin");
+}
+
 export async function setStatus(formData: FormData) {
   const user = await requireUser();
   const id = formData.get("id") as string;

@@ -42,10 +42,17 @@ export default async function CalendarPage({
   // El scheduler corre GLOBALMENTE para resolver dependencias entre usuarios.
   // Cargamos todas las tareas activas del sistema, scheduleamos, y filtramos
   // al final por el viewedUserId.
-  const [viewedUser, allMembers, allTasksRaw, viewedUserTasksRaw] = await Promise.all([
+  const [viewedUser, allMembers, allUsersForCapacity, allTasksRaw, viewedUserTasksRaw] = await Promise.all([
     prisma.user.findUnique({
       where: { id: viewedUserId },
-      select: { id: true, name: true, handle: true, role: true, team: { select: { name: true } } },
+      select: {
+        id: true,
+        name: true,
+        handle: true,
+        role: true,
+        dailyCapacityMinutes: true,
+        team: { select: { name: true } },
+      },
     }),
     isPM
       ? prisma.user.findMany({
@@ -53,6 +60,11 @@ export default async function CalendarPage({
           orderBy: [{ role: "asc" }, { name: "asc" }],
         })
       : Promise.resolve([]),
+    // Capacidades personalizadas de todos los users (para el scheduler global)
+    prisma.user.findMany({
+      where: { dailyCapacityMinutes: { not: null } },
+      select: { id: true, dailyCapacityMinutes: true },
+    }),
     // Todas las tareas activas con estimación (para scheduling global)
     prisma.task.findMany({
       where: {
@@ -83,13 +95,29 @@ export default async function CalendarPage({
     createdAt: t.createdAt,
     assigneeId: t.assigneeId!,
     blockedByTaskId: t.blockedByTaskId,
+    scheduledAt: t.scheduledAt,
     client: t.client,
   }));
 
+  // Capacidades personalizadas como Map<userId, minutes>
+  const capacityByUser = new Map<string, number>();
+  for (const u of allUsersForCapacity) {
+    if (u.dailyCapacityMinutes != null) {
+      capacityByUser.set(u.id, u.dailyCapacityMinutes);
+    }
+  }
+
   const today = startOfDay(new Date());
-  const globalBlocks = scheduleTasks(schedulable, { startDate: today });
+  const globalBlocks = scheduleTasks(schedulable, {
+    startDate: today,
+    capacityByUser,
+  });
   // Filtramos al viewed user — el resto del cómputo igual
   const allBlocks = globalBlocks.filter((b) => b.task.assigneeId === viewedUserId);
+
+  // Capacidad efectiva del viewed user (personalizada o default)
+  const viewedUserCapacity =
+    viewedUser.dailyCapacityMinutes ?? DEFAULT_DAILY_CAPACITY_MIN;
 
   // Semana visible — defaults a la semana actual (lunes).
   let weekStart = sp.weekStart ? isoToDate(sp.weekStart) : null;
@@ -136,8 +164,11 @@ export default async function CalendarPage({
               : "Tu carga semanal"}
           </h1>
           <p className="mt-2 text-[13px] text-ink-600">
-            Capacidad: <strong className="text-ink-900">{DEFAULT_DAILY_CAPACITY_MIN / 60}h / día</strong> · Lun–Vie · Las tareas se ordenan por
-            prioridad y se bloquean según su estimación.
+            Capacidad: <strong className="text-ink-900">{viewedUserCapacity / 60}h / día</strong>
+            {viewedUser.dailyCapacityMinutes != null && (
+              <span className="text-ink-500"> (personalizada)</span>
+            )}
+            {" "}· Lun–Vie · Las tareas se ordenan por prioridad y se bloquean según su estimación.
           </p>
         </div>
       </header>
@@ -221,7 +252,7 @@ export default async function CalendarPage({
           const dayKey = dateToIso(day);
           const dayBlocks = visibleBlocks.filter((b) => dateToIso(b.date) === dayKey);
           const loaded = loadByDay.get(dayKey) ?? 0;
-          const loadPct = Math.min(100, Math.round((loaded / DEFAULT_DAILY_CAPACITY_MIN) * 100));
+          const loadPct = Math.min(100, Math.round((loaded / viewedUserCapacity) * 100));
           const dayIdx = days.indexOf(day);
           const isToday = dateToIso(day) === dateToIso(today);
 
@@ -237,7 +268,7 @@ export default async function CalendarPage({
                     {DAY_NAMES_SHORT[dayIdx]} {day.getDate()}
                   </div>
                   <div className="mt-0.5 font-mono text-[11px] text-ink-500">
-                    {formatDurationCompact(loaded)} / {formatDurationCompact(DEFAULT_DAILY_CAPACITY_MIN)}
+                    {formatDurationCompact(loaded)} / {formatDurationCompact(viewedUserCapacity)}
                   </div>
                 </div>
                 <div className="text-[10px] uppercase tracking-[0.18em] text-ink-400">{loadPct}%</div>
@@ -260,19 +291,33 @@ export default async function CalendarPage({
                 ) : (
                   dayBlocks.map((b) => {
                     // Altura proporcional a duración. 1 hora ≈ 36px (240px capacidad / 6.67h)
-                    const heightPx = Math.max(36, Math.round((b.durationMinutes / DEFAULT_DAILY_CAPACITY_MIN) * 240));
+                    const heightPx = Math.max(36, Math.round((b.durationMinutes / viewedUserCapacity) * 240));
                     return (
                       <Link
                         key={`${b.taskId}-${b.partIndex}`}
                         href={`/task/${b.taskId}`}
                         style={{ minHeight: heightPx }}
                         className={`group block rounded-lg border px-3 py-2 transition hover:border-ink-300/60 ${
-                          b.predecessorTitle
-                            ? "bg-accent-warning/8 border-accent-warning/30 hover:bg-accent-warning/12"
-                            : "bg-cream-50 border-ink-300/40 hover:bg-cream-200"
+                          b.isFixed
+                            ? "bg-accent-rust/8 border-accent-rust/40 hover:bg-accent-rust/12"
+                            : b.predecessorTitle
+                              ? "bg-accent-warning/8 border-accent-warning/30 hover:bg-accent-warning/12"
+                              : "bg-cream-50 border-ink-300/40 hover:bg-cream-200"
                         }`}
                       >
                         <div className="flex items-center gap-1.5">
+                          {b.isFixed && (
+                            <svg
+                              width="10"
+                              height="10"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              className="shrink-0 text-accent-rust"
+                              aria-label="Tarea fija"
+                            >
+                              <path d="M16 4l-1.4 1.4 1 1L11 11l-2-2-1.4 1.4 3 3L7 18l1.4 1.4 3.6-3.6 3 3L16.4 17.4l-2-2 4.6-4.6 1 1L21.4 10.4 16 4z" />
+                            </svg>
+                          )}
                           <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${priorityDot(b.task.priority)}`} />
                           <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink-500">
                             {formatDurationCompact(b.durationMinutes)}
@@ -289,7 +334,15 @@ export default async function CalendarPage({
                           {b.task.client.name} · {priorityLabel(b.task.priority)}
                           {b.task.dueDate && ` · vence ${formatDate(b.task.dueDate)}`}
                         </div>
-                        {b.predecessorTitle && (
+                        {b.isFixed && (
+                          <div className="mt-1.5 flex items-center gap-1 text-[9px] text-accent-rust">
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                              <path d="M16 4l-1.4 1.4 1 1L11 11l-2-2-1.4 1.4 3 3L7 18l1.4 1.4 3.6-3.6 3 3L16.4 17.4l-2-2 4.6-4.6 1 1L21.4 10.4 16 4z" />
+                            </svg>
+                            fecha fija
+                          </div>
+                        )}
+                        {b.predecessorTitle && !b.isFixed && (
                           <div
                             className="mt-1.5 flex items-center gap-1 text-[9px] text-accent-warning truncate"
                             title={`Empieza después de: ${b.predecessorTitle}`}

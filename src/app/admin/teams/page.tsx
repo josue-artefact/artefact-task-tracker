@@ -197,6 +197,20 @@ export default async function TeamsPage({
                             <option value="MEMBER">Miembro</option>
                             <option value="PM">Project Manager</option>
                           </Select>
+                          <label className="block">
+                            <div className="mb-1 text-[10px] uppercase tracking-[0.18em] text-ink-500">
+                              Capacidad diaria (horas) — vacío usa default 6h
+                            </div>
+                            <Input
+                              name="dailyCapacityHours"
+                              type="number"
+                              step="0.5"
+                              min="1"
+                              max="16"
+                              defaultValue={m.dailyCapacityMinutes ? (m.dailyCapacityMinutes / 60).toString() : ""}
+                              placeholder="6"
+                            />
+                          </label>
                           <Submit small>Guardar cambios</Submit>
                         </form>
                       </EditPanel>

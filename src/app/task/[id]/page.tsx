@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { AppShell } from "@/components/AppShell";
 import { PriorityPill, StatusPill } from "@/components/PriorityPill";
 import { PRIORITIES, STATUSES, formatDate, formatRelative, priorityLabel, statusLabel, isOverdue } from "@/lib/format";
-import { addComment, transferTask, setStatus, setPriority, deleteTask, updateTask, archiveTask, unarchiveTask } from "@/app/actions/tasks";
+import { addComment, transferTask, setStatus, setPriority, deleteTask, updateTask, archiveTask, unarchiveTask, setTaskScheduledAt } from "@/app/actions/tasks";
 import { setTaskEstimate } from "@/app/actions/time";
 import { EditCard, EditTrigger, EditPanel } from "@/components/EditDisclosure";
 import { ImproveBriefButton } from "@/components/ImproveBriefButton";
@@ -432,6 +432,37 @@ export default async function TaskPage({
                 />
                 <div className="flex justify-end">
                   <SubmitButton>Guardar</SubmitButton>
+                </div>
+              </form>
+            </Card>
+          )}
+
+          {/* Pin / Fecha fija (PM only) — la tarea no se mueve del calendario */}
+          {isPM && (
+            <Card>
+              <SectionLabel>
+                <span className="inline-flex items-center gap-1.5">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent-warning" aria-hidden>
+                    <path d="M12 17v5M9 10h6M5 10h14l-2 7H7l-2-7zM7 3h10v7H7z" />
+                  </svg>
+                  Fecha fija
+                </span>
+              </SectionLabel>
+              <form action={setTaskScheduledAt} className="space-y-2">
+                <input type="hidden" name="id" value={task.id} />
+                <input
+                  type="date"
+                  name="scheduledAt"
+                  defaultValue={task.scheduledAt ? new Date(task.scheduledAt).toISOString().slice(0, 10) : ""}
+                  className="w-full rounded-xl bg-cream-50 border border-ink-300/40 px-3 py-2.5 text-[13px] text-ink-900 transition-colors focus:outline-none focus:border-accent-lime/40"
+                />
+                <p className="text-[11px] text-ink-500 leading-relaxed">
+                  {task.scheduledAt
+                    ? "Fijada — el calendario no la mueve por prioridad/dependencia. Vacía el campo para hacerla flexible de nuevo."
+                    : "Para shoots, juntas con cliente, recordings — eventos que viven en una fecha exacta y no se mueven."}
+                </p>
+                <div className="flex justify-end">
+                  <SubmitButton>{task.scheduledAt ? "Actualizar" : "Fijar"}</SubmitButton>
                 </div>
               </form>
             </Card>
