@@ -80,6 +80,113 @@ export async function notifyTransferredFromMe(opts: {
   }).catch(() => {});
 }
 
+/* ----------------------- Review notifications ----------------------- */
+
+export async function notifyReviewRequested(opts: {
+  taskId: string;
+  taskTitle: string;
+  reviewerId: string;
+  reviewerIsClient: boolean;
+  fromUserId: string;
+}) {
+  if (opts.reviewerId === opts.fromUserId) return;
+
+  const fromUser = await prisma.user.findUnique({
+    where: { id: opts.fromUserId },
+    select: { handle: true },
+  });
+
+  const clientHint = opts.reviewerIsClient ? " (revisión cliente)" : "";
+  const message = `@${fromUser?.handle ?? "alguien"} pide tu revisión en "${opts.taskTitle}"${clientHint}`;
+
+  await prisma.notification.create({
+    data: {
+      userId: opts.reviewerId,
+      kind: "task_review_requested",
+      message,
+      taskId: opts.taskId,
+      fromUserId: opts.fromUserId,
+    },
+  });
+
+  sendPushToUser(opts.reviewerId, {
+    title: "Pendiente de revisión",
+    body: message,
+    url: `/task/${opts.taskId}`,
+    tag: `task-${opts.taskId}`,
+  }).catch(() => {});
+}
+
+export async function notifyReviewApproved(opts: {
+  taskId: string;
+  taskTitle: string;
+  assigneeId: string | null;
+  fromUserId: string;
+}) {
+  if (!opts.assigneeId) return;
+  if (opts.assigneeId === opts.fromUserId) return;
+
+  const fromUser = await prisma.user.findUnique({
+    where: { id: opts.fromUserId },
+    select: { handle: true },
+  });
+
+  const message = `@${fromUser?.handle ?? "alguien"} aprobó tu tarea "${opts.taskTitle}"`;
+
+  await prisma.notification.create({
+    data: {
+      userId: opts.assigneeId,
+      kind: "task_review_approved",
+      message,
+      taskId: opts.taskId,
+      fromUserId: opts.fromUserId,
+    },
+  });
+
+  sendPushToUser(opts.assigneeId, {
+    title: "Tarea aprobada",
+    body: message,
+    url: `/task/${opts.taskId}`,
+    tag: `task-${opts.taskId}`,
+  }).catch(() => {});
+}
+
+export async function notifyReviewReturned(opts: {
+  taskId: string;
+  taskTitle: string;
+  assigneeId: string | null;
+  fromUserId: string;
+  reason: string | null;
+}) {
+  if (!opts.assigneeId) return;
+  if (opts.assigneeId === opts.fromUserId) return;
+
+  const fromUser = await prisma.user.findUnique({
+    where: { id: opts.fromUserId },
+    select: { handle: true },
+  });
+
+  const reasonHint = opts.reason ? ` — "${opts.reason}"` : "";
+  const message = `@${fromUser?.handle ?? "alguien"} devolvió "${opts.taskTitle}"${reasonHint}`;
+
+  await prisma.notification.create({
+    data: {
+      userId: opts.assigneeId,
+      kind: "task_review_returned",
+      message,
+      taskId: opts.taskId,
+      fromUserId: opts.fromUserId,
+    },
+  });
+
+  sendPushToUser(opts.assigneeId, {
+    title: "Revisión devuelta",
+    body: message,
+    url: `/task/${opts.taskId}`,
+    tag: `task-${opts.taskId}`,
+  }).catch(() => {});
+}
+
 export async function notifyCommented(opts: {
   taskId: string;
   taskTitle: string;

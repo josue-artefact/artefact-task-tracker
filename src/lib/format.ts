@@ -1,5 +1,5 @@
 export const PRIORITIES = ["LOW", "MEDIUM", "HIGH", "URGENT"] as const;
-export const STATUSES = ["TODO", "DOING", "DONE"] as const;
+export const STATUSES = ["TODO", "DOING", "REVIEW", "DONE"] as const;
 
 export type Priority = (typeof PRIORITIES)[number];
 export type Status = (typeof STATUSES)[number];
@@ -8,12 +8,17 @@ export function priorityRank(p: string): number {
   return { URGENT: 0, HIGH: 1, MEDIUM: 2, LOW: 3 }[p as Priority] ?? 99;
 }
 
+/** Orden semántico de pipeline: TODO → DOING → REVIEW → DONE. */
+export function statusRank(s: string): number {
+  return { TODO: 0, DOING: 1, REVIEW: 2, DONE: 3 }[s as Status] ?? 99;
+}
+
 export function priorityLabel(p: string): string {
   return { URGENT: "Urgente", HIGH: "Alta", MEDIUM: "Media", LOW: "Baja" }[p as Priority] ?? p;
 }
 
 export function statusLabel(s: string): string {
-  return { TODO: "Por hacer", DOING: "En curso", DONE: "Hecho" }[s as Status] ?? s;
+  return { TODO: "Por hacer", DOING: "En curso", REVIEW: "Revisión", DONE: "Hecho" }[s as Status] ?? s;
 }
 
 export function priorityDot(p: string): string {
@@ -29,6 +34,7 @@ export function statusDot(s: string): string {
   return {
     TODO: "bg-ink-500",
     DOING: "bg-accent-lime",
+    REVIEW: "bg-accent-warning",
     DONE: "bg-ink-700",
   }[s as Status] ?? "bg-ink-500";
 }

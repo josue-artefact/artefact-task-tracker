@@ -33,6 +33,7 @@ model User {
 
   assignedTasks Task[]    @relation("Assignee")
   createdTasks  Task[]    @relation("Creator")
+  reviewingTasks Task[]   @relation("Reviewer")
   comments      Comment[]
   transfersFrom TaskTransfer[] @relation("TransferFrom")
   transfersTo   TaskTransfer[] @relation("TransferTo")
@@ -59,7 +60,15 @@ model Task {
   title            String
   description      String?
   priority         String   @default("MEDIUM") // "LOW" | "MEDIUM" | "HIGH" | "URGENT"
-  status           String   @default("TODO")   // "TODO" | "DOING" | "DONE"
+  status           String   @default("TODO")   // "TODO" | "DOING" | "REVIEW" | "DONE"
+
+  // Revisión: cuando una tarea pasa a REVIEW, queda pendiente del sign-off del
+  // reviewer (siempre un User del equipo). Si el sign-off real viene del cliente,
+  // reviewerIsClient=true indica que el reviewer del equipo solo coordina.
+  reviewerId         String?
+  reviewer           User?     @relation("Reviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  reviewerIsClient   Boolean   @default(false)
+  reviewRequestedAt  DateTime?
   dueDate          DateTime?
   estimatedMinutes Int?     // PM puede setear; opcional
   clientId         String

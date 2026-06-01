@@ -8,10 +8,11 @@ import { priorityRank, formatRelative } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
-const COLUMNS: { status: "TODO" | "DOING" | "DONE"; label: string }[] = [
-  { status: "TODO",  label: "Por hacer" },
-  { status: "DOING", label: "En curso"  },
-  { status: "DONE",  label: "Hecho"     },
+const COLUMNS: { status: "TODO" | "DOING" | "REVIEW" | "DONE"; label: string }[] = [
+  { status: "TODO",   label: "Por hacer" },
+  { status: "DOING",  label: "En curso"  },
+  { status: "REVIEW", label: "Revisión"  },
+  { status: "DONE",   label: "Hecho"     },
 ];
 
 export default async function KanbanPage({
@@ -47,6 +48,7 @@ export default async function KanbanPage({
   const grouped = {
     TODO: sorted.filter((t) => t.status === "TODO"),
     DOING: sorted.filter((t) => t.status === "DOING"),
+    REVIEW: sorted.filter((t) => t.status === "REVIEW"),
     DONE: sorted.filter((t) => t.status === "DONE"),
   };
 
@@ -111,7 +113,7 @@ export default async function KanbanPage({
       </section>
 
       {/* Columns */}
-      <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         {COLUMNS.map((col, idx) => {
           const items = grouped[col.status];
           return (
@@ -165,13 +167,16 @@ function KanbanCard({
   canMove,
 }: {
   task: TaskCard;
-  currentStatus: "TODO" | "DOING" | "DONE";
+  currentStatus: "TODO" | "DOING" | "REVIEW" | "DONE";
   canMove: boolean;
 }) {
+  // Las flechas del kanban solo mueven entre TODO/DOING/DONE. REVIEW se
+  // entra y sale por /task/[id] (necesita reviewer / aprobar / devolver).
   const order: ("TODO" | "DOING" | "DONE")[] = ["TODO", "DOING", "DONE"];
-  const idx = order.indexOf(currentStatus);
-  const prev = idx > 0 ? order[idx - 1] : null;
-  const next = idx < order.length - 1 ? order[idx + 1] : null;
+  const inReview = currentStatus === "REVIEW";
+  const idx = inReview ? -1 : order.indexOf(currentStatus);
+  const prev = !inReview && idx > 0 ? order[idx - 1] : null;
+  const next = !inReview && idx >= 0 && idx < order.length - 1 ? order[idx + 1] : null;
   const isDone = currentStatus === "DONE";
 
   return (

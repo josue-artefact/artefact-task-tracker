@@ -12,6 +12,11 @@ import { ImproveBriefButton } from "@/components/ImproveBriefButton";
 import { TimeSection } from "@/components/TimeSection";
 import { ActiveTaskToggle } from "@/components/ActiveTaskToggle";
 import { TimeLoggedBanner } from "@/components/TimeLoggedBanner";
+import {
+  SubmitForReviewCard,
+  ReviewerActionsCard,
+  AwaitingReviewCard,
+} from "@/components/ReviewCards";
 import { formatDurationCompact } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
@@ -51,6 +56,7 @@ export default async function TaskPage({
       },
       pipeline: { select: { id: true, name: true } },
       blockedByTask: { select: { id: true, title: true, status: true, pipelineOrder: true } },
+      reviewer: { select: { id: true, handle: true, name: true } },
     },
   });
 
@@ -58,15 +64,25 @@ export default async function TaskPage({
 
   const isPM = user.role === "PM";
   const isAssignee = task.assigneeId === user.id;
+  const isReviewer = task.reviewerId === user.id;
+  const inReview = task.status === "REVIEW";
   const canEditStatus = isPM || isAssignee;
   const canTransfer = isPM || isAssignee;
   const canComment = true;
+  const canRequestReview = (isAssignee || isPM) && !inReview && task.status !== "DONE";
+  const canActOnReview = inReview && (isReviewer || isPM);
 
   // candidates for transfer — everyone but current assignee (or current user if unassigned)
   const allUsers = await prisma.user.findMany({
     include: { team: true },
     orderBy: [{ team: { name: "asc" } }, { handle: "asc" }],
   });
+
+  // Reviewers candidatos: PMs (en la práctica son los que aprueban).
+  // Si en el futuro quieren peer-review entre miembros, abrimos la lista.
+  const pmReviewers = allUsers
+    .filter((u) => u.role === "PM" && u.id !== user.id)
+    .map((u) => ({ id: u.id, handle: u.handle, name: u.name }));
 
   // For PM edit: full client/team lists for reassignment.
   const [allClients, allTeams] = isPM
@@ -247,6 +263,30 @@ export default async function TaskPage({
             </EditCard>
           </Card>
 
+          {/* Review state — top of column, prominente cuando aplica */}
+          {canActOnReview && task.reviewer && task.reviewRequestedAt && (
+            <ReviewerActionsCard
+              taskId={task.id}
+              reviewerName={task.reviewer.name}
+              reviewerIsClient={task.reviewerIsClient}
+              requestedAt={task.reviewRequestedAt.toISOString()}
+            />
+          )}
+
+          {/* Assignee viendo su tarea en revisión (no es reviewer) */}
+          {inReview && isAssignee && !isReviewer && task.reviewer && (
+            <AwaitingReviewCard
+              reviewerName={task.reviewer.name}
+              reviewerHandle={task.reviewer.handle}
+              reviewerIsClient={task.reviewerIsClient}
+            />
+          )}
+
+          {/* CTA "Solicitar revisión" para el assignee/PM cuando aplica */}
+          {canRequestReview && pmReviewers.length > 0 && (
+            <SubmitForReviewCard taskId={task.id} reviewers={pmReviewers} />
+          )}
+
           {/* Time tracking */}
           <TimeSection
             taskId={task.id}
@@ -397,12 +437,12 @@ export default async function TaskPage({
             </Card>
           )}
 
-          {/* Status setter */}
-          {canEditStatus && (
+          {/* Status setter — REVIEW se omite (solo se llega via "Solicitar revisión") */}
+          {canEditStatus && !inReview && (
             <Card>
               <SectionLabel>Estado</SectionLabel>
               <div className="flex flex-wrap gap-2">
-                {STATUSES.map((s) => (
+                {STATUSES.filter((s) => s !== "REVIEW").map((s) => (
                   <form key={s} action={setStatus}>
                     <input type="hidden" name="id" value={task.id} />
                     <input type="hidden" name="status" value={s} />
@@ -420,6 +460,9 @@ export default async function TaskPage({
                   </form>
                 ))}
               </div>
+              <p className="mt-3 text-[10px] uppercase tracking-[0.18em] text-ink-400">
+                Para revisión, usa &ldquo;Solicitar revisión&rdquo; arriba.
+              </p>
             </Card>
           )}
 

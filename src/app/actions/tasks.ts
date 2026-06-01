@@ -6,7 +6,14 @@ import { prisma } from "@/lib/db";
 import { requireUser, requirePM } from "@/lib/auth";
 import { PRIORITIES, STATUSES } from "@/lib/format";
 import { parseDuration } from "@/lib/time";
-import { notifyAssigned, notifyTransferredFromMe, notifyCommented } from "@/lib/notify";
+import {
+  notifyAssigned,
+  notifyTransferredFromMe,
+  notifyCommented,
+  notifyReviewRequested,
+  notifyReviewApproved,
+  notifyReviewReturned,
+} from "@/lib/notify";
 import { autoStopIfActive } from "./active";
 
 export async function createTask(formData: FormData) {
@@ -192,6 +199,9 @@ export async function setStatus(formData: FormData) {
   const status = formData.get("status") as string;
   if (!id || !STATUSES.includes(status as any)) return;
 
+  // REVIEW no se setea por esta vía — requiere reviewer asignado (usa submitForReview)
+  if (status === "REVIEW") return;
+
   // Member can only update their own task; PM can update anything.
   const task = await prisma.task.findUnique({ where: { id } });
   if (!task) return;
@@ -281,4 +291,168 @@ export async function transferTask(formData: FormData) {
   revalidatePath("/admin");
   revalidatePath("/inbox");
   revalidatePath(`/task/${taskId}`);
+}
+
+/* ============================ Review workflow ============================ */
+
+/**
+ * Solicita revisión de una tarea — la pasa al status REVIEW asignando un
+ * reviewer (User del equipo) que es quien hará el sign-off. Si el sign-off
+ * real viene del cliente (no del equipo), `reviewerIsClient=true` señala
+ * que el reviewer solo coordina con el cliente.
+ *
+ * Permisos: el assignee o un PM. Para acelerar el flujo, en este punto:
+ *   - status: DOING (o TODO) → REVIEW
+ *   - auto-stop del timer si tenía sesión activa
+ *   - notificación al reviewer
+ *
+ * Form fields: taskId, reviewerId, reviewerIsClient? ("on" / undefined), note?
+ */
+export async function submitForReview(formData: FormData) {
+  const user = await requireUser();
+  const taskId = formData.get("taskId") as string;
+  const reviewerId = formData.get("reviewerId") as string;
+  if (!taskId || !reviewerId) return;
+
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    select: { id: true, title: true, status: true, assigneeId: true },
+  });
+  if (!task) return;
+  if (task.status === "REVIEW" || task.status === "DONE") return; // ya está en review o terminada
+
+  // Permisos: assignee o PM
+  if (user.role !== "PM" && task.assigneeId !== user.id) return;
+
+  // Verifica que el reviewer existe
+  const reviewer = await prisma.user.findUnique({
+    where: { id: reviewerId },
+    select: { id: true },
+  });
+  if (!reviewer) return;
+
+  const reviewerIsClient = formData.get("reviewerIsClient") === "on";
+  const note = ((formData.get("note") as string) || "").trim();
+
+  await prisma.task.update({
+    where: { id: taskId },
+    data: {
+      status: "REVIEW",
+      reviewerId,
+      reviewerIsClient,
+      reviewRequestedAt: new Date(),
+    },
+  });
+
+  // Auto-stop timer si el assignee tenía sesión activa
+  await autoStopIfActive(user.id, taskId);
+
+  // Comentario automático con la nota opcional (audit trail)
+  if (note) {
+    await prisma.comment.create({
+      data: { taskId, body: `🔍 Solicitud de revisión: ${note}`, authorId: user.id },
+    });
+  }
+
+  await notifyReviewRequested({
+    taskId,
+    taskTitle: task.title,
+    reviewerId,
+    reviewerIsClient,
+    fromUserId: user.id,
+  });
+
+  revalidatePath(`/task/${taskId}`);
+  revalidatePath("/admin");
+  revalidatePath("/inbox");
+}
+
+/**
+ * Aprueba la revisión — pasa la tarea a DONE. Solo el reviewer asignado
+ * (o cualquier PM) puede aprobar.
+ */
+export async function approveReview(formData: FormData) {
+  const user = await requireUser();
+  const taskId = formData.get("taskId") as string;
+  if (!taskId) return;
+
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    select: { id: true, title: true, status: true, reviewerId: true, assigneeId: true },
+  });
+  if (!task || task.status !== "REVIEW") return;
+
+  // Permisos: el reviewer asignado o cualquier PM
+  if (user.role !== "PM" && task.reviewerId !== user.id) return;
+
+  await prisma.task.update({
+    where: { id: taskId },
+    data: {
+      status: "DONE",
+      reviewerId: null,
+      reviewerIsClient: false,
+      reviewRequestedAt: null,
+    },
+  });
+
+  await notifyReviewApproved({
+    taskId,
+    taskTitle: task.title,
+    assigneeId: task.assigneeId,
+    fromUserId: user.id,
+  });
+
+  revalidatePath(`/task/${taskId}`);
+  revalidatePath("/admin");
+  revalidatePath("/inbox");
+  revalidatePath("/admin/insights");
+}
+
+/**
+ * Devuelve la revisión al colaborador — la tarea vuelve a DOING. Requiere
+ * un motivo (queda como comentario público) y notifica al assignee.
+ */
+export async function returnReview(formData: FormData) {
+  const user = await requireUser();
+  const taskId = formData.get("taskId") as string;
+  const reason = ((formData.get("reason") as string) || "").trim();
+  if (!taskId) return;
+
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    select: { id: true, title: true, status: true, reviewerId: true, assigneeId: true },
+  });
+  if (!task || task.status !== "REVIEW") return;
+
+  if (user.role !== "PM" && task.reviewerId !== user.id) return;
+
+  await prisma.$transaction([
+    prisma.task.update({
+      where: { id: taskId },
+      data: {
+        status: "DOING",
+        reviewerId: null,
+        reviewerIsClient: false,
+        reviewRequestedAt: null,
+      },
+    }),
+    // El comentario con el motivo queda visible en la historia
+    ...(reason
+      ? [prisma.comment.create({
+          data: { taskId, body: `↩️ Devuelto en revisión: ${reason}`, authorId: user.id },
+        })]
+      : []),
+  ]);
+
+  await notifyReviewReturned({
+    taskId,
+    taskTitle: task.title,
+    assigneeId: task.assigneeId,
+    fromUserId: user.id,
+    reason: reason || null,
+  });
+
+  revalidatePath(`/task/${taskId}`);
+  revalidatePath("/admin");
+  revalidatePath("/inbox");
 }
