@@ -244,6 +244,48 @@ export async function updatePipeline(formData: FormData) {
   revalidatePath("/admin/pipelines");
 }
 
+/* --------------------------- Archive / Unarchive pipeline --------------------------- */
+
+/**
+ * Archiva un pipeline — lo pasa a status "ARCHIVED", sacándolo de la lista
+ * de activos. Las tareas asociadas se mantienen intactas (mayoría estarán
+ * DONE) para preservar historial e insights.
+ *
+ * A diferencia de deletePipeline, es reversible vía unarchivePipeline.
+ */
+export async function archivePipeline(formData: FormData) {
+  await requirePM();
+  const id = formData.get("id") as string;
+  if (!id) return;
+
+  await prisma.pipeline.update({
+    where: { id },
+    data: { status: "ARCHIVED" },
+  });
+  revalidatePath(`/pipeline/${id}`);
+  revalidatePath("/admin/pipelines");
+  revalidatePath("/admin");
+}
+
+/**
+ * Desarchiva un pipeline — vuelve a status "DONE" (el estado "post-archivo"
+ * natural). Si el PM quiere reactivarlo del todo, puede editar el status a
+ * ACTIVE desde "Editar".
+ */
+export async function unarchivePipeline(formData: FormData) {
+  await requirePM();
+  const id = formData.get("id") as string;
+  if (!id) return;
+
+  await prisma.pipeline.updateMany({
+    where: { id, status: "ARCHIVED" },
+    data: { status: "DONE" },
+  });
+  revalidatePath(`/pipeline/${id}`);
+  revalidatePath("/admin/pipelines");
+  revalidatePath("/admin");
+}
+
 /* --------------------------- Delete pipeline --------------------------- */
 
 /**

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requirePM } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { AppShell } from "@/components/AppShell";
+import { ArchivePipelineButton } from "@/components/ArchivePipelineButton";
 import { formatDate } from "@/lib/format";
 import {
   getPipelineHealth,
@@ -136,12 +137,23 @@ export default async function PipelinesPage({
                   )}
                 </div>
 
-                {/* Health pill */}
-                <div className="flex shrink-0 items-center gap-2 rounded-full bg-cream-50 border border-ink-300/30 px-3 py-1.5">
-                  <span className={`h-2 w-2 rounded-full ${healthDot(health)}`} />
-                  <span className="text-[10px] uppercase tracking-[0.18em] text-ink-700">
-                    {healthLabel(health)}
-                  </span>
+                {/* Health pill + acciones inline (archivar / desarchivar) */}
+                <div className="flex shrink-0 flex-col items-end gap-2">
+                  <div className="flex items-center gap-2 rounded-full bg-cream-50 border border-ink-300/30 px-3 py-1.5">
+                    <span className={`h-2 w-2 rounded-full ${healthDot(health)}`} />
+                    <span className="text-[10px] uppercase tracking-[0.18em] text-ink-700">
+                      {healthLabel(health)}
+                    </span>
+                  </div>
+                  {/* Archivar disponible desde el tab de activos; Desarchivar desde archivados */}
+                  {(filter === "active" || filter === "archived") && (
+                    <ArchivePipelineButton
+                      pipelineId={p.id}
+                      pipelineName={p.name}
+                      isArchived={p.status === "ARCHIVED"}
+                      openTaskCount={p.tasks.filter((t) => t.status !== "DONE").length}
+                    />
+                  )}
                 </div>
               </div>
 

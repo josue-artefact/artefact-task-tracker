@@ -28,6 +28,7 @@ import { PRIORITIES, priorityLabel } from "@/lib/format";
 import { EditCard, EditTrigger, EditPanel } from "@/components/EditDisclosure";
 import { DeletePipelineButton } from "@/components/DeletePipelineButton";
 import { DeleteTaskRowButton } from "@/components/DeleteTaskRowButton";
+import { ArchivePipelineButton } from "@/components/ArchivePipelineButton";
 
 export const dynamic = "force-dynamic";
 
@@ -184,6 +185,13 @@ export default async function PipelineDetailPage({
                 </form>
               </EditPanel>
             </EditCard>
+
+            <ArchivePipelineButton
+              pipelineId={pipeline.id}
+              pipelineName={pipeline.name}
+              isArchived={pipeline.status === "ARCHIVED"}
+              openTaskCount={pipeline.tasks.filter((t) => t.status !== "DONE").length}
+            />
 
             <DeletePipelineButton
               pipelineId={pipeline.id}
